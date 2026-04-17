@@ -6,18 +6,18 @@ function App() {
   const [carrito, setCarrito] = useState([]); 
   const [error, setError] = useState(null);
 
-  // --- CONFIGURACIÓN DE URLS ---
-  // Reemplaza esto con el link que te dé Render al terminar el deploy
-  const BACKEND_URL = "https://tu-proyecto-backend.onrender.com"; 
+  // --- CONFIGURACIÓN DE URL ---
+  // He actualizado esta línea con tu link real de Render que verificamos antes.
+  const BACKEND_URL = "https://distriariza.onrender.com"; 
 
   const cargarProductos = async () => {
     try {
-      // Ahora usamos la URL de Render en lugar de la IP local
+      // Ahora el Frontend sabe que debe buscar los datos en la nube (Render)
       const res = await axios.get(`${BACKEND_URL}/api/productos`);
       setProductos(res.data);
     } catch (err) {
-      console.error(err);
-      setError("No se pudieron cargar los productos.");
+      console.error("Error al conectar con el backend:", err);
+      setError("No se pudieron cargar los productos. Verifica la conexión.");
     }
   };
 
@@ -66,8 +66,8 @@ function App() {
 
   const obtenerRutaImagen = (url) => {
     if (!url) return 'https://via.placeholder.com/150';
-    // Si la imagen es un link de internet, lo deja igual. 
-    // Si es un nombre de archivo, lo busca en la carpeta de productos del backend en la nube.
+    // Si la imagen es una URL completa, se usa tal cual.
+    // Si es solo el nombre del archivo, se busca en la carpeta de productos de tu servidor en Render.
     return url.startsWith('http') ? url : `${BACKEND_URL}/productos/${url}`;
   };
 
@@ -83,7 +83,11 @@ function App() {
         <div style={{ fontWeight: 'bold' }}>🛒 Items: {carrito.reduce((acc, p) => acc + p.cantidad, 0)}</div>
       </nav>
 
-      {error && <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>}
+      {error && (
+        <div style={{ backgroundColor: '#ffebee', color: '#c62828', padding: '15px', borderRadius: '8px', marginBottom: '20px', textAlign: 'center' }}>
+          {error}
+        </div>
+      )}
 
       <div style={{ display: 'flex', gap: '20px', maxWidth: '1200px', margin: '0 auto', flexWrap: 'wrap' }}>
         
