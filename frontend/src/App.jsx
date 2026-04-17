@@ -6,16 +6,18 @@ function App() {
   const [carrito, setCarrito] = useState([]); 
   const [error, setError] = useState(null);
 
-  // --- TU IP CONFIGURADA ---
-  const MI_IP = "192.168.1.4";
+  // --- CONFIGURACIÓN DE URLS ---
+  // Reemplaza esto con el link que te dé Render al terminar el deploy
+  const BACKEND_URL = "https://tu-proyecto-backend.onrender.com"; 
 
   const cargarProductos = async () => {
     try {
-      // Usamos tu IP en lugar de localhost
-      const res = await axios.get(`http://${MI_IP}:5000/api/productos`);
+      // Ahora usamos la URL de Render en lugar de la IP local
+      const res = await axios.get(`${BACKEND_URL}/api/productos`);
       setProductos(res.data);
     } catch (err) {
-      setError("Error conectando con el servidor.");
+      console.error(err);
+      setError("No se pudieron cargar los productos.");
     }
   };
 
@@ -64,8 +66,9 @@ function App() {
 
   const obtenerRutaImagen = (url) => {
     if (!url) return 'https://via.placeholder.com/150';
-    // También actualizamos la ruta de las imágenes
-    return url.startsWith('http') ? url : `http://${MI_IP}:5000/productos/${url}`;
+    // Si la imagen es un link de internet, lo deja igual. 
+    // Si es un nombre de archivo, lo busca en la carpeta de productos del backend en la nube.
+    return url.startsWith('http') ? url : `${BACKEND_URL}/productos/${url}`;
   };
 
   return (
@@ -79,6 +82,8 @@ function App() {
         <h1 style={{ margin: 0, fontSize: '1.4rem' }}>🌊 Acuario Store</h1>
         <div style={{ fontWeight: 'bold' }}>🛒 Items: {carrito.reduce((acc, p) => acc + p.cantidad, 0)}</div>
       </nav>
+
+      {error && <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>}
 
       <div style={{ display: 'flex', gap: '20px', maxWidth: '1200px', margin: '0 auto', flexWrap: 'wrap' }}>
         

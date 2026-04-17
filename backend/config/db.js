@@ -1,14 +1,11 @@
-const mysql = require('mysql2'); 
-require('dotenv').config();
-
-const pool = mysql.createPool({
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '1141316532Df.', // Tu contraseña de MySQL
-    database: 'mi_catalogo_acuario',
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
+// Así debe quedar tu conexión en VS Code
+const db = mysql.createConnection({
+  host: "mysql-14c7894e-distriariza.d.aivencloud.com",
+  port: 28140,
+  user: "avnadmin",
+  password: "CONTRASEÑA_DE_AIVEN", // La que copiaste de la web
+  database: "defaultdb",
+  ssl: {
+    rejectUnauthorized: false // Necesario para conexiones externas
+  }
 });
-
-module.exports = pool.promise();
