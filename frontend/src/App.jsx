@@ -79,7 +79,7 @@ function App() {
 
   useEffect(() => { cargarProductos(); }, []);
 
-  // LÓGICA DE FILTRADO CORREGIDA
+  // --- LÓGICA DE FILTRADO REFORZADA ---
   const productosVisibles = productos.filter(p => {
     const normalizar = (texto) => 
       texto ? texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase() : "";
@@ -91,11 +91,16 @@ function App() {
 
     const coincideBusqueda = nombreProducto.includes(queryBusqueda);
     
-    // Comprobación exacta o de inclusión total para evitar fallos en nombres largos
+    // Si la categoría activa es 'Todos', mostrar siempre.
+    if (categoriaActiva === 'Todos') return coincideBusqueda;
+
+    // Si no es 'Todos', comparamos. 
+    // Usamos split(' ')[0] para que si buscas "Accesorios" coincida con "Accesorios para hamsters"
+    const palabraClaveFiltro = categoriaFiltro.split(' ')[0];
     const coincideCategoria = 
-      categoriaActiva === 'Todos' || 
-      categoriaProducto === categoriaFiltro ||
-      categoriaProducto.includes(categoriaFiltro);
+      categoriaProducto === categoriaFiltro || 
+      categoriaProducto.includes(palabraClaveFiltro) ||
+      categoriaFiltro.includes(categoriaProducto);
     
     return coincideBusqueda && coincideCategoria;
   });
