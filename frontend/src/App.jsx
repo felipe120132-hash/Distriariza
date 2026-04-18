@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+// Asegúrate de que llogo.JPG esté dentro de la carpeta src/assets/
+import logoAriza from './assets/llogo.JPG'; 
 
 const DESCRIPCIONES_DETALLADAS = {
   "Acuaprime 120ml": {
@@ -130,16 +132,15 @@ function App() {
   return (
     <div style={{ paddingBottom: '100px', backgroundColor: '#F0F2F5', minHeight: '100vh', fontFamily: 'Inter, sans-serif' }}>
       
-      {/* NAVBAR CON LOGO ACTUALIZADO */}
+      {/* NAVBAR CON LOGO CORREGIDO */}
       <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 30px', backgroundColor: 'white', position: 'sticky', top: 0, zIndex: 1000, borderBottom: '1px solid #E5E7EB' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
           <span style={{ fontSize: '1.2rem', color: '#1A73E8' }}>☰</span>
-          {/* DIV contenedor para el logo y el nombre */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <img 
-              src={image_7.png} // Ruta de tu logo
+              src={logoAriza} // CAMBIO: Ahora usa la variable importada arriba
               alt="Logo Distribuciones Ariza" 
-              style={{ height: '35px', width: 'auto' }} // Ajusta el tamaño aquí
+              style={{ height: '35px', width: 'auto', borderRadius: '4px' }} 
             />
             <h1 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>Distribuciones Ariza</h1>
           </div>
@@ -149,11 +150,11 @@ function App() {
         </div>
       </nav>
 
-      {/* SECCIÓN DE BÚSQUEDA Y TÍTULO */}
+      {/* SECCIÓN DE BÚSQUEDA Y TÍTULO ACTUALIZADO */}
       <div style={{ padding: '40px 30px 20px 30px' }}>
         <h2 style={{ fontSize: 'clamp(1.8rem, 5vw, 2.4rem)', fontWeight: 800, margin: '0 0 20px 0', lineHeight: '1.2', color: '#111827' }}>
-          Todo lo que necesitas para tus<br />
-          <span style={{ color: '#1A73E8' }}>peces y hámsters.</span>
+          Seleccionando los mejores<br />
+          <span style={{ color: '#1A73E8' }}>ejemplares del mundo.</span>
         </h2>
         
         <div style={{ position: 'relative', width: '100%', maxWidth: '380px' }}>
@@ -318,7 +319,7 @@ function App() {
         </>
       )}
 
-      {/* NAVEGACIÓN INFERIOR ACTUALIZADA CON BURBUJA DE CANTIDAD */}
+      {/* NAVEGACIÓN INFERIOR */}
       <div style={{ position: 'fixed', bottom: '20px', left: '50%', transform: 'translateX(-50%)', width: '90%', maxWidth: '400px', backgroundColor: 'rgba(255, 255, 255, 0.9)', backdropFilter: 'blur(12px)', borderRadius: '20px', padding: '12px 0', display: 'flex', justifyContent: 'space-around', boxShadow: '0 10px 15px rgba(0,0,0,0.1)', zIndex: 1000 }}>
         <div onClick={() => {setCategoriaActiva('Todos'); setBusqueda('');}} style={{ textAlign: 'center', color: categoriaActiva === 'Todos' ? '#1A73E8' : '#9CA3AF', cursor: 'pointer' }}>
           <div style={{ fontSize: '1.4rem' }}>⊞</div>
@@ -327,13 +328,12 @@ function App() {
         <div onClick={() => setCarritoAbierto(true)} style={{ textAlign: 'center', color: '#9CA3AF', cursor: 'pointer', position: 'relative' }}>
           <div style={{ fontSize: '1.4rem', position: 'relative' }}>
             🛒 
-            {/* Burbuja de cantidad en el carrito inferior */}
             {totalItems > 0 && (
               <span style={{ 
                 position: 'absolute', 
                 top: '-5px', 
                 right: '-10px', 
-                backgroundColor: '#EF4444', // Color rojo para resaltar
+                backgroundColor: '#EF4444', 
                 color: 'white', 
                 fontSize: '0.6rem', 
                 minWidth: '16px', 
@@ -343,7 +343,7 @@ function App() {
                 alignItems: 'center', 
                 justifyContent: 'center',
                 fontWeight: 'bold',
-                border: '2px solid white' // Borde blanco para separar del icono
+                border: '2px solid white' 
               }}>
                 {totalItems}
               </span>
