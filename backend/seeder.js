@@ -31,7 +31,7 @@ const seedDatabase = async () => {
             // Equipos (ID: catEq.insertId)
             { nombre: 'Filtro 2450L', desc: 'Sistema de filtración interna.', precio: 0, cat: catEq.insertId, img: 'filtro-2450.jpeg' },
             { nombre: 'Termostato 100W', desc: 'Regulador de temperatura.', precio: 0, cat: catEq.insertId, img: 'termostato100.jpeg' },
-            { nombre: 'Comedero Automático', desc: 'Programable digitalmente.', precio: 0, cat: catEq.insertId, img: 'comedero.jpeg' }
+            { nombre: 'Comedero Automático de 3 tiempos', desc: 'Programable digitalmente.', precio: 0, cat: catEq.insertId, img: 'comedero3tiempos.jpeg' }
         ];
 
         // 4. Inserción masiva
