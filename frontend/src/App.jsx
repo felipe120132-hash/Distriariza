@@ -246,7 +246,7 @@ function App() {
         </>
       )}
 
-      {/* CARRITO Y NAVEGACIÓN */}
+      {/* CARRITO Y NAVEGACIÓN LATERAL */}
       {carritoAbierto && (
         <>
           <div onClick={() => { setCarritoAbierto(false); setPasoCarrito('lista'); }} style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.3)', zIndex: 1500 }}></div>
@@ -308,14 +308,16 @@ function App() {
         </>
       )}
 
-      {/* NAV INFERIOR CON CONTADOR */}
+      {/* NAV INFERIOR CON EMOJI ACTUALIZADO */}
       <div style={{ position: 'fixed', bottom: '20px', left: '50%', transform: 'translateX(-50%)', width: '90%', maxWidth: '400px', backgroundColor: 'rgba(255, 255, 255, 0.9)', backdropFilter: 'blur(12px)', borderRadius: '20px', padding: '12px 0', display: 'flex', justifyContent: 'space-around', boxShadow: '0 10px 15px rgba(0,0,0,0.1)', zIndex: 1000 }}>
+        
+        {/* BOTÓN TIENDA CON EMOJI 🏪 */}
         <div onClick={() => {setCategoriaActiva('Todos'); setBusqueda('');}} style={{ textAlign: 'center', color: categoriaActiva === 'Todos' ? '#1A73E8' : '#9CA3AF', cursor: 'pointer' }}>
-          <div style={{ fontSize: '1.4rem' }}>⊞</div>
+          <div style={{ fontSize: '1.4rem' }}>🏪</div>
           <span style={{ fontSize: '0.65rem', fontWeight: 800 }}>TIENDA</span>
         </div>
         
-        {/* CARRITO CON LÓGICA DE CONTADOR */}
+        {/* BOTÓN CARRITO */}
         <div onClick={() => setCarritoAbierto(true)} style={{ textAlign: 'center', color: '#9CA3AF', cursor: 'pointer', position: 'relative' }}>
           <div style={{ fontSize: '1.4rem', position: 'relative', display: 'inline-block' }}>
             🛒
