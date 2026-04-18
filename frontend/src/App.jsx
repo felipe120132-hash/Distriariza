@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
+// 1. DESCRIPCIONES DETALLADAS
 const DESCRIPCIONES_DETALLADAS = {
   "Acuaprime 120ml": {
     resumen: "🛡️ Protección total para tus peces en cada cambio de agua.",
@@ -43,14 +44,22 @@ function App() {
   const [error, setError] = useState(null);
   const [carritoAbierto, setCarritoAbierto] = useState(false);
   const [productoSeleccionado, setProductoSeleccionado] = useState(null);
-  
   const [busqueda, setBusqueda] = useState('');
   const [categoriaActiva, setCategoriaActiva] = useState('Todos');
-
   const [pasoCarrito, setPasoCarrito] = useState('lista'); 
   const [datosEnvio, setDatosEnvio] = useState({ nombre: '', direccion: '', ciudad: '', telefono: '' });
 
   const BACKEND_URL = "https://distriariza.onrender.com";
+
+  // 2. CATEGORÍAS ACTUALIZADAS
+  const colecciones = [
+    { t: 'Líquidos', val: 'Liquidos vitales', icon: '💧' },
+    { t: 'Comida', val: 'Comida', icon: '🍱' },
+    { t: 'Vacaciones', val: 'Productos para tus vacaciones', icon: '🏖️' },
+    { t: 'Accesorios', val: 'Accesorios', icon: '🎨' },
+    { t: 'Equipos', val: 'Filtros,Termostatos y motores', icon: '⚙️' },
+    { t: 'Hamsters', val: 'Accesorios para hamsters', icon: '🐹' }
+  ];
 
   const cargarProductos = async () => {
     try {
@@ -90,7 +99,7 @@ function App() {
   const finalizarPedidoWhatsApp = () => {
     const numero = "573219627376";
     const lista = carrito.map(p => `• ${p.nombre} (x${p.cantidad})`).join('\n');
-    const msg = `*NUEVO PEDIDO - ACUARIO STORE*\n\n` +
+    const msg = `*NUEVO PEDIDO - DISTRIBUCIONES ARIZA*\n\n` +
                 `*Cliente:* ${datosEnvio.nombre}\n` +
                 `*Dirección:* ${datosEnvio.direccion}\n` +
                 `*Ciudad:* ${datosEnvio.ciudad}\n` +
@@ -111,23 +120,13 @@ function App() {
     <div style={{ paddingBottom: '100px', backgroundColor: '#F0F2F5', minHeight: '100vh', fontFamily: 'Inter, sans-serif' }}>
       
       {/* NAVBAR */}
-      <nav style={{ 
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
-        padding: '15px 30px', backgroundColor: 'white', 
-        position: 'sticky', top: 0, zIndex: 1000, borderBottom: '1px solid #E5E7EB'
-      }}>
+      <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 30px', backgroundColor: 'white', position: 'sticky', top: 0, zIndex: 1000, borderBottom: '1px solid #E5E7EB' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
           <span style={{ fontSize: '1.2rem', color: '#1A73E8' }}>☰</span>
           <h1 style={{ margin: 0, fontSize: '1rem', fontWeight: 600 }}>Distribuciones Ariza</h1>
         </div>
         <div onClick={() => setCarritoAbierto(true)} style={{ cursor: 'pointer', position: 'relative', fontSize: '1.3rem' }}>
-          🛒 {totalItems > 0 && (
-            <span style={{
-              position: 'absolute', top: '-5px', right: '-10px',
-              backgroundColor: '#1A73E8', color: 'white', fontSize: '0.65rem',
-              borderRadius: '50%', padding: '2px 6px', fontWeight: 'bold', border: '2px solid white'
-            }}>{totalItems}</span>
-          )}
+          🛒 {totalItems > 0 && <span style={{ position: 'absolute', top: '-5px', right: '-10px', backgroundColor: '#1A73E8', color: 'white', fontSize: '0.65rem', borderRadius: '50%', padding: '2px 6px', fontWeight: 'bold', border: '2px solid white' }}>{totalItems}</span>}
         </div>
       </nav>
 
@@ -139,41 +138,31 @@ function App() {
         </h2>
         
         <div style={{ position: 'relative', width: '100%', maxWidth: '550px' }}>
-          <input 
-            type="text" 
-            placeholder="Buscar especies o tecnología..." 
-            value={busqueda}
-            onChange={(e) => setBusqueda(e.target.value)}
-            style={{ 
-              width: '100%', padding: '16px 20px 16px 50px', borderRadius: '16px', 
-              border: 'none', backgroundColor: 'white', boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
-              fontSize: '1rem', outline: 'none'
-            }} 
-          />
+          <input type="text" placeholder="Buscar productos..." value={busqueda} onChange={(e) => setBusqueda(e.target.value)} style={{ width: '100%', padding: '16px 20px 16px 50px', borderRadius: '16px', border: 'none', backgroundColor: 'white', boxShadow: '0 4px 6px rgba(0,0,0,0.05)', fontSize: '1rem', outline: 'none' }} />
           <span style={{ position: 'absolute', left: '18px', top: '50%', transform: 'translateY(-50%)' }}>🔍</span>
         </div>
       </div>
 
       <div style={{ padding: '0 30px' }}>
-        {/* COLECCIONES / CATEGORÍAS */}
+        {/* COLECCIONES */}
         <div style={{ marginBottom: '45px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
             <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700 }}>Colecciones</h3>
             <span onClick={() => setCategoriaActiva('Todos')} style={{ color: '#1A73E8', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer' }}>Ver todo</span>
           </div>
-          <div style={{ display: 'flex', gap: '20px', overflowX: 'auto', paddingBottom: '10px' }}>
-            {[
-              { t: 'Agua Dulce', val: 'Agua Dulce', img: 'https://images.unsplash.com/photo-1522069169874-c58ec4b76be5?w=400' },
-              { t: 'Agua Salada', val: 'Agua Salada', img: 'https://images.unsplash.com/photo-1582967788606-a171c1080cb0?w=400' },
-              { t: 'Arrecife', val: 'Arrecife', img: 'https://images.unsplash.com/photo-1546024077-c4b626955eef?w=400' }
-            ].map((col, i) => (
-              <div key={i} onClick={() => setCategoriaActiva(col.val)} style={{ minWidth: '130px', cursor: 'pointer', textAlign: 'center' }}>
-                <img src={col.img} alt={col.t} style={{ 
-                  width: '130px', height: '130px', borderRadius: '20px', objectFit: 'cover', 
-                  border: categoriaActiva === col.val ? '4px solid #1A73E8' : '4px solid white', 
-                  boxShadow: '0 4px 10px rgba(0,0,0,0.1)', transition: '0.3s'
-                }} />
-                <p style={{ marginTop: '10px', fontSize: '0.85rem', fontWeight: 600, color: categoriaActiva === col.val ? '#1A73E8' : '#111827' }}>{col.t}</p>
+          
+          <div style={{ display: 'flex', gap: '20px', overflowX: 'auto', paddingBottom: '15px', scrollbarWidth: 'none' }}>
+            {colecciones.map((col, i) => (
+              <div key={i} onClick={() => setCategoriaActiva(col.val)} style={{ minWidth: '90px', cursor: 'pointer', textAlign: 'center' }}>
+                <div style={{ 
+                  width: '75px', height: '75px', borderRadius: '50%', margin: '0 auto',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.8rem',
+                  backgroundColor: categoriaActiva === col.val ? '#1A73E8' : 'white',
+                  color: categoriaActiva === col.val ? 'white' : '#111827',
+                  boxShadow: '0 4px 10px rgba(0,0,0,0.08)', transition: '0.3s',
+                  border: '3px solid white'
+                }}>{col.icon}</div>
+                <p style={{ marginTop: '10px', fontSize: '0.7rem', fontWeight: 700, color: categoriaActiva === col.val ? '#1A73E8' : '#4B5563', lineHeight: '1.2', textTransform: 'uppercase' }}>{col.t}</p>
               </div>
             ))}
           </div>
@@ -182,7 +171,7 @@ function App() {
         {/* LISTADO DE PRODUCTOS */}
         <div style={{ marginBottom: '60px' }}>
           <h3 style={{ margin: '0 0 25px 0', fontSize: '1.3rem', fontWeight: 700 }}>
-            {categoriaActiva === 'Todos' ? 'Productos destacados' : `Productos: ${categoriaActiva}`}
+            {categoriaActiva === 'Todos' ? 'Productos destacados' : categoriaActiva}
           </h3>
           {error && <p style={{ color: '#EF4444' }}>{error}</p>}
           
@@ -192,7 +181,7 @@ function App() {
                 <div onClick={() => setProductoSeleccionado(p)} style={{ backgroundColor: '#F9FAFB', borderRadius: '18px', height: '220px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '15px', cursor: 'pointer', overflow: 'hidden' }}>
                   <img src={obtenerRutaImagen(p.imagen_url)} alt={p.nombre} style={{ width: '85%', height: '85%', objectFit: 'contain' }} />
                 </div>
-                <p style={{ margin: '0', fontSize: '0.65rem', color: '#6B7280', textTransform: 'uppercase', fontWeight: 700 }}>{p.categoria_nombre || 'Equipamiento'}</p>
+                <p style={{ margin: '0', fontSize: '0.65rem', color: '#6B7280', textTransform: 'uppercase', fontWeight: 700 }}>{p.categoria_nombre || 'General'}</p>
                 <h4 onClick={() => setProductoSeleccionado(p)} style={{ margin: '4px 0 12px 0', fontSize: '1rem', fontWeight: 600, cursor: 'pointer' }}>{p.nombre}</h4>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '1.1rem', fontWeight: 700, color: '#1A73E8' }}>${Number(p.precio).toLocaleString()}</span>
@@ -213,7 +202,7 @@ function App() {
             <div style={{ backgroundColor: '#F9FAFB', borderRadius: '24px', padding: '20px', textAlign: 'center', marginBottom: '20px' }}>
               <img src={obtenerRutaImagen(productoSeleccionado.imagen_url)} alt={productoSeleccionado.nombre} style={{ maxHeight: '200px', maxWidth: '100%', objectFit: 'contain' }} />
             </div>
-            <span style={{ fontSize: '0.7rem', color: '#1A73E8', fontWeight: 800, textTransform: 'uppercase' }}>{productoSeleccionado.categoria_nombre || 'BIENESTAR ACUÁTICO'}</span>
+            <span style={{ fontSize: '0.7rem', color: '#1A73E8', fontWeight: 800, textTransform: 'uppercase' }}>{productoSeleccionado.categoria_nombre || 'BIENESTAR'}</span>
             <h2 style={{ margin: '5px 0 15px 0', fontSize: '1.6rem', fontWeight: 800 }}>{productoSeleccionado.nombre}</h2>
             <div style={{ color: '#4B5563', fontSize: '0.95rem', lineHeight: '1.6' }}>
               <p style={{ fontWeight: 700, color: '#111827', marginBottom: '12px' }}>{DESCRIPCIONES_DETALLADAS[productoSeleccionado.nombre]?.resumen || "Calidad premium seleccionada."}</p>
@@ -228,20 +217,18 @@ function App() {
         </>
       )}
 
-      {/* CARRITO (PANEL LATERAL CORREGIDO) */}
+      {/* CARRITO LATERAL COMPLETO */}
       {carritoAbierto && (
         <>
           <div onClick={() => { setCarritoAbierto(false); setPasoCarrito('lista'); }} style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.3)', zIndex: 1500 }}></div>
           <div style={{ position: 'fixed', top: 0, right: 0, width: '100%', maxWidth: '420px', height: '100%', backgroundColor: '#F9FAFB', zIndex: 2000, display: 'flex', flexDirection: 'column', boxShadow: '-10px 0 30px rgba(0,0,0,0.1)' }}>
             
-            {/* Cabecera del Carrito */}
             <div style={{ display: 'flex', alignItems: 'center', padding: '30px', borderBottom: '1px solid #f0f0f0' }}>
               {pasoCarrito === 'envio' && <button onClick={() => setPasoCarrito('lista')} style={{ background: 'none', border: 'none', cursor: 'pointer', marginRight: '15px', fontSize: '1.2rem' }}>←</button>}
               <h2 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800 }}>{pasoCarrito === 'lista' ? 'Tu Carrito' : 'Datos de Entrega'}</h2>
               <button onClick={() => { setCarritoAbierto(false); setPasoCarrito('lista'); }} style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem' }}>✕</button>
             </div>
 
-            {/* Contenido Scrolleable */}
             <div style={{ flex: 1, overflowY: 'auto', padding: '20px 30px' }}>
               {pasoCarrito === 'lista' && (
                 carrito.length === 0 ? <p style={{ textAlign: 'center', color: '#9CA3AF', marginTop: '40px' }}>Carrito vacío.</p> : carrito.map(item => (
@@ -273,50 +260,34 @@ function App() {
                 <div style={{ textAlign: 'center', padding: '40px 10px' }}>
                   <div style={{ fontSize: '4rem' }}>✅</div>
                   <h3 style={{ fontSize: '1.5rem', fontWeight: 800 }}>¡Pedido Enviado!</h3>
-                  <button onClick={() => { setCarrito([]); setCarritoAbierto(false); setPasoCarrito('lista'); }} style={{ width: '100%', marginTop: '20px', padding: '16px', backgroundColor: '#F3F4F6', borderRadius: '15px', border: 'none', fontWeight: 700, cursor: 'pointer' }}>Limpiar Carrito</button>
+                  <button onClick={() => { setCarrito([]); setCarritoAbierto(false); setPasoCarrito('lista'); }} style={{ width: '100%', marginTop: '20px', padding: '16px', backgroundColor: '#F3F4F6', borderRadius: '15px', border: 'none', fontWeight: 700, cursor: 'pointer' }}>Cerrar</button>
                 </div>
               )}
             </div>
 
-            {/* Footer fijo del Carrito (Total y Botón) */}
             {carrito.length > 0 && pasoCarrito !== 'confirmado' && (
               <div style={{ padding: '25px 30px', backgroundColor: 'white', borderTop: '1px solid #f0f0f0' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                   <span style={{ fontWeight: 600, color: '#6B7280' }}>Total:</span>
                   <span style={{ fontSize: '1.6rem', fontWeight: 800 }}>${totalCompra.toLocaleString()}</span>
                 </div>
-                {pasoCarrito === 'lista' ? (
-                  <button onClick={() => setPasoCarrito('envio')} style={{ width: '100%', padding: '18px', backgroundColor: '#1A73E8', color: 'white', border: 'none', borderRadius: '18px', fontWeight: 700, cursor: 'pointer', fontSize: '1rem' }}>Continuar</button>
-                ) : (
-                  <button 
-                    disabled={!datosEnvio.nombre || !datosEnvio.direccion || !datosEnvio.telefono} 
-                    onClick={finalizarPedidoWhatsApp} 
-                    style={{ width: '100%', padding: '18px', backgroundColor: '#25D366', color: 'white', border: 'none', borderRadius: '18px', fontWeight: 700, cursor: 'pointer', fontSize: '1rem' }}
-                  >
-                    Finalizar WhatsApp 🚀
-                  </button>
-                )}
+                <button onClick={pasoCarrito === 'lista' ? () => setPasoCarrito('envio') : finalizarPedidoWhatsApp} style={{ width: '100%', padding: '18px', backgroundColor: pasoCarrito === 'lista' ? '#1A73E8' : '#25D366', color: 'white', border: 'none', borderRadius: '18px', fontWeight: 700, cursor: 'pointer', fontSize: '1rem' }}>
+                  {pasoCarrito === 'lista' ? 'Continuar Compra' : 'Finalizar por WhatsApp 🚀'}
+                </button>
               </div>
             )}
           </div>
         </>
       )}
 
-      {/* BARRA INFERIOR (MENU) */}
+      {/* BARRA INFERIOR FLOTANTE */}
       <div style={{ position: 'fixed', bottom: '20px', left: '50%', transform: 'translateX(-50%)', width: '90%', maxWidth: '400px', backgroundColor: 'rgba(255, 255, 255, 0.9)', backdropFilter: 'blur(12px)', borderRadius: '20px', padding: '12px 0', display: 'flex', justifyContent: 'space-around', boxShadow: '0 10px 15px rgba(0,0,0,0.1)', zIndex: 1000 }}>
         <div onClick={() => {setCategoriaActiva('Todos'); setBusqueda('');}} style={{ textAlign: 'center', color: categoriaActiva === 'Todos' ? '#1A73E8' : '#9CA3AF', cursor: 'pointer' }}>
           <div style={{ fontSize: '1.4rem' }}>⊞</div>
           <span style={{ fontSize: '0.65rem', fontWeight: 800 }}>TIENDA</span>
         </div>
         <div onClick={() => setCarritoAbierto(true)} style={{ textAlign: 'center', color: '#9CA3AF', cursor: 'pointer' }}>
-          <div style={{ fontSize: '1.4rem', position: 'relative' }}>
-            🛒
-            {totalItems > 0 && (
-              <span style={{ position: 'absolute', top: '-5px', right: '-8px', background: '#1A73E8', color: 'white', fontSize: '0.6rem', padding: '2px 5px', borderRadius: '10px', border: '2px solid white' }}>
-                {totalItems}
-              </span>
-            )}
-          </div>
+          <div style={{ fontSize: '1.4rem', position: 'relative' }}>🛒</div>
           <span style={{ fontSize: '0.65rem', fontWeight: 800 }}>CARRITO</span>
         </div>
       </div>
