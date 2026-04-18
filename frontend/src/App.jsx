@@ -129,7 +129,7 @@ function App() {
   };
 
   return (
-    <div style={{ paddingBottom: '120px', backgroundColor: '#F0F2F5', minHeight: '100vh', fontFamily: 'Inter, sans-serif' }}>
+    <div style={{ paddingBottom: '100px', backgroundColor: '#F0F2F5', minHeight: '100vh', fontFamily: 'Inter, sans-serif' }}>
       
       {/* NAVBAR */}
       <nav style={{ 
@@ -139,7 +139,7 @@ function App() {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <img 
-            src="/Logo.jpeg" // Asegúrate de que el archivo esté en la carpeta public/
+            src="/Logo.jpeg" 
             alt="Logo" 
             style={{ height: '50px', width: 'auto', borderRadius: '8px', objectFit: 'contain' }} 
             onError={(e) => { e.target.src = "https://via.placeholder.com/50?text=Logo" }}
@@ -267,33 +267,6 @@ function App() {
           </div>
         </div>
       )}
-
-      {/* BARRA DE NAVEGACIÓN INFERIOR (TAB BAR) */}
-      <div style={{ 
-        position: 'fixed', bottom: '20px', left: '50%', transform: 'translateX(-50%)', 
-        width: '90%', maxWidth: '400px', backgroundColor: 'rgba(255, 255, 255, 0.9)', 
-        backdropFilter: 'blur(12px)', borderRadius: '20px', padding: '12px 0', 
-        display: 'flex', justifyContent: 'space-around', boxShadow: '0 10px 15px rgba(0,0,0,0.1)', 
-        zIndex: 2000 
-      }}>
-        <div onClick={() => {setCategoriaActiva('Todos'); setBusqueda(''); window.scrollTo(0,0);}} style={{ textAlign: 'center', color: categoriaActiva === 'Todos' ? '#1A73E8' : '#9CA3AF', cursor: 'pointer' }}>
-          <div style={{ fontSize: '1.4rem' }}>🏠</div>
-          <span style={{ fontSize: '0.65rem', fontWeight: 800 }}>INICIO</span>
-        </div>
-        <div onClick={() => setCarritoAbierto(true)} style={{ textAlign: 'center', color: '#9CA3AF', cursor: 'pointer', position: 'relative' }}>
-          <div style={{ fontSize: '1.4rem' }}>🛒</div>
-          <span style={{ fontSize: '0.65rem', fontWeight: 800 }}>CARRITO</span>
-          {totalItems > 0 && (
-            <span style={{ 
-              position: 'absolute', top: '-5px', right: '5px', backgroundColor: '#EF4444', 
-              color: 'white', fontSize: '0.6rem', minWidth: '16px', height: '16px', 
-              borderRadius: '50%', display: 'flex', alignItems: 'center', 
-              justifyContent: 'center', fontWeight: 'bold', border: '2px solid white'
-            }}>{totalItems}</span>
-          )}
-        </div>
-      </div>
-
     </div>
   );
 }
