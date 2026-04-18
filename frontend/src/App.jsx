@@ -5,39 +5,27 @@ import axios from 'axios';
 const DESCRIPCIONES_DETALLADAS = {
   "Acuaprime 120ml": {
     resumen: "🛡️ Protección total para tus peces en cada cambio de agua.",
-    cuerpo: `Acuaprime es mucho más que un simple anticloro. Es un acondicionador completo de alta concentración diseñado para eliminar instantáneamente los elementos nocivos del agua del grifo.
+    cuerpo: `Acuaprime es mucho más que un simple anticloro. Es un acondicionador completo diseñado para eliminar instantáneamente los elementos nocivos.
     
-    ✨ **Beneficios Principales:**
-    • 🚀 **Eliminación Instantánea:** Neutraliza el cloro, las cloraminas y los metales pesados.
-    • 🐟 **Protección de Mucosa:** Contiene coloides que refuerzan la capa natural de los peces, reduciendo el estrés.
-    • 💧 **Súper Concentrado:** Una pequeña dosis trata una gran cantidad de litros.
-    • 🌍 **Seguro para Todos:** Ideal para acuarios de agua dulce, marinos y estanques.`,
-    uso: "📝 **Modo de Uso:** Añade la dosis recomendada en cada cambio de agua o al montar un acuario nuevo para asegurar un ambiente apto desde el primer segundo."
+    ✨ <b>Beneficios Principales:</b>
+    • 🚀 <b>Eliminación Instantánea:</b> Neutraliza el cloro, las cloraminas y los metales pesados.
+    • 🐟 <b>Protección de Mucosa:</b> Contiene coloides que refuerzan la capa natural, reduciendo el estrés.
+    • 💧 <b>Súper Concentrado:</b> Una pequeña dosis trata una gran cantidad de litros.
+    • 🌍 <b>Seguro para Todos:</b> Ideal para agua dulce, marinos y estanques.`,
+    uso: "📝 <b>Modo de Uso:</b> Añade la dosis recomendada en cada cambio de agua para asegurar un ambiente apto desde el primer segundo."
   },
   "Cycle 120ml": {
     resumen: "🦠 Establece un ecosistema saludable de forma inmediata.",
-    cuerpo: `Cycle es una fórmula avanzada con bacterias beneficiosas de alta resistencia. Elimina el amoníaco y los nitritos tóxicos, evitando el "síndrome del tanque nuevo".
+    cuerpo: `Fórmula avanzada con bacterias beneficiosas. Elimina el amoníaco y nitritos tóxicos, evitando el "síndrome del tanque nuevo".
     
-    ✨ **Beneficios Principales:**
-    • ⏳ **Maduración Acelerada:** Permite introducir peces en nuevos acuarios mucho más rápido.
-    • 🧹 **Elimina Tóxicos:** Transforma desechos orgánicos en nitratos seguros para las plantas.
-    • 🔋 **Refuerzo Biológico:** Ideal tras limpiezas de filtro o cambios grandes de agua.
-    • 🌊 **Fórmula Adaptable:** Funciona perfectamente en agua dulce y salada.`,
-    uso: "📝 **Modo de Uso:** Agitar bien. Dosificar por 3 días seguidos al iniciar un acuario, y aplicar una dosis de mantenimiento semanal."
-  },
-  "Test PH": {
-    resumen: "📉 Conoce la calidad de tu agua al instante.",
-    cuerpo: `El PH es un parámetro crítico. Un nivel inestable estresa a tus peces y afecta su color. Con este kit, monitorearás de forma sencilla si el agua es ácida, neutra o alcalina.
-    
-    ✨ **Beneficios Principales:**
-    • ⏱️ **Resultados Inmediatos:** Lectura clara en menos de un minuto.
-    • 🎯 **Alta Precisión:** Diseñado para detectar variaciones sutiles.
-    • 🧪 **Larga Duración:** El reactivo rinde para múltiples pruebas constantes.
-    • 🐠 **Vital para la Salud:** Indispensable para peces amazónicos o cíclidos africanos.`,
-    uso: "📝 **Modo de Uso:** Toma una muestra de agua en el tubo incluido, agrega las gotas del reactivo, agita y compara el color con la tabla del empaque."
+    ✨ <b>Beneficios Principales:</b>
+    • ⏳ <b>Maduración Acelerada:</b> Introduce peces mucho más rápido.
+    • 🧹 <b>Elimina Tóxicos:</b> Transforma desechos en nitratos seguros.
+    • 🔋 <b>Refuerzo Biológico:</b> Ideal tras limpiezas de filtro.
+    • 🌊 <b>Fórmula Adaptable:</b> Agua dulce y salada.`,
+    uso: "📝 <b>Modo de Uso:</b> Agitar bien. Dosificar por 3 días seguidos al iniciar y semanalmente como mantenimiento."
   }
 };
-
 function App() {
   const [productos, setProductos] = useState([]);
   const [carrito, setCarrito] = useState([]);
