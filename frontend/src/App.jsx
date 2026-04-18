@@ -48,8 +48,16 @@ function App() {
   const [pasoCarrito, setPasoCarrito] = useState('lista'); 
   const [datosEnvio, setDatosEnvio] = useState({ nombre: '', direccion: '', ciudad: '', telefono: '' });
 
-  // URL de tu backend en Render
   const BACKEND_URL = "https://distriariza.onrender.com";
+
+  // Función para formatear moneda con ceros (COP)
+  const formatoMoneda = (valor) => {
+    return new Intl.NumberFormat('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+      minimumFractionDigits: 2
+    }).format(valor);
+  };
 
   const colecciones = [
     { t: 'LÍQUIDOS', val: 'Liquidos vitales', icon: '💧' },
@@ -72,7 +80,6 @@ function App() {
 
   useEffect(() => { cargarProductos(); }, []);
 
-  // --- LÓGICA DE FILTRADO MEJORADA ---
   const productosVisibles = productos.filter(p => {
     const normalizar = (texto) => 
       texto ? texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase() : "";
@@ -118,16 +125,14 @@ function App() {
                 `*Ciudad:* ${datosEnvio.ciudad}\n` +
                 `*Teléfono:* ${datosEnvio.telefono}\n\n` +
                 `*Productos:*\n${lista}\n\n` +
-                `*Total: $${totalCompra.toLocaleString('es-CO')}*`;
+                `*Total: ${formatoMoneda(totalCompra)}*`;
     
     window.open(`https://wa.me/${numero}?text=${encodeURIComponent(msg)}`, '_blank');
     setPasoCarrito('confirmado');
   };
 
-  // --- CORRECCIÓN DE RUTA DE IMAGEN ---
   const obtenerRutaImagen = (url) => {
     if (!url) return 'https://via.placeholder.com/300';
-    // Si la URL ya es completa (http...), la usamos. Si no, le pegamos el backend.
     return url.startsWith('http') ? url : `${BACKEND_URL}/productos/${url}`;
   };
 
@@ -149,7 +154,7 @@ function App() {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <img 
-            src="/Logo.jpeg"  // <--- NOMBRE CORREGIDO SEGÚN TU ÚLTIMO ARCHIVO
+            src="/Logo.jpeg"
             alt="Logo Distribuciones Ariza" 
             style={{ height: '50px', width: 'auto', borderRadius: '8px', objectFit: 'contain' }} 
             onError={(e) => { e.target.src = "https://via.placeholder.com/50?text=Logo" }}
@@ -250,7 +255,8 @@ function App() {
                 <p style={{ margin: '0', fontSize: '0.65rem', color: '#6B7280', textTransform: 'uppercase', fontWeight: 700 }}>{p.categoria_nombre}</p>
                 <h4 onClick={() => setProductoSeleccionado(p)} style={{ margin: '4px 0 12px 0', fontSize: '1rem', fontWeight: 600, cursor: 'pointer' }}>{p.nombre}</h4>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '1.1rem', fontWeight: 700, color: '#1A73E8' }}>${Number(p.precio).toLocaleString()}</span>
+                  {/* PRECIO FORMATEADO AQUÍ */}
+                  <span style={{ fontSize: '1.1rem', fontWeight: 700, color: '#1A73E8' }}>{formatoMoneda(p.precio)}</span>
                   <button onClick={() => agregarAlCarrito(p)} style={{ width: '38px', height: '38px', borderRadius: '10px', backgroundColor: '#1A73E8', color: 'white', border: 'none', cursor: 'pointer', fontSize: '1.2rem' }}>+</button>
                 </div>
               </div>
@@ -274,7 +280,8 @@ function App() {
               <div style={{ whiteSpace: 'pre-line', marginBottom: '20px' }} dangerouslySetInnerHTML={{ __html: DESCRIPCIONES_DETALLADAS[productoSeleccionado.nombre]?.cuerpo || productoSeleccionado.descripcion }} />
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '30px', paddingTop: '20px', borderTop: '1px solid #F3F4F6' }}>
-              <div style={{ fontSize: '1.6rem', fontWeight: 800 }}>${Number(productoSeleccionado.precio).toLocaleString()}</div>
+              {/* PRECIO FORMATEADO AQUÍ */}
+              <div style={{ fontSize: '1.6rem', fontWeight: 800 }}>{formatoMoneda(productoSeleccionado.precio)}</div>
               <button onClick={() => { agregarAlCarrito(productoSeleccionado); setProductoSeleccionado(null); }} style={{ backgroundColor: '#1A73E8', color: 'white', padding: '16px 25px', borderRadius: '18px', border: 'none', fontWeight: 700, cursor: 'pointer' }}>Añadir 🛒</button>
             </div>
           </div>
@@ -299,7 +306,8 @@ function App() {
                     <img src={obtenerRutaImagen(item.imagen_url)} alt={item.nombre} style={{ width: '50px', height: '50px', objectFit: 'contain' }} />
                     <div style={{ flex: 1 }}>
                       <p style={{ fontWeight: 600, fontSize: '0.9rem', margin: 0 }}>{item.nombre}</p>
-                      <p style={{ color: '#1A73E8', fontWeight: 700, margin: '4px 0 0' }}>${(item.precio * item.cantidad).toLocaleString()}</p>
+                      {/* PRECIO FORMATEADO AQUÍ */}
+                      <p style={{ color: '#1A73E8', fontWeight: 700, margin: '4px 0 0' }}>{formatoMoneda(item.precio * item.cantidad)}</p>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                       <button onClick={() => restarCantidad(item.id)} style={{ border: 'none', background: '#f3f4f6', borderRadius: '8px', width: '25px', height: '25px', cursor: 'pointer' }}>-</button>
@@ -333,7 +341,8 @@ function App() {
               <div style={{ padding: '25px 30px', backgroundColor: 'white', borderTop: '1px solid #f0f0f0' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                   <span style={{ fontWeight: 600, color: '#6B7280' }}>Total:</span>
-                  <span style={{ fontSize: '1.6rem', fontWeight: 800 }}>${totalCompra.toLocaleString()}</span>
+                  {/* TOTAL FORMATEADO AQUÍ */}
+                  <span style={{ fontSize: '1.6rem', fontWeight: 800 }}>{formatoMoneda(totalCompra)}</span>
                 </div>
                 <button onClick={pasoCarrito === 'lista' ? () => setPasoCarrito('envio') : finalizarPedidoWhatsApp} style={{ width: '100%', padding: '18px', backgroundColor: pasoCarrito === 'lista' ? '#1A73E8' : '#25D366', color: 'white', border: 'none', borderRadius: '18px', fontWeight: 700, cursor: 'pointer', fontSize: '1rem' }}>
                   {pasoCarrito === 'lista' ? 'Siguiente paso' : 'Pedir por WhatsApp 🚀'}
