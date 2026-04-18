@@ -48,6 +48,7 @@ function App() {
   const [pasoCarrito, setPasoCarrito] = useState('lista'); 
   const [datosEnvio, setDatosEnvio] = useState({ nombre: '', direccion: '', ciudad: '', telefono: '' });
 
+  // URL de tu backend en Render
   const BACKEND_URL = "https://distriariza.onrender.com";
 
   const colecciones = [
@@ -64,20 +65,21 @@ function App() {
       const res = await axios.get(`${BACKEND_URL}/api/productos`);
       setProductos(res.data);
     } catch (err) {
+      console.error(err);
       setError("No se pudieron cargar los productos.");
     }
   };
 
   useEffect(() => { cargarProductos(); }, []);
 
+  // --- LÓGICA DE FILTRADO MEJORADA ---
   const productosVisibles = productos.filter(p => {
-    const nombreProducto = p.nombre.toLowerCase();
-    const queryBusqueda = busqueda.toLowerCase();
-    
     const normalizar = (texto) => 
-      texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase();
+      texto ? texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase() : "";
 
-    const categoriaProducto = normalizar(p.categoria_nombre || "");
+    const nombreProducto = normalizar(p.nombre);
+    const queryBusqueda = normalizar(busqueda);
+    const categoriaProducto = normalizar(p.categoria_nombre);
     const categoriaFiltro = normalizar(categoriaActiva);
 
     const coincideBusqueda = nombreProducto.includes(queryBusqueda);
@@ -122,15 +124,17 @@ function App() {
     setPasoCarrito('confirmado');
   };
 
+  // --- CORRECCIÓN DE RUTA DE IMAGEN ---
   const obtenerRutaImagen = (url) => {
     if (!url) return 'https://via.placeholder.com/300';
+    // Si la URL ya es completa (http...), la usamos. Si no, le pegamos el backend.
     return url.startsWith('http') ? url : `${BACKEND_URL}/productos/${url}`;
   };
 
   return (
     <div style={{ paddingBottom: '100px', backgroundColor: '#F0F2F5', minHeight: '100vh', fontFamily: 'Inter, sans-serif' }}>
       
-      {/* NAVBAR CON LOGO INTEGRADO */}
+      {/* NAVBAR */}
       <nav style={{ 
         display: 'flex', 
         justifyContent: 'space-between', 
@@ -145,9 +149,10 @@ function App() {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <img 
-            src="/llogo.JPG" 
+            src="/Logo.jpeg"  // <--- NOMBRE CORREGIDO SEGÚN TU ÚLTIMO ARCHIVO
             alt="Logo Distribuciones Ariza" 
-            style={{ height: '50px', width: 'auto', borderRadius: '8px' }} 
+            style={{ height: '50px', width: 'auto', borderRadius: '8px', objectFit: 'contain' }} 
+            onError={(e) => { e.target.src = "https://via.placeholder.com/50?text=Logo" }}
           />
           <div style={{ lineHeight: '1' }}>
             <h1 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#111827' }}>
@@ -177,7 +182,7 @@ function App() {
         </div>
       </nav>
 
-      {/* SECCIÓN DE BÚSQUEDA Y TÍTULO */}
+      {/* SECCIÓN DE BÚSQUEDA */}
       <div style={{ padding: '40px 30px 20px 30px' }}>
         <h2 style={{ fontSize: 'clamp(1.8rem, 5vw, 2.4rem)', fontWeight: 800, margin: '0 0 20px 0', lineHeight: '1.2', color: '#111827' }}>
           Todo lo que necesitas para tus<br />
@@ -206,7 +211,7 @@ function App() {
       </div>
 
       <div style={{ padding: '0 30px' }}>
-        {/* COLECCIONES */}
+        {/* CATEGORÍAS */}
         <div style={{ marginBottom: '45px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
             <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700 }}>Explorar categorías</h3>
@@ -237,26 +242,19 @@ function App() {
           </h3>
           
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '25px' }}>
-            {productosVisibles.length > 0 ? (
-              productosVisibles.map(p => (
-                <div key={p.id} style={{ backgroundColor: 'white', borderRadius: '24px', padding: '15px', boxShadow: '0 4px 6px rgba(0,0,0,0.03)' }}>
-                  <div onClick={() => setProductoSeleccionado(p)} style={{ backgroundColor: '#F9FAFB', borderRadius: '18px', height: '220px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '15px', cursor: 'pointer', overflow: 'hidden' }}>
-                    <img src={obtenerRutaImagen(p.imagen_url)} alt={p.nombre} style={{ width: '85%', height: '85%', objectFit: 'contain' }} />
-                  </div>
-                  <p style={{ margin: '0', fontSize: '0.65rem', color: '#6B7280', textTransform: 'uppercase', fontWeight: 700 }}>{p.categoria_nombre}</p>
-                  <h4 onClick={() => setProductoSeleccionado(p)} style={{ margin: '4px 0 12px 0', fontSize: '1rem', fontWeight: 600, cursor: 'pointer' }}>{p.nombre}</h4>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: '1.1rem', fontWeight: 700, color: '#1A73E8' }}>${Number(p.precio).toLocaleString()}</span>
-                    <button onClick={() => agregarAlCarrito(p)} style={{ width: '38px', height: '38px', borderRadius: '10px', backgroundColor: '#1A73E8', color: 'white', border: 'none', cursor: 'pointer', fontSize: '1.2rem' }}>+</button>
-                  </div>
+            {productosVisibles.map(p => (
+              <div key={p.id} style={{ backgroundColor: 'white', borderRadius: '24px', padding: '15px', boxShadow: '0 4px 6px rgba(0,0,0,0.03)' }}>
+                <div onClick={() => setProductoSeleccionado(p)} style={{ backgroundColor: '#F9FAFB', borderRadius: '18px', height: '220px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '15px', cursor: 'pointer', overflow: 'hidden' }}>
+                  <img src={obtenerRutaImagen(p.imagen_url)} alt={p.nombre} style={{ width: '85%', height: '85%', objectFit: 'contain' }} />
                 </div>
-              ))
-            ) : (
-              <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '60px 20px' }}>
-                <div style={{ fontSize: '3rem', marginBottom: '10px' }}>🔍</div>
-                <p style={{ color: '#9CA3AF', fontWeight: 600 }}>No se encontraron productos en esta categoría.</p>
+                <p style={{ margin: '0', fontSize: '0.65rem', color: '#6B7280', textTransform: 'uppercase', fontWeight: 700 }}>{p.categoria_nombre}</p>
+                <h4 onClick={() => setProductoSeleccionado(p)} style={{ margin: '4px 0 12px 0', fontSize: '1rem', fontWeight: 600, cursor: 'pointer' }}>{p.nombre}</h4>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: '1.1rem', fontWeight: 700, color: '#1A73E8' }}>${Number(p.precio).toLocaleString()}</span>
+                  <button onClick={() => agregarAlCarrito(p)} style={{ width: '38px', height: '38px', borderRadius: '10px', backgroundColor: '#1A73E8', color: 'white', border: 'none', cursor: 'pointer', fontSize: '1.2rem' }}>+</button>
+                </div>
               </div>
-            )}
+            ))}
           </div>
         </div>
       </div>
