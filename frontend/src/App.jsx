@@ -51,7 +51,7 @@ function App() {
 
   const BACKEND_URL = "https://distriariza.onrender.com";
 
-  // 2. CATEGORÍAS ACTUALIZADAS
+  // 2. CATEGORÍAS ACTUALIZADAS (Líquidos -> Liquidos vitales)
   const colecciones = [
     { t: 'Líquidos', val: 'Liquidos vitales', icon: '💧' },
     { t: 'Comida', val: 'Comida', icon: '🍱' },
@@ -217,7 +217,7 @@ function App() {
         </>
       )}
 
-      {/* CARRITO LATERAL COMPLETO */}
+      {/* CARRITO LATERAL */}
       {carritoAbierto && (
         <>
           <div onClick={() => { setCarritoAbierto(false); setPasoCarrito('lista'); }} style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.3)', zIndex: 1500 }}></div>
