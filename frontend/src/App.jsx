@@ -141,7 +141,7 @@ function App() {
         </div>
       </nav>
 
-      {/* SECCIÓN DE BÚSQUEDA Y TÍTULO ACTUALIZADO */}
+      {/* SECCIÓN DE BÚSQUEDA Y TÍTULO */}
       <div style={{ padding: '40px 30px 20px 30px' }}>
         <h2 style={{ fontSize: 'clamp(1.8rem, 5vw, 2.4rem)', fontWeight: 800, margin: '0 0 20px 0', lineHeight: '1.2', color: '#111827' }}>
           Todo lo que necesitas para tus<br />
@@ -310,14 +310,36 @@ function App() {
         </>
       )}
 
-      {/* NAVEGACIÓN INFERIOR */}
+      {/* NAVEGACIÓN INFERIOR ACTUALIZADA */}
       <div style={{ position: 'fixed', bottom: '20px', left: '50%', transform: 'translateX(-50%)', width: '90%', maxWidth: '400px', backgroundColor: 'rgba(255, 255, 255, 0.9)', backdropFilter: 'blur(12px)', borderRadius: '20px', padding: '12px 0', display: 'flex', justifyContent: 'space-around', boxShadow: '0 10px 15px rgba(0,0,0,0.1)', zIndex: 1000 }}>
         <div onClick={() => {setCategoriaActiva('Todos'); setBusqueda('');}} style={{ textAlign: 'center', color: categoriaActiva === 'Todos' ? '#1A73E8' : '#9CA3AF', cursor: 'pointer' }}>
           <div style={{ fontSize: '1.4rem' }}>⊞</div>
           <span style={{ fontSize: '0.65rem', fontWeight: 800 }}>TIENDA</span>
         </div>
-        <div onClick={() => setCarritoAbierto(true)} style={{ textAlign: 'center', color: '#9CA3AF', cursor: 'pointer' }}>
-          <div style={{ fontSize: '1.4rem', position: 'relative' }}>🛒 {totalItems > 0 && <span style={{ position: 'absolute', top: '-2px', right: '-8px', backgroundColor: '#EF4444', width: '8px', height: '8px', borderRadius: '50%' }}></span>}</div>
+        <div onClick={() => setCarritoAbierto(true)} style={{ textAlign: 'center', color: '#9CA3AF', cursor: 'pointer', position: 'relative' }}>
+          <div style={{ fontSize: '1.4rem', position: 'relative' }}>
+            🛒 
+            {totalItems > 0 && (
+              <span style={{ 
+                position: 'absolute', 
+                top: '-5px', 
+                right: '-10px', 
+                backgroundColor: '#EF4444', 
+                color: 'white', 
+                fontSize: '0.6rem', 
+                minWidth: '16px', 
+                height: '16px', 
+                borderRadius: '50%', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center',
+                fontWeight: 'bold',
+                border: '2px solid white'
+              }}>
+                {totalItems}
+              </span>
+            )}
+          </div>
           <span style={{ fontSize: '0.65rem', fontWeight: 800 }}>CARRITO</span>
         </div>
       </div>
