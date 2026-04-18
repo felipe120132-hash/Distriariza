@@ -70,12 +70,10 @@ function App() {
 
   useEffect(() => { cargarProductos(); }, []);
 
-  // FILTRO OPTIMIZADO: Ignora tildes, mayúsculas y espacios extra
   const productosVisibles = productos.filter(p => {
     const nombreProducto = p.nombre.toLowerCase();
     const queryBusqueda = busqueda.toLowerCase();
     
-    // Función para normalizar texto (quita tildes y deja en minúsculas)
     const normalizar = (texto) => 
       texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase();
 
@@ -83,7 +81,6 @@ function App() {
     const categoriaFiltro = normalizar(categoriaActiva);
 
     const coincideBusqueda = nombreProducto.includes(queryBusqueda);
-    
     const coincideCategoria = 
       categoriaActiva === 'Todos' || 
       categoriaProducto === categoriaFiltro ||
@@ -144,14 +141,13 @@ function App() {
         </div>
       </nav>
 
-      {/* SECCIÓN DE BÚSQUEDA Y TÍTULO */}
+      {/* SECCIÓN DE BÚSQUEDA Y TÍTULO ACTUALIZADO */}
       <div style={{ padding: '40px 30px 20px 30px' }}>
         <h2 style={{ fontSize: 'clamp(1.8rem, 5vw, 2.4rem)', fontWeight: 800, margin: '0 0 20px 0', lineHeight: '1.2', color: '#111827' }}>
-          Seleccionando los mejores<br />
-          <span style={{ color: '#1A73E8' }}>ejemplares del mundo.</span>
+          Todo lo que necesitas para tus<br />
+          <span style={{ color: '#1A73E8' }}>peces y hámsters.</span>
         </h2>
         
-        {/* BARRA DE BÚSQUEDA PROFESIONAL */}
         <div style={{ position: 'relative', width: '100%', maxWidth: '380px' }}>
           <input 
             type="text" 
