@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
-// Diccionario de descripciones enriquecidas con emojis
+// Diccionario de descripciones con etiquetas HTML para negritas
 const DESCRIPCIONES_DETALLADAS = {
   "Acuaprime 120ml": {
     resumen: "🛡️ Protección total para tus peces en cada cambio de agua.",
@@ -26,6 +26,7 @@ const DESCRIPCIONES_DETALLADAS = {
     uso: "📝 <b>Modo de Uso:</b> Agitar bien. Dosificar por 3 días seguidos al iniciar y semanalmente como mantenimiento."
   }
 };
+
 function App() {
   const [productos, setProductos] = useState([]);
   const [carrito, setCarrito] = useState([]);
@@ -196,7 +197,7 @@ function App() {
         </div>
       </div>
 
-      {/* MODAL DE DETALLES DEL PRODUCTO (ACTUALIZADO CON DESCRIPCIONES) */}
+      {/* MODAL DE DETALLES - CORREGIDO PARA NEGRITAS */}
       {productoSeleccionado && (
         <>
           <div onClick={() => setProductoSeleccionado(null)} style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 3000, backdropFilter: 'blur(8px)' }}></div>
@@ -221,12 +222,22 @@ function App() {
               <p style={{ fontWeight: 700, color: '#111827', marginBottom: '12px' }}>
                 {DESCRIPCIONES_DETALLADAS[productoSeleccionado.nombre]?.resumen || "Calidad premium seleccionada para tu ecosistema."}
               </p>
-              <div style={{ whiteSpace: 'pre-line', marginBottom: '20px' }}>
-                {DESCRIPCIONES_DETALLADAS[productoSeleccionado.nombre]?.cuerpo || productoSeleccionado.descripcion}
-              </div>
-              <p style={{ backgroundColor: '#EFF6FF', padding: '15px', borderRadius: '16px', color: '#1E40AF', fontSize: '0.85rem' }}>
-                {DESCRIPCIONES_DETALLADAS[productoSeleccionado.nombre]?.uso || "Uso: Siga las instrucciones indicadas en el empaque del producto."}
-              </p>
+              
+              {/* RENDERIZADO DE HTML PARA EL CUERPO */}
+              <div 
+                style={{ whiteSpace: 'pre-line', marginBottom: '20px' }}
+                dangerouslySetInnerHTML={{ 
+                  __html: DESCRIPCIONES_DETALLADAS[productoSeleccionado.nombre]?.cuerpo || productoSeleccionado.descripcion 
+                }}
+              />
+              
+              {/* RENDERIZADO DE HTML PARA EL USO */}
+              <p 
+                style={{ backgroundColor: '#EFF6FF', padding: '15px', borderRadius: '16px', color: '#1E40AF', fontSize: '0.85rem' }}
+                dangerouslySetInnerHTML={{ 
+                  __html: DESCRIPCIONES_DETALLADAS[productoSeleccionado.nombre]?.uso || "Uso: Siga las instrucciones indicadas en el empaque del producto." 
+                }}
+              />
             </div>
             
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '30px', paddingTop: '20px', borderTop: '1px solid #F3F4F6' }}>
