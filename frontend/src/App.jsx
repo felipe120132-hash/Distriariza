@@ -6,6 +6,9 @@ function App() {
   const [carrito, setCarrito] = useState([]);
   const [error, setError] = useState(null);
   const [carritoAbierto, setCarritoAbierto] = useState(false);
+  
+  // Nuevo estado para el producto seleccionado
+  const [productoSeleccionado, setProductoSeleccionado] = useState(null);
 
   const BACKEND_URL = "https://distriariza.onrender.com";
 
@@ -53,9 +56,9 @@ function App() {
   };
 
   return (
-    <div id="root" style={{ paddingBottom: '100px', backgroundColor: '#F0F2F5' }}>
+    <div id="root" style={{ paddingBottom: '100px', backgroundColor: '#F0F2F5', minHeight: '100vh' }}>
       
-      {/* NAVBAR MEJORADA */}
+      {/* NAVBAR */}
       <nav style={{ 
         display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
         padding: '15px 30px', backgroundColor: 'white', 
@@ -63,9 +66,7 @@ function App() {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
           <span style={{ fontSize: '1.2rem', color: '#1A73E8' }}>☰</span>
-          <h1 style={{ margin: 0, fontSize: '1rem', fontWeight: 600, letterSpacing: '-0.5px' }}>
-            Distribuciones Ariza
-          </h1>
+          <h1 style={{ margin: 0, fontSize: '1rem', fontWeight: 600 }}>Distribuciones Ariza</h1>
         </div>
         <div onClick={() => setCarritoAbierto(true)} style={{ cursor: 'pointer', position: 'relative', fontSize: '1.3rem' }}>
           🛒
@@ -81,71 +82,80 @@ function App() {
         </div>
       </nav>
 
-      {/* HERO SECTION - TÍTULO PREMIUM */}
-      <div style={{ padding: '40px 30px', textAlign: 'left' }}>
-        <h2 style={{ fontSize: '2.8rem', fontWeight: 800, margin: '0 0 25px 0', lineHeight: '1.05', color: '#111827' }}>
-          Curating the World's<br />
-          <span style={{ color: '#1A73E8' }}>Finest Aquatics.</span>
+      {/* HERO SECTION */}
+      <div style={{ padding: '40px 30px' }}>
+        <h2 style={{ fontSize: '2.5rem', fontWeight: 800, margin: '0 0 25px 0', lineHeight: '1.1', color: '#111827' }}>
+          Seleccionando los mejores<br />
+          <span style={{ color: '#1A73E8' }}>ejemplares del mundo.</span>
         </h2>
         
         <div style={{ position: 'relative', width: '100%', maxWidth: '550px' }}>
           <input 
             type="text" 
-            placeholder="Search premium species and tech..." 
+            placeholder="Buscar especies o tecnología..." 
             style={{ 
               width: '100%', padding: '16px 20px 16px 50px', borderRadius: '16px', 
-              border: 'none', backgroundColor: 'white', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)',
+              border: 'none', backgroundColor: 'white', boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
               fontSize: '1rem', outline: 'none'
             }} 
           />
-          <span style={{ position: 'absolute', left: '18px', top: '50%', transform: 'translateY(-50%)', opacity: 0.4 }}>🔍</span>
+          <span style={{ position: 'absolute', left: '18px', top: '50%', transform: 'translateY(-50%)' }}>🔍</span>
         </div>
       </div>
 
       <div style={{ padding: '0 30px' }}>
         
-        {/* COLECCIONES REDISEÑADAS */}
+        {/* COLECCIONES */}
         <div style={{ marginBottom: '45px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
-            <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700 }}>Collections</h3>
-            <span style={{ color: '#1A73E8', fontSize: '0.85rem', fontWeight: 600 }}>View All</span>
+            <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700 }}>Colecciones</h3>
+            <span style={{ color: '#1A73E8', fontSize: '0.85rem', fontWeight: 600 }}>Ver todo</span>
           </div>
-          <div style={{ display: 'flex', gap: '20px', overflowX: 'auto', paddingBottom: '10px', scrollbarWidth: 'none' }}>
+          <div style={{ display: 'flex', gap: '20px', overflowX: 'auto', paddingBottom: '10px' }}>
             {[
-              { t: 'Freshwater', img: 'https://images.unsplash.com/photo-1522069169874-c58ec4b76be5?w=400' },
-              { t: 'Saltwater', img: 'https://images.unsplash.com/photo-1582967788606-a171c1080cb0?w=400' },
-              { t: 'Coral Reef', img: 'https://images.unsplash.com/photo-1546024077-c4b626955eef?w=400' }
+              { t: 'Agua Dulce', img: 'https://images.unsplash.com/photo-1522069169874-c58ec4b76be5?w=400' },
+              { t: 'Agua Salada', img: 'https://images.unsplash.com/photo-1582967788606-a171c1080cb0?w=400' },
+              { t: 'Arrecife', img: 'https://images.unsplash.com/photo-1546024077-c4b626955eef?w=400' }
             ].map((col, i) => (
-              <div key={i} style={{ minWidth: '130px', textAlign: 'left' }}>
-                <img src={col.img} alt={col.t} style={{ width: '130px', height: '130px', borderRadius: '20px', objectFit: 'cover', border: '4px solid white', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }} />
-                <p style={{ marginTop: '10px', fontSize: '0.85rem', fontWeight: 600, color: '#374151' }}>{col.t}</p>
+              <div key={i} style={{ minWidth: '130px' }}>
+                <img src={col.img} alt={col.t} style={{ width: '130px', height: '130px', borderRadius: '20px', objectFit: 'cover', border: '4px solid white', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }} />
+                <p style={{ marginTop: '10px', fontSize: '0.85rem', fontWeight: 600 }}>{col.t}</p>
               </div>
             ))}
           </div>
         </div>
 
-        {/* ARTEFACTOS DESTACADOS - GRID DE TARJETAS */}
+        {/* LISTADO DE PRODUCTOS */}
         <div style={{ marginBottom: '60px' }}>
-          <h3 style={{ margin: '0 0 25px 0', fontSize: '1.3rem', fontWeight: 700 }}>Featured Artifacts</h3>
+          <h3 style={{ margin: '0 0 25px 0', fontSize: '1.3rem', fontWeight: 700 }}>Artefactos destacados</h3>
           {error && <p style={{ color: '#EF4444' }}>{error}</p>}
           
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '25px' }}>
             {productos.map(p => (
               <div key={p.id} style={{ 
                 backgroundColor: 'white', borderRadius: '24px', padding: '15px', 
-                boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)', transition: 'transform 0.2s'
+                boxShadow: '0 4px 6px rgba(0,0,0,0.03)'
               }}>
-                <div style={{ 
-                  backgroundColor: '#F9FAFB', borderRadius: '18px', height: '220px', 
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '15px', overflow: 'hidden'
-                }}>
-                  <img src={obtenerRutaImagen(p.imagen_url)} alt={p.nombre} style={{ width: '90%', height: '90%', objectFit: 'contain' }} />
+                <div 
+                  onClick={() => setProductoSeleccionado(p)}
+                  style={{ 
+                    backgroundColor: '#F9FAFB', borderRadius: '18px', height: '220px', 
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '15px', 
+                    cursor: 'pointer', overflow: 'hidden'
+                  }}
+                >
+                  <img src={obtenerRutaImagen(p.imagen_url)} alt={p.nombre} style={{ width: '85%', height: '85%', objectFit: 'contain' }} />
                 </div>
                 
-                <p style={{ margin: '0', fontSize: '0.65rem', color: '#6B7280', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.5px' }}>
-                  {p.categoria_nombre || 'Premium Tech'}
+                <p style={{ margin: '0', fontSize: '0.65rem', color: '#6B7280', textTransform: 'uppercase', fontWeight: 700 }}>
+                  {p.categoria_nombre || 'Equipamiento'}
                 </p>
-                <h4 style={{ margin: '4px 0 12px 0', fontSize: '1rem', fontWeight: 600, color: '#111827' }}>{p.nombre}</h4>
+                <h4 
+                  onClick={() => setProductoSeleccionado(p)}
+                  style={{ margin: '4px 0 12px 0', fontSize: '1rem', fontWeight: 600, cursor: 'pointer' }}
+                >
+                  {p.nombre}
+                </h4>
                 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '1.1rem', fontWeight: 700, color: '#1A73E8' }}>${Number(p.precio).toLocaleString()}</span>
@@ -154,7 +164,7 @@ function App() {
                     style={{ 
                       width: '38px', height: '38px', borderRadius: '10px', 
                       backgroundColor: '#1A73E8', color: 'white', border: 'none', 
-                      cursor: 'pointer', fontSize: '1.2rem', fontWeight: 'bold'
+                      cursor: 'pointer', fontSize: '1.2rem'
                     }}
                   >+</button>
                 </div>
@@ -164,53 +174,95 @@ function App() {
         </div>
       </div>
 
-      {/* BARRA DE NAVEGACIÓN INFERIOR (FLOTANTE) */}
+      {/* MODAL DE DETALLES DEL PRODUCTO */}
+      {productoSeleccionado && (
+        <>
+          <div onClick={() => setProductoSeleccionado(null)} style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 3000, backdropFilter: 'blur(5px)' }}></div>
+          <div style={{ 
+            position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', 
+            width: '90%', maxWidth: '500px', backgroundColor: 'white', zIndex: 3001, 
+            borderRadius: '30px', padding: '30px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)' 
+          }}>
+            <button onClick={() => setProductoSeleccionado(null)} style={{ position: 'absolute', top: '20px', right: '20px', background: '#F3F4F6', border: 'none', borderRadius: '50%', width: '35px', height: '35px', cursor: 'pointer' }}>✕</button>
+            
+            <div style={{ backgroundColor: '#F9FAFB', borderRadius: '20px', padding: '20px', textAlign: 'center', marginBottom: '20px' }}>
+              <img src={obtenerRutaImagen(productoSeleccionado.imagen_url)} alt={productoSeleccionado.nombre} style={{ maxHeight: '250px', maxWidth: '100%', objectFit: 'contain' }} />
+            </div>
+            
+            <span style={{ fontSize: '0.75rem', color: '#1A73E8', fontWeight: 700, textTransform: 'uppercase' }}>{productoSeleccionado.categoria_nombre}</span>
+            <h2 style={{ margin: '5px 0 15px 0', fontSize: '1.5rem', fontWeight: 800 }}>{productoSeleccionado.nombre}</h2>
+            <p style={{ color: '#4B5563', lineHeight: '1.6', fontSize: '0.95rem', marginBottom: '25px' }}>
+              {productoSeleccionado.descripcion || "Este producto premium ha sido seleccionado cuidadosamente para garantizar el bienestar de tu ecosistema acuático."}
+            </p>
+            
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: '1.8rem', fontWeight: 800 }}>${Number(productoSeleccionado.precio).toLocaleString()}</span>
+              <button 
+                onClick={() => { agregarAlCarrito(productoSeleccionado); setProductoSeleccionado(null); }}
+                style={{ backgroundColor: '#1A73E8', color: 'white', padding: '15px 30px', borderRadius: '15px', border: 'none', fontWeight: 700, cursor: 'pointer' }}
+              >
+                Añadir al carrito
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* BARRA DE NAVEGACIÓN INFERIOR */}
       <div style={{
         position: 'fixed', bottom: '20px', left: '50%', transform: 'translateX(-50%)',
         width: '90%', maxWidth: '400px', backgroundColor: 'rgba(255, 255, 255, 0.9)', 
         backdropFilter: 'blur(12px)', borderRadius: '20px', padding: '12px 0',
-        display: 'flex', justifyContent: 'space-around', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)', zIndex: 1000
+        display: 'flex', justifyContent: 'space-around', boxShadow: '0 10px 15px rgba(0,0,0,0.1)', zIndex: 1000
       }}>
-        {['GALLERY', 'SEARCH', 'CART', 'PROFILE'].map((label, idx) => (
-          <div key={label} onClick={label === 'CART' ? () => setCarritoAbierto(true) : null} style={{ textAlign: 'center', cursor: 'pointer' }}>
-            <div style={{ fontSize: '1.2rem', color: idx === 0 ? '#1A73E8' : '#9CA3AF' }}>
-              {idx === 0 ? '⊞' : idx === 1 ? '🔍' : idx === 2 ? '🛒' : '👤'}
-            </div>
-            <span style={{ fontSize: '0.6rem', fontWeight: 700, color: idx === 0 ? '#1A73E8' : '#9CA3AF' }}>{label}</span>
-          </div>
-        ))}
+        <div style={{ textAlign: 'center', color: '#1A73E8' }}>
+          <div style={{ fontSize: '1.2rem' }}>⊞</div>
+          <span style={{ fontSize: '0.6rem', fontWeight: 700 }}>GALERÍA</span>
+        </div>
+        <div style={{ textAlign: 'center', color: '#9CA3AF' }}>
+          <div style={{ fontSize: '1.2rem' }}>🔍</div>
+          <span style={{ fontSize: '0.6rem', fontWeight: 700 }}>BUSCAR</span>
+        </div>
+        <div onClick={() => setCarritoAbierto(true)} style={{ textAlign: 'center', color: '#9CA3AF', cursor: 'pointer' }}>
+          <div style={{ fontSize: '1.2rem' }}>🛒</div>
+          <span style={{ fontSize: '0.6rem', fontWeight: 700 }}>CARRITO</span>
+        </div>
+        <div style={{ textAlign: 'center', color: '#9CA3AF' }}>
+          <div style={{ fontSize: '1.2rem' }}>👤</div>
+          <span style={{ fontSize: '0.6rem', fontWeight: 700 }}>PERFIL</span>
+        </div>
       </div>
 
-      {/* MODAL DEL CARRITO - DISEÑO LIMPIO */}
+      {/* MODAL DEL CARRITO */}
       {carritoAbierto && (
         <>
-          <div onClick={() => setCarritoAbierto(false)} style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.3)', zIndex: 1500, backdropFilter: 'blur(4px)' }}></div>
+          <div onClick={() => setCarritoAbierto(false)} style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.3)', zIndex: 1500 }}></div>
           <div style={{ 
             position: 'fixed', top: 0, right: 0, width: '100%', maxWidth: '400px', height: '100%', 
             backgroundColor: 'white', zIndex: 2000, padding: '40px 30px', display: 'flex', flexDirection: 'column'
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
-              <h2 style={{ margin: 0, fontSize: '1.6rem', fontWeight: 800 }}>Your Cart</h2>
+              <h2 style={{ margin: 0, fontSize: '1.6rem', fontWeight: 800 }}>Tu Carrito</h2>
               <button onClick={() => setCarritoAbierto(false)} style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer' }}>✕</button>
             </div>
             
             <div style={{ flex: 1, overflowY: 'auto' }}>
               {carrito.length === 0 ? (
-                <p style={{ textAlign: 'center', color: '#9CA3AF', marginTop: '40px' }}>Tu carrito está vacío.</p>
+                <p style={{ textAlign: 'center', color: '#9CA3AF' }}>El carrito está vacío.</p>
               ) : (
                 carrito.map(item => (
                   <div key={item.id} style={{ display: 'flex', gap: '15px', marginBottom: '20px', alignItems: 'center' }}>
-                    <div style={{ width: '65px', height: '65px', borderRadius: '14px', backgroundColor: '#F3F4F6', overflow: 'hidden', border: '1px solid #E5E7EB' }}>
+                    <div style={{ width: '60px', height: '60px', borderRadius: '12px', backgroundColor: '#F3F4F6', padding: '5px' }}>
                       <img src={obtenerRutaImagen(item.imagen_url)} alt={item.nombre} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                     </div>
                     <div style={{ flex: 1 }}>
-                      <p style={{ fontWeight: 600, fontSize: '0.95rem', margin: 0 }}>{item.nombre}</p>
-                      <p style={{ color: '#1A73E8', fontWeight: 700, fontSize: '0.9rem' }}>${(item.precio * item.cantidad).toLocaleString()}</p>
+                      <p style={{ fontWeight: 600, fontSize: '0.9rem', margin: 0 }}>{item.nombre}</p>
+                      <p style={{ color: '#1A73E8', fontWeight: 700 }}>${(item.precio * item.cantidad).toLocaleString()}</p>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', backgroundColor: '#F3F4F6', padding: '4px 10px', borderRadius: '10px' }}>
-                      <button onClick={() => restarCantidad(item.id)} style={{ border: 'none', background: 'none', fontWeight: 'bold', cursor: 'pointer' }}>-</button>
-                      <span style={{ fontSize: '0.9rem', fontWeight: 700 }}>{item.cantidad}</span>
-                      <button onClick={() => agregarAlCarrito(item)} style={{ border: 'none', background: 'none', fontWeight: 'bold', cursor: 'pointer' }}>+</button>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: '#F3F4F6', padding: '4px 8px', borderRadius: '8px' }}>
+                      <button onClick={() => restarCantidad(item.id)} style={{ border: 'none', background: 'none', fontWeight: 'bold' }}>-</button>
+                      <span>{item.cantidad}</span>
+                      <button onClick={() => agregarAlCarrito(item)} style={{ border: 'none', background: 'none', fontWeight: 'bold' }}>+</button>
                     </div>
                   </div>
                 ))
@@ -226,10 +278,10 @@ function App() {
                 <button 
                   onClick={enviarWhatsApp}
                   style={{ 
-                    width: '100%', padding: '20px', backgroundColor: '#1A73E8', color: 'white', 
+                    width: '100%', padding: '18px', backgroundColor: '#25D366', color: 'white', 
                     border: 'none', borderRadius: '18px', fontSize: '1rem', fontWeight: 700, cursor: 'pointer'
                   }}
-                >Checkout via WhatsApp 🚀</button>
+                >Pedir por WhatsApp 🚀</button>
               </div>
             )}
           </div>
