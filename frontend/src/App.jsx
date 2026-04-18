@@ -55,7 +55,7 @@ function App() {
     { t: 'COMIDA', val: 'Comida', icon: '🍱' },
     { t: 'VACACIONES', val: 'Productos para tus vacaciones', icon: '🏖️' },
     { t: 'ACCESORIOS', val: 'Accesorios', icon: '🎨' },
-    { t: 'EQUIPOS', val: 'Filtros,Termostatos y motores', icon: '⚙️' },
+    { t: 'EQUIPOS', val: 'Filtros, Termostatos y motores', icon: '⚙️' },
     { t: 'HAMSTERS', val: 'Accesorios para hamsters', icon: '🐹' }
   ];
 
@@ -70,7 +70,7 @@ function App() {
 
   useEffect(() => { cargarProductos(); }, []);
 
-  // FILTRO OPTIMIZADO: Ahora es más flexible con los nombres de categorías
+  // FILTRO OPTIMIZADO: Más flexible con nombres largos de categorías
   const productosVisibles = productos.filter(p => {
     const nombreProducto = p.nombre.toLowerCase();
     const queryBusqueda = busqueda.toLowerCase();
@@ -79,7 +79,7 @@ function App() {
 
     const coincideBusqueda = nombreProducto.includes(queryBusqueda);
     
-    // Lógica flexible para categorías (ej: "Líquidos vitales" coincide con "Líquidos")
+    // Nueva lógica: Coincide si es exacto o si la primera palabra de la categoría coincide
     const coincideCategoria = 
       categoriaActiva === 'Todos' || 
       categoriaProducto === categoriaFiltro ||
@@ -140,22 +140,23 @@ function App() {
         </div>
       </nav>
 
-      {/* SECCIÓN DE BÚSQUEDA Y TÍTULO - Ajustado para mejor legibilidad */}
+      {/* SECCIÓN DE BÚSQUEDA Y TÍTULO */}
       <div style={{ padding: '40px 30px 20px 30px' }}>
         <h2 style={{ fontSize: 'clamp(1.8rem, 5vw, 2.4rem)', fontWeight: 800, margin: '0 0 20px 0', lineHeight: '1.2', color: '#111827' }}>
           Todo lo que necesitas para tus<br />
           <span style={{ color: '#1A73E8' }}>peces y hámsters.</span>
         </h2>
         
-        <div style={{ position: 'relative', width: '100%', maxWidth: '550px' }}>
+        {/* BARRA DE BÚSQUEDA CORTA */}
+        <div style={{ position: 'relative', width: '100%', maxWidth: '380px' }}>
           <input 
             type="text" 
-            placeholder="¿Qué mascota vamos a consentir hoy?" 
+            placeholder="¿Qué mascota buscamos hoy?" 
             value={busqueda} 
             onChange={(e) => setBusqueda(e.target.value)} 
-            style={{ width: '100%', padding: '16px 20px 16px 50px', borderRadius: '16px', border: 'none', backgroundColor: 'white', boxShadow: '0 4px 6px rgba(0,0,0,0.05)', fontSize: '1rem', outline: 'none' }} 
+            style={{ width: '100%', padding: '14px 20px 14px 45px', borderRadius: '14px', border: 'none', backgroundColor: 'white', boxShadow: '0 4px 6px rgba(0,0,0,0.05)', fontSize: '0.95rem', outline: 'none' }} 
           />
-          <span style={{ position: 'absolute', left: '18px', top: '50%', transform: 'translateY(-50%)' }}>🔍</span>
+          <span style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)', opacity: 0.6 }}>🔍</span>
         </div>
       </div>
 
@@ -212,8 +213,7 @@ function App() {
         </div>
       </div>
 
-      {/* ... (Modales y Carrito se mantienen igual) ... */}
-      {/* MODAL DE DETALLES */}
+      {/* MODAL DE DETALLES (Corregido) */}
       {productoSeleccionado && (
         <>
           <div onClick={() => setProductoSeleccionado(null)} style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 3000, backdropFilter: 'blur(8px)' }}></div>
@@ -224,7 +224,8 @@ function App() {
             </div>
             <h2 style={{ margin: '5px 0 15px 0', fontSize: '1.6rem', fontWeight: 800 }}>{productoSeleccionado.nombre}</h2>
             <div style={{ color: '#4B5563', fontSize: '0.95rem', lineHeight: '1.6' }}>
-              <p style={{ fontWeight: 700, color: '#111827', marginBottom: '12px' }}>{DESCRIPCIONES_DETALLATEDAS[productoSeleccionado.nombre]?.resumen || "Calidad garantizada para tu mascota."}</p>
+              {/* Aquí se corrigió el nombre de la variable de DESCRIPCIONES */}
+              <p style={{ fontWeight: 700, color: '#111827', marginBottom: '12px' }}>{DESCRIPCIONES_DETALLADAS[productoSeleccionado.nombre]?.resumen || "Calidad garantizada para tu mascota."}</p>
               <div style={{ whiteSpace: 'pre-line', marginBottom: '20px' }} dangerouslySetInnerHTML={{ __html: DESCRIPCIONES_DETALLADAS[productoSeleccionado.nombre]?.cuerpo || productoSeleccionado.descripcion }} />
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '30px', paddingTop: '20px', borderTop: '1px solid #F3F4F6' }}>
