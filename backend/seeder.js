@@ -18,20 +18,20 @@ const seedDatabase = async () => {
         // 3. Listado de productos del PDF
         const productos = [
             // Líquidos (ID: catLiq.insertId)
-            { nombre: 'Acuaprime 30ml', desc: 'Eliminador de cloro y metales pesados.', precio: 3000, cat: catLiq.insertId, img: 'acuaprime-30.jpeg' },
-            { nombre: 'Acuaprime 120ml', desc: 'Eliminador de cloro y metales pesados.', precio: 6500, cat: catLiq.insertId, img: 'acuaprime-120.jpeg' },
-            { nombre: 'Cycle 120ml', desc: 'Suplemento biológico para acuarios.', precio: 6500, cat: catLiq.insertId, img: 'cycle-120.jpeg' },
-            { nombre: 'Test Plus Ultra PH', desc: 'Medidor de PH con mayor precisión.', precio: 5500, cat: catLiq.insertId, img: 'test-ph.jpeg' },
+            { nombre: 'Acuaprime 30ml', desc: 'Eliminador de cloro y metales pesados.', precio: 3.000, cat: catLiq.insertId, img: 'acuaprime-30.jpeg' },
+            { nombre: 'Acuaprime 120ml', desc: 'Eliminador de cloro y metales pesados.', precio: 6.500, cat: catLiq.insertId, img: 'acuaprime-120.jpeg' },
+            { nombre: 'Cycle 120ml', desc: 'Suplemento biológico para acuarios.', precio: 6.500, cat: catLiq.insertId, img: 'cycle-120.jpeg' },
+            { nombre: 'Test Plus Ultra PH', desc: 'Medidor de PH con mayor precisión.', precio: 5.500, cat: catLiq.insertId, img: 'test-ph.jpeg' },
             
             // Alimentos (ID: catAlim.insertId)
-            { nombre: 'Nutri 5 Pellets', desc: 'Comida para toda clase de peces.', precio: 6000, cat: catAlim.insertId, img: 'nutri5-pellets.jpeg' },
-            { nombre: 'Betta Pellets 30gr', desc: 'Alimento especializado para Bettas.', precio: 5500, cat: catAlim.insertId, img: 'betta.jpeg' },
-            { nombre: 'Comida para kois', desc: 'Presentación por libra.', precio: 27000, cat: catAlim.insertId, img: 'comida-kois.jpeg' },
+            { nombre: 'Nutri 5 Pellets', desc: 'Comida para toda clase de peces.', precio: 6.000, cat: catAlim.insertId, img: 'nutri5-pellets.jpeg' },
+            { nombre: 'Betta Pellets 30gr', desc: 'Alimento especializado para Bettas.', precio: 5.500, cat: catAlim.insertId, img: 'betta.jpeg' },
+            { nombre: 'Comida para kois', desc: 'Presentación por libra.', precio: 27.000, cat: catAlim.insertId, img: 'comida-kois.jpeg' },
 
             // Equipos (ID: catEq.insertId)
-            { nombre: 'Filtro 2450L', desc: 'Sistema de filtración interna.', precio: 34000, cat: catEq.insertId, img: 'filtro-2450.jpeg' },
-            { nombre: 'Termostato 100W', desc: 'Regulador de temperatura.', precio: 13000, cat: catEq.insertId, img: 'termostato100.jpeg' },
-            { nombre: 'Comedero Automático de 3 tiempos', desc: 'Programable digitalmente.', precio: 43000, cat: catEq.insertId, img: 'comedero3tiempos.jpeg' }
+            { nombre: 'Filtro 2450L', desc: 'Sistema de filtración interna.', precio: 34.000, cat: catEq.insertId, img: 'filtro-2450.jpeg' },
+            { nombre: 'Termostato 100W', desc: 'Regulador de temperatura.', precio: 13.000, cat: catEq.insertId, img: 'termostato100.jpeg' },
+            { nombre: 'Comedero Automático de 3 tiempos', desc: 'Programable digitalmente.', precio: 43.000, cat: catEq.insertId, img: 'comedero3tiempos.jpeg' }
         ];
 
         // 4. Inserción masiva
