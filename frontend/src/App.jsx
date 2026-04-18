@@ -58,7 +58,6 @@ function App() {
     }).format(valor);
   };
 
-  // --- COLECCIONES SINCRONIZADAS CON TU BASE DE DATOS ---
   const colecciones = [
     { t: 'LÍQUIDOS', val: 'Líquidos vitales', icon: '💧' },
     { t: 'COMIDA', val: 'Alimentos', icon: '🍱' },
@@ -80,7 +79,6 @@ function App() {
 
   useEffect(() => { cargarProductos(); }, []);
 
-  // --- LÓGICA DE FILTRADO INTELIGENTE ---
   const productosVisibles = productos.filter(p => {
     const normalizar = (texto) => 
       texto ? texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase() : "";
@@ -94,7 +92,6 @@ function App() {
     
     if (categoriaActiva === 'Todos') return coincideBusqueda;
 
-    // Comprobamos coincidencia exacta o parcial (ej: "Equipos" coincide con "Filtros y equipos")
     const coincideCategoria = 
       categoriaDelProducto === categoriaDelFiltro || 
       categoriaDelProducto.includes(categoriaDelFiltro) ||
@@ -249,7 +246,7 @@ function App() {
         </>
       )}
 
-      {/* CARRITO Y NAVEGACIÓN (Se mantienen iguales) */}
+      {/* CARRITO Y NAVEGACIÓN */}
       {carritoAbierto && (
         <>
           <div onClick={() => { setCarritoAbierto(false); setPasoCarrito('lista'); }} style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.3)', zIndex: 1500 }}></div>
@@ -311,14 +308,40 @@ function App() {
         </>
       )}
 
-      {/* NAV INFERIOR */}
+      {/* NAV INFERIOR CON CONTADOR */}
       <div style={{ position: 'fixed', bottom: '20px', left: '50%', transform: 'translateX(-50%)', width: '90%', maxWidth: '400px', backgroundColor: 'rgba(255, 255, 255, 0.9)', backdropFilter: 'blur(12px)', borderRadius: '20px', padding: '12px 0', display: 'flex', justifyContent: 'space-around', boxShadow: '0 10px 15px rgba(0,0,0,0.1)', zIndex: 1000 }}>
         <div onClick={() => {setCategoriaActiva('Todos'); setBusqueda('');}} style={{ textAlign: 'center', color: categoriaActiva === 'Todos' ? '#1A73E8' : '#9CA3AF', cursor: 'pointer' }}>
           <div style={{ fontSize: '1.4rem' }}>⊞</div>
           <span style={{ fontSize: '0.65rem', fontWeight: 800 }}>TIENDA</span>
         </div>
+        
+        {/* CARRITO CON LÓGICA DE CONTADOR */}
         <div onClick={() => setCarritoAbierto(true)} style={{ textAlign: 'center', color: '#9CA3AF', cursor: 'pointer', position: 'relative' }}>
-          <div style={{ fontSize: '1.4rem' }}>🛒</div>
+          <div style={{ fontSize: '1.4rem', position: 'relative', display: 'inline-block' }}>
+            🛒
+            {totalItems > 0 && (
+              <span style={{ 
+                position: 'absolute', 
+                top: '-8px', 
+                right: '-12px', 
+                backgroundColor: '#EF4444', 
+                color: 'white', 
+                fontSize: '0.65rem', 
+                minWidth: '18px', 
+                height: '18px', 
+                borderRadius: '50%', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center',
+                fontWeight: 'bold',
+                border: '2px solid white',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+              }}>
+                {totalItems}
+              </span>
+            )}
+          </div>
+          <br />
           <span style={{ fontSize: '0.65rem', fontWeight: 800 }}>CARRITO</span>
         </div>
       </div>
