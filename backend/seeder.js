@@ -26,7 +26,7 @@ const seedDatabase = async () => {
             // Alimentos (ID: catAlim.insertId)
             { nombre: 'Nutri 5 Pellets', desc: 'Comida para toda clase de peces.', precio: 0, cat: catAlim.insertId, img: 'nutri5-pellets.jpeg' },
             { nombre: 'Betta Pellets 30gr', desc: 'Alimento especializado para Bettas.', precio: 0, cat: catAlim.insertId, img: 'betta.jpeg' },
-            { nombre: 'Comida para Tortuga', desc: 'Presentación por libra.', precio: 0, cat: catAlim.insertId, img: 'comida-tortuga.jpeg' },
+            { nombre: 'Comida para kois', desc: 'Presentación por libra.', precio: 0, cat: catAlim.insertId, img: 'comida-kois.jpeg' },
 
             // Equipos (ID: catEq.insertId)
             { nombre: 'Filtro 600L', desc: 'Sistema de filtración interna.', precio: 0, cat: catEq.insertId, img: 'filtro-600.jpeg' },
