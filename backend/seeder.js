@@ -24,14 +24,14 @@ const seedDatabase = async () => {
             { nombre: 'Test Plus Ultra PH', desc: 'Medidor de PH con mayor precisión.', precio: 0, cat: catLiq.insertId, img: 'test-ph.jpeg' },
             
             // Alimentos (ID: catAlim.insertId)
-            { nombre: 'Nutri 5 Pellets', desc: 'Comida para toda clase de peces.', precio: 0, cat: catAlim.insertId, img: 'nutri5.jpg' },
-            { nombre: 'Betta Pellets 30gr', desc: 'Alimento especializado para Bettas.', precio: 0, cat: catAlim.insertId, img: 'betta.jpg' },
-            { nombre: 'Comida para Tortuga', desc: 'Presentación por libra.', precio: 0, cat: catAlim.insertId, img: 'comida-tortuga.jpg' },
+            { nombre: 'Nutri 5 Pellets', desc: 'Comida para toda clase de peces.', precio: 0, cat: catAlim.insertId, img: 'nutri5-pellets.jpeg' },
+            { nombre: 'Betta Pellets 30gr', desc: 'Alimento especializado para Bettas.', precio: 0, cat: catAlim.insertId, img: 'betta.jpeg' },
+            { nombre: 'Comida para Tortuga', desc: 'Presentación por libra.', precio: 0, cat: catAlim.insertId, img: 'comida-tortuga.jpeg' },
 
             // Equipos (ID: catEq.insertId)
-            { nombre: 'Filtro 600L', desc: 'Sistema de filtración interna.', precio: 0, cat: catEq.insertId, img: 'filtro-600.jpg' },
-            { nombre: 'Termostato 100W', desc: 'Regulador de temperatura.', precio: 0, cat: catEq.insertId, img: 'termostato.jpg' },
-            { nombre: 'Comedero Automático', desc: 'Programable digitalmente.', precio: 0, cat: catEq.insertId, img: 'comedero.jpg' }
+            { nombre: 'Filtro 600L', desc: 'Sistema de filtración interna.', precio: 0, cat: catEq.insertId, img: 'filtro-600.jpeg' },
+            { nombre: 'Termostato 100W', desc: 'Regulador de temperatura.', precio: 0, cat: catEq.insertId, img: 'termostato.jpeg' },
+            { nombre: 'Comedero Automático', desc: 'Programable digitalmente.', precio: 0, cat: catEq.insertId, img: 'comedero.jpeg' }
         ];
 
         // 4. Inserción masiva
