@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
-// 1. DESCRIPCIONES DETALLADAS PARA PRODUCTOS ESPECÍFICOS
 const DESCRIPCIONES_DETALLADAS = {
   "Acuaprime 120ml": {
     resumen: "🛡️ Protección total para tus peces en cada cambio de agua.",
@@ -51,7 +50,7 @@ function App() {
 
   const BACKEND_URL = "https://distriariza.onrender.com";
 
-  // 2. COLECCIONES DEFINIDAS (Líquidos filtra "Liquidos vitales")
+  // Configuración de colecciones basada en tus capturas
   const colecciones = [
     { t: 'LÍQUIDOS', val: 'Liquidos vitales', icon: '💧' },
     { t: 'COMIDA', val: 'Comida', icon: '🍱' },
@@ -72,10 +71,16 @@ function App() {
 
   useEffect(() => { cargarProductos(); }, []);
 
-  // FILTRADO LÓGICO
+  // LÓGICA DE FILTRADO CORREGIDA
   const productosVisibles = productos.filter(p => {
-    const coincideBusqueda = p.nombre.toLowerCase().includes(busqueda.toLowerCase());
-    const coincideCategoria = categoriaActiva === 'Todos' || p.categoria_nombre === categoriaActiva;
+    const nombreProducto = p.nombre.toLowerCase();
+    const queryBusqueda = busqueda.toLowerCase();
+    const categoriaProducto = (p.categoria_nombre || "").trim().toLowerCase();
+    const categoriaFiltro = categoriaActiva.trim().toLowerCase();
+
+    const coincideBusqueda = nombreProducto.includes(queryBusqueda);
+    const coincideCategoria = categoriaActiva === 'Todos' || categoriaProducto === categoriaFiltro;
+    
     return coincideBusqueda && coincideCategoria;
   });
 
@@ -145,7 +150,7 @@ function App() {
       </div>
 
       <div style={{ padding: '0 30px' }}>
-        {/* COLECCIONES (UI CIRCULAR) */}
+        {/* COLECCIONES */}
         <div style={{ marginBottom: '45px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
             <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700 }}>Colecciones</h3>
@@ -169,7 +174,7 @@ function App() {
           </div>
         </div>
 
-        {/* LISTADO DINÁMICO */}
+        {/* LISTADO DE PRODUCTOS */}
         <div style={{ marginBottom: '60px' }}>
           <h3 style={{ margin: '0 0 25px 0', fontSize: '1.3rem', fontWeight: 700 }}>
             {categoriaActiva === 'Todos' ? 'Productos destacados' : categoriaActiva}
@@ -189,11 +194,12 @@ function App() {
                 </div>
               </div>
             ))}
+            {productosVisibles.length === 0 && <p style={{ color: '#9CA3AF' }}>No hay productos en esta categoría.</p>}
           </div>
         </div>
       </div>
 
-      {/* MODAL DE DETALLES CON DESCRIPCIONES */}
+      {/* MODAL DE DETALLES */}
       {productoSeleccionado && (
         <>
           <div onClick={() => setProductoSeleccionado(null)} style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 3000, backdropFilter: 'blur(8px)' }}></div>
@@ -205,9 +211,8 @@ function App() {
             <span style={{ fontSize: '0.7rem', color: '#1A73E8', fontWeight: 800, textTransform: 'uppercase' }}>{productoSeleccionado.categoria_nombre}</span>
             <h2 style={{ margin: '5px 0 15px 0', fontSize: '1.6rem', fontWeight: 800 }}>{productoSeleccionado.nombre}</h2>
             <div style={{ color: '#4B5563', fontSize: '0.95rem', lineHeight: '1.6' }}>
-              <p style={{ fontWeight: 700, color: '#111827', marginBottom: '12px' }}>{DESCRIPCIONES_DETALLADAS[productoSeleccionado.nombre]?.resumen || "Calidad premium para tu acuario."}</p>
+              <p style={{ fontWeight: 700, color: '#111827', marginBottom: '12px' }}>{DESCRIPCIONES_DETALLADAS[productoSeleccionado.nombre]?.resumen || "Producto de alta calidad."}</p>
               <div style={{ whiteSpace: 'pre-line', marginBottom: '20px' }} dangerouslySetInnerHTML={{ __html: DESCRIPCIONES_DETALLADAS[productoSeleccionado.nombre]?.cuerpo || productoSeleccionado.descripcion }} />
-              <p style={{ backgroundColor: '#EFF6FF', padding: '15px', borderRadius: '16px', color: '#1E40AF' }} dangerouslySetInnerHTML={{ __html: DESCRIPCIONES_DETALLADAS[productoSeleccionado.nombre]?.uso || "Consulte indicaciones de uso en el envase." }} />
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '30px', paddingTop: '20px', borderTop: '1px solid #F3F4F6' }}>
               <div style={{ fontSize: '1.6rem', fontWeight: 800 }}>${Number(productoSeleccionado.precio).toLocaleString()}</div>
@@ -217,7 +222,7 @@ function App() {
         </>
       )}
 
-      {/* CARRITO Y PROCESO DE PAGO */}
+      {/* CARRITO LATERAL */}
       {carritoAbierto && (
         <>
           <div onClick={() => { setCarritoAbierto(false); setPasoCarrito('lista'); }} style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.3)', zIndex: 1500 }}></div>
@@ -231,7 +236,7 @@ function App() {
 
             <div style={{ flex: 1, overflowY: 'auto', padding: '20px 30px' }}>
               {pasoCarrito === 'lista' && (
-                carrito.length === 0 ? <p style={{ textAlign: 'center', color: '#9CA3AF', marginTop: '40px' }}>Tu carrito está vacío.</p> : carrito.map(item => (
+                carrito.length === 0 ? <p style={{ textAlign: 'center', color: '#9CA3AF', marginTop: '40px' }}>Carrito vacío.</p> : carrito.map(item => (
                   <div key={item.id} style={{ display: 'flex', gap: '15px', marginBottom: '15px', backgroundColor: 'white', padding: '15px', borderRadius: '20px', border: '1px solid #f0f0f0' }}>
                     <img src={obtenerRutaImagen(item.imagen_url)} alt={item.nombre} style={{ width: '50px', height: '50px', objectFit: 'contain' }} />
                     <div style={{ flex: 1 }}>
@@ -259,8 +264,8 @@ function App() {
               {pasoCarrito === 'confirmado' && (
                 <div style={{ textAlign: 'center', padding: '40px 10px' }}>
                   <div style={{ fontSize: '4rem' }}>✅</div>
-                  <h3 style={{ fontSize: '1.5rem', fontWeight: 800 }}>¡Pedido Procesado!</h3>
-                  <button onClick={() => { setCarrito([]); setCarritoAbierto(false); setPasoCarrito('lista'); }} style={{ width: '100%', marginTop: '20px', padding: '16px', backgroundColor: '#F3F4F6', borderRadius: '15px', border: 'none', fontWeight: 700, cursor: 'pointer' }}>Volver a la tienda</button>
+                  <h3 style={{ fontSize: '1.5rem', fontWeight: 800 }}>¡Pedido Enviado!</h3>
+                  <button onClick={() => { setCarrito([]); setCarritoAbierto(false); setPasoCarrito('lista'); }} style={{ width: '100%', marginTop: '20px', padding: '16px', backgroundColor: '#F3F4F6', borderRadius: '15px', border: 'none', fontWeight: 700, cursor: 'pointer' }}>Cerrar</button>
                 </div>
               )}
             </div>
@@ -280,7 +285,7 @@ function App() {
         </>
       )}
 
-      {/* BARRA DE NAVEGACIÓN INFERIOR */}
+      {/* BARRA INFERIOR */}
       <div style={{ position: 'fixed', bottom: '20px', left: '50%', transform: 'translateX(-50%)', width: '90%', maxWidth: '400px', backgroundColor: 'rgba(255, 255, 255, 0.9)', backdropFilter: 'blur(12px)', borderRadius: '20px', padding: '12px 0', display: 'flex', justifyContent: 'space-around', boxShadow: '0 10px 15px rgba(0,0,0,0.1)', zIndex: 1000 }}>
         <div onClick={() => {setCategoriaActiva('Todos'); setBusqueda('');}} style={{ textAlign: 'center', color: categoriaActiva === 'Todos' ? '#1A73E8' : '#9CA3AF', cursor: 'pointer' }}>
           <div style={{ fontSize: '1.4rem' }}>⊞</div>
