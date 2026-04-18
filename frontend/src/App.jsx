@@ -44,11 +44,9 @@ function App() {
   const [carritoAbierto, setCarritoAbierto] = useState(false);
   const [productoSeleccionado, setProductoSeleccionado] = useState(null);
   
-  // ESTADOS DE BÚSQUEDA Y FILTRO
   const [busqueda, setBusqueda] = useState('');
   const [categoriaActiva, setCategoriaActiva] = useState('Todos');
 
-  // ESTADOS PARA EL FLUJO DE COMPRA
   const [pasoCarrito, setPasoCarrito] = useState('lista'); 
   const [datosEnvio, setDatosEnvio] = useState({ nombre: '', direccion: '', ciudad: '', telefono: '' });
 
@@ -65,7 +63,6 @@ function App() {
 
   useEffect(() => { cargarProductos(); }, []);
 
-  // LÓGICA DE FILTRADO DINÁMICO
   const productosVisibles = productos.filter(p => {
     const coincideBusqueda = p.nombre.toLowerCase().includes(busqueda.toLowerCase());
     const coincideCategoria = categoriaActiva === 'Todos' || p.categoria_nombre === categoriaActiva;
@@ -231,62 +228,74 @@ function App() {
         </>
       )}
 
-      {/* CARRITO */}
+      {/* CARRITO (PANEL LATERAL CORREGIDO) */}
       {carritoAbierto && (
         <>
           <div onClick={() => { setCarritoAbierto(false); setPasoCarrito('lista'); }} style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.3)', zIndex: 1500 }}></div>
-          <div style={{ position: 'fixed', top: 0, right: 0, width: '100%', maxWidth: '420px', height: '100%', backgroundColor: '#F9FAFB', zIndex: 2000, padding: '30px', display: 'flex', flexDirection: 'column' }}>
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '30px' }}>
-              {pasoCarrito === 'envio' && <button onClick={() => setPasoCarrito('lista')} style={{ background: 'none', border: 'none', cursor: 'pointer', marginRight: '15px' }}>←</button>}
+          <div style={{ position: 'fixed', top: 0, right: 0, width: '100%', maxWidth: '420px', height: '100%', backgroundColor: '#F9FAFB', zIndex: 2000, display: 'flex', flexDirection: 'column', boxShadow: '-10px 0 30px rgba(0,0,0,0.1)' }}>
+            
+            {/* Cabecera del Carrito */}
+            <div style={{ display: 'flex', alignItems: 'center', padding: '30px', borderBottom: '1px solid #f0f0f0' }}>
+              {pasoCarrito === 'envio' && <button onClick={() => setPasoCarrito('lista')} style={{ background: 'none', border: 'none', cursor: 'pointer', marginRight: '15px', fontSize: '1.2rem' }}>←</button>}
               <h2 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800 }}>{pasoCarrito === 'lista' ? 'Tu Carrito' : 'Datos de Entrega'}</h2>
-              <button onClick={() => { setCarritoAbierto(false); setPasoCarrito('lista'); }} style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer' }}>✕</button>
+              <button onClick={() => { setCarritoAbierto(false); setPasoCarrito('lista'); }} style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem' }}>✕</button>
             </div>
 
-            {pasoCarrito === 'lista' && (
-              <>
-                <div style={{ flex: 1, overflowY: 'auto' }}>
-                  {carrito.length === 0 ? <p style={{ textAlign: 'center', color: '#9CA3AF' }}>Carrito vacío.</p> : carrito.map(item => (
-                    <div key={item.id} style={{ display: 'flex', gap: '15px', marginBottom: '15px', backgroundColor: 'white', padding: '15px', borderRadius: '20px' }}>
-                      <img src={obtenerRutaImagen(item.imagen_url)} alt={item.nombre} style={{ width: '50px', height: '50px', objectFit: 'contain' }} />
-                      <div style={{ flex: 1 }}>
-                        <p style={{ fontWeight: 600, fontSize: '0.9rem', margin: 0 }}>{item.nombre}</p>
-                        <p style={{ color: '#1A73E8', fontWeight: 700 }}>${(item.precio * item.cantidad).toLocaleString()}</p>
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <button onClick={() => restarCantidad(item.id)} style={{ border: 'none', background: 'none', cursor: 'pointer' }}>-</button>
-                        <span>{item.cantidad}</span>
-                        <button onClick={() => agregarAlCarrito(item)} style={{ border: 'none', background: 'none', cursor: 'pointer' }}>+</button>
-                      </div>
+            {/* Contenido Scrolleable */}
+            <div style={{ flex: 1, overflowY: 'auto', padding: '20px 30px' }}>
+              {pasoCarrito === 'lista' && (
+                carrito.length === 0 ? <p style={{ textAlign: 'center', color: '#9CA3AF', marginTop: '40px' }}>Carrito vacío.</p> : carrito.map(item => (
+                  <div key={item.id} style={{ display: 'flex', gap: '15px', marginBottom: '15px', backgroundColor: 'white', padding: '15px', borderRadius: '20px', border: '1px solid #f0f0f0' }}>
+                    <img src={obtenerRutaImagen(item.imagen_url)} alt={item.nombre} style={{ width: '50px', height: '50px', objectFit: 'contain' }} />
+                    <div style={{ flex: 1 }}>
+                      <p style={{ fontWeight: 600, fontSize: '0.9rem', margin: 0 }}>{item.nombre}</p>
+                      <p style={{ color: '#1A73E8', fontWeight: 700, margin: '4px 0 0' }}>${(item.precio * item.cantidad).toLocaleString()}</p>
                     </div>
-                  ))}
-                </div>
-                {carrito.length > 0 && (
-                  <div style={{ marginTop: 'auto', paddingTop: '20px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px' }}>
-                      <span style={{ fontWeight: 600 }}>Total:</span>
-                      <span style={{ fontSize: '1.4rem', fontWeight: 800 }}>${totalCompra.toLocaleString()}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <button onClick={() => restarCantidad(item.id)} style={{ border: 'none', background: '#f3f4f6', borderRadius: '8px', width: '25px', height: '25px', cursor: 'pointer' }}>-</button>
+                      <span style={{ fontWeight: 600 }}>{item.cantidad}</span>
+                      <button onClick={() => agregarAlCarrito(item)} style={{ border: 'none', background: '#f3f4f6', borderRadius: '8px', width: '25px', height: '25px', cursor: 'pointer' }}>+</button>
                     </div>
-                    <button onClick={() => setPasoCarrito('envio')} style={{ width: '100%', padding: '18px', backgroundColor: '#1A73E8', color: 'white', border: 'none', borderRadius: '18px', fontWeight: 700 }}>Continuar</button>
                   </div>
+                ))
+              )}
+
+              {pasoCarrito === 'envio' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <input type="text" placeholder="Nombre completo" style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #E5E7EB' }} onChange={(e) => setDatosEnvio({...datosEnvio, nombre: e.target.value})} />
+                  <input type="text" placeholder="Dirección" style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #E5E7EB' }} onChange={(e) => setDatosEnvio({...datosEnvio, direccion: e.target.value})} />
+                  <input type="text" placeholder="Ciudad" style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #E5E7EB' }} onChange={(e) => setDatosEnvio({...datosEnvio, ciudad: e.target.value})} />
+                  <input type="text" placeholder="Teléfono" style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #E5E7EB' }} onChange={(e) => setDatosEnvio({...datosEnvio, telefono: e.target.value})} />
+                </div>
+              )}
+
+              {pasoCarrito === 'confirmado' && (
+                <div style={{ textAlign: 'center', padding: '40px 10px' }}>
+                  <div style={{ fontSize: '4rem' }}>✅</div>
+                  <h3 style={{ fontSize: '1.5rem', fontWeight: 800 }}>¡Pedido Enviado!</h3>
+                  <button onClick={() => { setCarrito([]); setCarritoAbierto(false); setPasoCarrito('lista'); }} style={{ width: '100%', marginTop: '20px', padding: '16px', backgroundColor: '#F3F4F6', borderRadius: '15px', border: 'none', fontWeight: 700, cursor: 'pointer' }}>Limpiar Carrito</button>
+                </div>
+              )}
+            </div>
+
+            {/* Footer fijo del Carrito (Total y Botón) */}
+            {carrito.length > 0 && pasoCarrito !== 'confirmado' && (
+              <div style={{ padding: '25px 30px', backgroundColor: 'white', borderTop: '1px solid #f0f0f0' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                  <span style={{ fontWeight: 600, color: '#6B7280' }}>Total:</span>
+                  <span style={{ fontSize: '1.6rem', fontWeight: 800 }}>${totalCompra.toLocaleString()}</span>
+                </div>
+                {pasoCarrito === 'lista' ? (
+                  <button onClick={() => setPasoCarrito('envio')} style={{ width: '100%', padding: '18px', backgroundColor: '#1A73E8', color: 'white', border: 'none', borderRadius: '18px', fontWeight: 700, cursor: 'pointer', fontSize: '1rem' }}>Continuar</button>
+                ) : (
+                  <button 
+                    disabled={!datosEnvio.nombre || !datosEnvio.direccion || !datosEnvio.telefono} 
+                    onClick={finalizarPedidoWhatsApp} 
+                    style={{ width: '100%', padding: '18px', backgroundColor: '#25D366', color: 'white', border: 'none', borderRadius: '18px', fontWeight: 700, cursor: 'pointer', fontSize: '1rem' }}
+                  >
+                    Finalizar WhatsApp 🚀
+                  </button>
                 )}
-              </>
-            )}
-
-            {pasoCarrito === 'envio' && (
-              <div style={{ flex: 1 }}>
-                <input type="text" placeholder="Nombre completo" style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #E5E7EB', marginBottom: '10px' }} onChange={(e) => setDatosEnvio({...datosEnvio, nombre: e.target.value})} />
-                <input type="text" placeholder="Dirección" style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #E5E7EB', marginBottom: '10px' }} onChange={(e) => setDatosEnvio({...datosEnvio, direccion: e.target.value})} />
-                <input type="text" placeholder="Ciudad" style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #E5E7EB', marginBottom: '10px' }} onChange={(e) => setDatosEnvio({...datosEnvio, ciudad: e.target.value})} />
-                <input type="text" placeholder="Teléfono" style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #E5E7EB', marginBottom: '20px' }} onChange={(e) => setDatosEnvio({...datosEnvio, telefono: e.target.value})} />
-                <button disabled={!datosEnvio.nombre || !datosEnvio.direccion || !datosEnvio.telefono} onClick={finalizarPedidoWhatsApp} style={{ width: '100%', padding: '18px', backgroundColor: '#25D366', color: 'white', border: 'none', borderRadius: '18px', fontWeight: 700 }}>Finalizar WhatsApp 🚀</button>
-              </div>
-            )}
-
-            {pasoCarrito === 'confirmado' && (
-              <div style={{ textAlign: 'center', padding: '40px 10px' }}>
-                <div style={{ fontSize: '4rem' }}>✅</div>
-                <h3>¡Pedido Enviado!</h3>
-                <button onClick={() => { setCarrito([]); setCarritoAbierto(false); setPasoCarrito('lista'); }} style={{ width: '100%', padding: '16px', backgroundColor: '#F3F4F6', borderRadius: '15px', border: 'none', fontWeight: 700 }}>Limpiar Carrito</button>
               </div>
             )}
           </div>
@@ -295,13 +304,20 @@ function App() {
 
       {/* BARRA INFERIOR (MENU) */}
       <div style={{ position: 'fixed', bottom: '20px', left: '50%', transform: 'translateX(-50%)', width: '90%', maxWidth: '400px', backgroundColor: 'rgba(255, 255, 255, 0.9)', backdropFilter: 'blur(12px)', borderRadius: '20px', padding: '12px 0', display: 'flex', justifyContent: 'space-around', boxShadow: '0 10px 15px rgba(0,0,0,0.1)', zIndex: 1000 }}>
-        <div onClick={() => {setCategoriaActiva('Todos'); setBusqueda('');}} style={{ textAlign: 'center', color: '#1A73E8', cursor: 'pointer' }}>
-          <div style={{ fontSize: '1.2rem' }}>⊞</div>
-          <span style={{ fontSize: '0.6rem', fontWeight: 700 }}>TIENDA</span>
+        <div onClick={() => {setCategoriaActiva('Todos'); setBusqueda('');}} style={{ textAlign: 'center', color: categoriaActiva === 'Todos' ? '#1A73E8' : '#9CA3AF', cursor: 'pointer' }}>
+          <div style={{ fontSize: '1.4rem' }}>⊞</div>
+          <span style={{ fontSize: '0.65rem', fontWeight: 800 }}>TIENDA</span>
         </div>
         <div onClick={() => setCarritoAbierto(true)} style={{ textAlign: 'center', color: '#9CA3AF', cursor: 'pointer' }}>
-          <div style={{ fontSize: '1.2rem' }}>🛒</div>
-          <span style={{ fontSize: '0.6rem', fontWeight: 700 }}>CARRITO</span>
+          <div style={{ fontSize: '1.4rem', position: 'relative' }}>
+            🛒
+            {totalItems > 0 && (
+              <span style={{ position: 'absolute', top: '-5px', right: '-8px', background: '#1A73E8', color: 'white', fontSize: '0.6rem', padding: '2px 5px', borderRadius: '10px', border: '2px solid white' }}>
+                {totalItems}
+              </span>
+            )}
+          </div>
+          <span style={{ fontSize: '0.65rem', fontWeight: 800 }}>CARRITO</span>
         </div>
       </div>
     </div>
