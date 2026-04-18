@@ -55,7 +55,7 @@ function App() {
     return new Intl.NumberFormat('es-CO', {
       style: 'currency',
       currency: 'COP',
-      minimumFractionDigits: 4
+      minimumFractionDigits: 3
     }).format(valor);
   };
 
