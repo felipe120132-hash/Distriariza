@@ -9,12 +9,11 @@
   --accent-bg: rgba(15, 98, 254, 0.05);
   --accent-border: rgba(15, 98, 254, 0.2);
   --shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
-  --shadow-strong: 0 10px 30px rgba(0, 0, 0, 0.12);
+  --shadow-strong: 0 12px 40px rgba(0, 0, 0, 0.12);
 
   /* Tipografía */
   --sans: 'Inter', system-ui, -apple-system, sans-serif;
-  --heading: 'Inter', system-ui, sans-serif;
-
+  
   /* Configuración Base */
   font: 18px/145% var(--sans);
   letter-spacing: -0.01em;
@@ -29,7 +28,7 @@
   :root {
     --text: #a8a8a8;
     --text-h: #ffffff;
-    --bg: #000000;
+    --bg: #0b0b0b;
     --border: #262626;
     --code-bg: #161616;
     --accent: #4589ff;
@@ -41,87 +40,142 @@ body {
   margin: 0;
   padding: 0;
   background-color: var(--bg);
+  overflow-x: hidden;
 }
 
-/* --- AJUSTE DE ALTURA --- */
+/* --- CONTENEDOR PRINCIPAL --- */
 #root {
-  width: 1126px;
-  max-width: 100%;
+  width: 100%;
+  max-width: 1126px;
   margin: 0 auto;
-  border-inline: 1px solid var(--border);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  box-sizing: border-box;
   background-color: var(--bg);
-  /* Espacio extra abajo para que el contenido no choque con el menú flotante */
-  padding-bottom: 140px; 
+  /* Espacio extra para que el dock no tape contenido */
+  padding-bottom: 200px; 
+  box-sizing: border-box;
 }
 
-/* --- MENÚ INFERIOR ELEVADO --- */
+/* --- DOCK INFERIOR (ESTILO APPLE) --- */
 .bottom-menu {
   position: fixed;
-  /* El secreto para que no se vea "hundido": */
-  bottom: 40px; 
+  /* Elevación del borde inferior */
+  bottom: 32px; 
   left: 50%;
   transform: translateX(-50%);
   
-  /* Diseño tipo cápsula */
+  /* Diseño de cápsula flotante */
   width: auto;
-  min-width: 320px;
-  background-color: rgba(255, 255, 255, 0.85); 
+  min-width: 340px;
+  background-color: rgba(255, 255, 255, 0.8); 
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   
   border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 30px;
-  padding: 10px 25px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  border-radius: 32px;
+  padding: 12px 28px;
+  box-shadow: var(--shadow-strong);
   
   display: flex;
-  gap: 30px;
+  gap: 32px;
   justify-content: center;
   align-items: center;
-  z-index: 9999; /* Asegura que esté por encima de todo */
+  z-index: 9999;
 }
 
-/* --- AJUSTE DEL PIE DEL CARRITO (CHECKOUT) --- */
+/* --- CARRITO / CHECKOUT (DENTRO DEL DRAWER) --- */
 .cart-footer {
-  margin-top: auto;
+  padding: 24px 24px calc(24px + env(safe-area-inset-bottom)); /* Soporte para iPhone notch */
+  background: var(--bg);
   border-top: 1px solid var(--border);
-  padding: 25px 20px 45px 20px; /* Padding inferior aumentado para fácil acceso */
-  background-color: var(--bg);
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
 }
 
-/* Tipografía */
-h1 {
-  font-size: 52px;
-  font-weight: 700;
-  letter-spacing: -0.04em;
-  line-height: 1.1;
-  margin: 40px 0 20px;
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.total-label {
+  font-weight: 600;
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.total-amount {
+  font-weight: 800;
+  font-size: 1.5rem;
   color: var(--text-h);
-  padding: 0 20px; /* Evita que pegue al borde en móviles */
 }
 
-/* Estilos de botones de acción */
+/* --- TARJETAS DE PRODUCTO --- */
+.product-card {
+  background: var(--bg);
+  border-radius: 24px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow);
+}
+
+/* --- BOTONES --- */
 .btn-primary {
+  width: 100%;
   background-color: var(--accent);
-  color: white;
-  padding: 16px 24px;
-  border-radius: 14px;
-  box-shadow: 0 4px 12px var(--accent-border);
+  color: #ffffff;
+  padding: 18px;
+  border-radius: 16px;
+  font-weight: 700;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
 }
 
+.btn-primary:active {
+  transform: scale(0.97);
+}
+
+/* --- RESPONSIVO --- */
 @media (max-width: 1024px) {
   :root { font-size: 16px; }
-  h1 { font-size: 36px; padding: 0 15px; }
-  #root { 
-    border-inline: none; 
-    padding-bottom: 120px; 
+  
+  h1 { 
+    font-size: 38px; 
+    padding: 0 20px; 
+    margin: 30px 0 15px;
   }
+
+  #root { 
+    padding-bottom: 160px; 
+  }
+
   .bottom-menu {
-    bottom: 20px; /* Un poco más bajo en móviles pero aún flotando */
-    width: 92%;
+    bottom: 20px; 
+    width: 90%;
+    min-width: unset;
+    gap: 0;
+    justify-content: space-around;
+  }
+}
+
+/* Soporte para modo oscuro en el dock */
+@media (prefers-color-scheme: dark) {
+  .bottom-menu {
+    background-color: rgba(20, 20, 20, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 }
