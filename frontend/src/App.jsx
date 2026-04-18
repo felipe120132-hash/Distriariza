@@ -70,6 +70,7 @@ function App() {
 
   useEffect(() => { cargarProductos(); }, []);
 
+  // FILTRO OPTIMIZADO: Ahora es más flexible con los nombres de categorías
   const productosVisibles = productos.filter(p => {
     const nombreProducto = p.nombre.toLowerCase();
     const queryBusqueda = busqueda.toLowerCase();
@@ -77,10 +78,12 @@ function App() {
     const categoriaFiltro = categoriaActiva.trim().toLowerCase();
 
     const coincideBusqueda = nombreProducto.includes(queryBusqueda);
+    
+    // Lógica flexible para categorías (ej: "Líquidos vitales" coincide con "Líquidos")
     const coincideCategoria = 
       categoriaActiva === 'Todos' || 
       categoriaProducto === categoriaFiltro ||
-      (categoriaFiltro === "liquidos vitales" && categoriaProducto.includes("liquido"));
+      categoriaProducto.includes(categoriaFiltro.split(' ')[0]); 
     
     return coincideBusqueda && coincideCategoria;
   });
@@ -137,9 +140,9 @@ function App() {
         </div>
       </nav>
 
-      {/* SECCIÓN DE BÚSQUEDA Y TÍTULO ACTUALIZADO */}
-      <div style={{ padding: '40px 30px' }}>
-        <h2 style={{ fontSize: '2.4rem', fontWeight: 800, margin: '0 0 25px 0', lineHeight: '1.1', color: '#111827' }}>
+      {/* SECCIÓN DE BÚSQUEDA Y TÍTULO - Ajustado para mejor legibilidad */}
+      <div style={{ padding: '40px 30px 20px 30px' }}>
+        <h2 style={{ fontSize: 'clamp(1.8rem, 5vw, 2.4rem)', fontWeight: 800, margin: '0 0 20px 0', lineHeight: '1.2', color: '#111827' }}>
           Todo lo que necesitas para tus<br />
           <span style={{ color: '#1A73E8' }}>peces y hámsters.</span>
         </h2>
@@ -147,7 +150,7 @@ function App() {
         <div style={{ position: 'relative', width: '100%', maxWidth: '550px' }}>
           <input 
             type="text" 
-            placeholder="¿Qué buscas hoy?" 
+            placeholder="¿Qué mascota vamos a consentir hoy?" 
             value={busqueda} 
             onChange={(e) => setBusqueda(e.target.value)} 
             style={{ width: '100%', padding: '16px 20px 16px 50px', borderRadius: '16px', border: 'none', backgroundColor: 'white', boxShadow: '0 4px 6px rgba(0,0,0,0.05)', fontSize: '1rem', outline: 'none' }} 
@@ -188,23 +191,28 @@ function App() {
           </h3>
           
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '25px' }}>
-            {productosVisibles.map(p => (
-              <div key={p.id} style={{ backgroundColor: 'white', borderRadius: '24px', padding: '15px', boxShadow: '0 4px 6px rgba(0,0,0,0.03)' }}>
-                <div onClick={() => setProductoSeleccionado(p)} style={{ backgroundColor: '#F9FAFB', borderRadius: '18px', height: '220px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '15px', cursor: 'pointer', overflow: 'hidden' }}>
-                  <img src={obtenerRutaImagen(p.imagen_url)} alt={p.nombre} style={{ width: '85%', height: '85%', objectFit: 'contain' }} />
+            {productosVisibles.length > 0 ? (
+              productosVisibles.map(p => (
+                <div key={p.id} style={{ backgroundColor: 'white', borderRadius: '24px', padding: '15px', boxShadow: '0 4px 6px rgba(0,0,0,0.03)' }}>
+                  <div onClick={() => setProductoSeleccionado(p)} style={{ backgroundColor: '#F9FAFB', borderRadius: '18px', height: '220px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '15px', cursor: 'pointer', overflow: 'hidden' }}>
+                    <img src={obtenerRutaImagen(p.imagen_url)} alt={p.nombre} style={{ width: '85%', height: '85%', objectFit: 'contain' }} />
+                  </div>
+                  <p style={{ margin: '0', fontSize: '0.65rem', color: '#6B7280', textTransform: 'uppercase', fontWeight: 700 }}>{p.categoria_nombre}</p>
+                  <h4 onClick={() => setProductoSeleccionado(p)} style={{ margin: '4px 0 12px 0', fontSize: '1rem', fontWeight: 600, cursor: 'pointer' }}>{p.nombre}</h4>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '1.1rem', fontWeight: 700, color: '#1A73E8' }}>${Number(p.precio).toLocaleString()}</span>
+                    <button onClick={() => agregarAlCarrito(p)} style={{ width: '38px', height: '38px', borderRadius: '10px', backgroundColor: '#1A73E8', color: 'white', border: 'none', cursor: 'pointer', fontSize: '1.2rem' }}>+</button>
+                  </div>
                 </div>
-                <p style={{ margin: '0', fontSize: '0.65rem', color: '#6B7280', textTransform: 'uppercase', fontWeight: 700 }}>{p.categoria_nombre}</p>
-                <h4 onClick={() => setProductoSeleccionado(p)} style={{ margin: '4px 0 12px 0', fontSize: '1rem', fontWeight: 600, cursor: 'pointer' }}>{p.nombre}</h4>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '1.1rem', fontWeight: 700, color: '#1A73E8' }}>${Number(p.precio).toLocaleString()}</span>
-                  <button onClick={() => agregarAlCarrito(p)} style={{ width: '38px', height: '38px', borderRadius: '10px', backgroundColor: '#1A73E8', color: 'white', border: 'none', cursor: 'pointer', fontSize: '1.2rem' }}>+</button>
-                </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p style={{ gridColumn: '1/-1', textAlign: 'center', padding: '40px', color: '#9CA3AF' }}>No se encontraron productos en esta categoría.</p>
+            )}
           </div>
         </div>
       </div>
 
+      {/* ... (Modales y Carrito se mantienen igual) ... */}
       {/* MODAL DE DETALLES */}
       {productoSeleccionado && (
         <>
@@ -216,7 +224,7 @@ function App() {
             </div>
             <h2 style={{ margin: '5px 0 15px 0', fontSize: '1.6rem', fontWeight: 800 }}>{productoSeleccionado.nombre}</h2>
             <div style={{ color: '#4B5563', fontSize: '0.95rem', lineHeight: '1.6' }}>
-              <p style={{ fontWeight: 700, color: '#111827', marginBottom: '12px' }}>{DESCRIPCIONES_DETALLADAS[productoSeleccionado.nombre]?.resumen || "Calidad garantizada para tu mascota."}</p>
+              <p style={{ fontWeight: 700, color: '#111827', marginBottom: '12px' }}>{DESCRIPCIONES_DETALLATEDAS[productoSeleccionado.nombre]?.resumen || "Calidad garantizada para tu mascota."}</p>
               <div style={{ whiteSpace: 'pre-line', marginBottom: '20px' }} dangerouslySetInnerHTML={{ __html: DESCRIPCIONES_DETALLADAS[productoSeleccionado.nombre]?.cuerpo || productoSeleccionado.descripcion }} />
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '30px', paddingTop: '20px', borderTop: '1px solid #F3F4F6' }}>
