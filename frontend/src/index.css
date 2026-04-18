@@ -1,19 +1,19 @@
 :root {
-  /* Paleta de Colores Minimalista - Inspirada en la imagen */
+  /* Paleta de Colores Minimalista */
   --text: #525252;
   --text-h: #000000;
   --bg: #ffffff;
   --border: #f0f0f0;
   --code-bg: #f9f9f9;
-  --accent: #0f62fe; /* Azul de la referencia */
+  --accent: #0f62fe; 
   --accent-bg: rgba(15, 98, 254, 0.05);
   --accent-border: rgba(15, 98, 254, 0.2);
   --shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  --shadow-strong: 0 10px 30px rgba(0, 0, 0, 0.12);
 
-  /* Tipografía - Sans moderna */
+  /* Tipografía */
   --sans: 'Inter', system-ui, -apple-system, sans-serif;
   --heading: 'Inter', system-ui, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
 
   /* Configuración Base */
   font: 18px/145% var(--sans);
@@ -21,12 +21,10 @@
   color-scheme: light dark;
   color: var(--text);
   background: var(--bg);
-  font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Soporte para Modo Oscuro automático */
 @media (prefers-color-scheme: dark) {
   :root {
     --text: #a8a8a8;
@@ -45,7 +43,7 @@ body {
   background-color: var(--bg);
 }
 
-/* Contenedor Principal Centrado */
+/* --- AJUSTE DE ALTURA --- */
 #root {
   width: 1126px;
   max-width: 100%;
@@ -56,9 +54,38 @@ body {
   flex-direction: column;
   box-sizing: border-box;
   background-color: var(--bg);
+  /* Espacio extra abajo para que el contenido no choque con el menú flotante */
+  padding-bottom: 140px; 
 }
 
-/* Tipografía Minimalista */
+/* --- MENÚ INFERIOR ELEVADO --- */
+.bottom-menu {
+  position: fixed;
+  bottom: 30px; /* Eleva el menú del borde inferior */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 400px;
+  background-color: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 12px 0;
+  box-shadow: var(--shadow-strong);
+  z-index: 1000;
+  display: flex;
+  justify-content: space-around;
+  backdrop-filter: blur(10px);
+}
+
+/* --- AJUSTE DEL PIE DEL CARRITO (CHECKOUT) --- */
+.cart-footer {
+  margin-top: auto;
+  border-top: 1px solid var(--border);
+  padding: 25px 20px 45px 20px; /* Padding inferior aumentado para fácil acceso */
+  background-color: var(--bg);
+}
+
+/* Tipografía */
 h1 {
   font-size: 52px;
   font-weight: 700;
@@ -66,65 +93,27 @@ h1 {
   line-height: 1.1;
   margin: 40px 0 20px;
   color: var(--text-h);
+  padding: 0 20px; /* Evita que pegue al borde en móviles */
 }
 
-h2 {
-  font-size: 28px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  color: var(--text-h);
-}
-
-h3 {
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--text-h);
-}
-
-/* Estilos para las tarjetas de productos */
-.product-card {
-  border: none;
-  background: var(--bg);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Elementos de Interacción */
-button {
-  font-family: var(--sans);
-  font-weight: 600;
-  cursor: pointer;
-  border: none;
-  transition: all 0.2s ease;
-}
-
-button:hover {
-  filter: brightness(1.1);
-}
-
-button:active {
-  transform: scale(0.96);
-}
-
-/* Scrollbar minimalista */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--bg);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--text);
+/* Estilos de botones de acción */
+.btn-primary {
+  background-color: var(--accent);
+  color: white;
+  padding: 16px 24px;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px var(--accent-border);
 }
 
 @media (max-width: 1024px) {
   :root { font-size: 16px; }
-  h1 { font-size: 36px; }
-  #root { border-inline: none; }
+  h1 { font-size: 36px; padding: 0 15px; }
+  #root { 
+    border-inline: none; 
+    padding-bottom: 120px; 
+  }
+  .bottom-menu {
+    bottom: 20px; /* Un poco más bajo en móviles pero aún flotando */
+    width: 92%;
+  }
 }
