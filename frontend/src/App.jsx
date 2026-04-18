@@ -185,7 +185,7 @@ function App() {
         {/* LISTADO DE PRODUCTOS */}
         <div style={{ marginBottom: '60px' }}>
           <h3 style={{ margin: '0 0 25px 0', fontSize: '1.3rem', fontWeight: 700 }}>
-            {categoriaActiva === 'Todos' ? 'Artefactos destacados' : `Productos: ${categoriaActiva}`}
+            {categoriaActiva === 'Todos' ? 'Productos destacados' : `Productos: ${categoriaActiva}`}
           </h3>
           {error && <p style={{ color: '#EF4444' }}>{error}</p>}
           
