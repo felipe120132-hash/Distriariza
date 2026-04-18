@@ -50,7 +50,6 @@ function App() {
 
   const BACKEND_URL = "https://distriariza.onrender.com";
 
-  // Configuración de colecciones basada en tus capturas
   const colecciones = [
     { t: 'LÍQUIDOS', val: 'Liquidos vitales', icon: '💧' },
     { t: 'COMIDA', val: 'Comida', icon: '🍱' },
@@ -71,15 +70,20 @@ function App() {
 
   useEffect(() => { cargarProductos(); }, []);
 
-  // LÓGICA DE FILTRADO CORREGIDA
+  // LÓGICA DE FILTRADO MEJORADA (Insensible a mayúsculas/espacios)
   const productosVisibles = productos.filter(p => {
     const nombreProducto = p.nombre.toLowerCase();
     const queryBusqueda = busqueda.toLowerCase();
+    
+    // Normalizamos los nombres de las categorías para evitar fallos por tildes o espacios
     const categoriaProducto = (p.categoria_nombre || "").trim().toLowerCase();
     const categoriaFiltro = categoriaActiva.trim().toLowerCase();
 
     const coincideBusqueda = nombreProducto.includes(queryBusqueda);
-    const coincideCategoria = categoriaActiva === 'Todos' || categoriaProducto === categoriaFiltro;
+    const coincideCategoria = 
+      categoriaActiva === 'Todos' || 
+      categoriaProducto === categoriaFiltro ||
+      (categoriaFiltro === "liquidos vitales" && categoriaProducto.includes("liquido"));
     
     return coincideBusqueda && coincideCategoria;
   });
@@ -136,7 +140,7 @@ function App() {
         </div>
       </nav>
 
-      {/* SEARCH SECTION */}
+      {/* SECCIÓN DE BÚSQUEDA */}
       <div style={{ padding: '40px 30px' }}>
         <h2 style={{ fontSize: '2.5rem', fontWeight: 800, margin: '0 0 25px 0', lineHeight: '1.1', color: '#111827' }}>
           Seleccionando los mejores<br />
@@ -144,7 +148,13 @@ function App() {
         </h2>
         
         <div style={{ position: 'relative', width: '100%', maxWidth: '550px' }}>
-          <input type="text" placeholder="Buscar productos..." value={busqueda} onChange={(e) => setBusqueda(e.target.value)} style={{ width: '100%', padding: '16px 20px 16px 50px', borderRadius: '16px', border: 'none', backgroundColor: 'white', boxShadow: '0 4px 6px rgba(0,0,0,0.05)', fontSize: '1rem', outline: 'none' }} />
+          <input 
+            type="text" 
+            placeholder="Buscar productos..." 
+            value={busqueda} 
+            onChange={(e) => setBusqueda(e.target.value)} 
+            style={{ width: '100%', padding: '16px 20px 16px 50px', borderRadius: '16px', border: 'none', backgroundColor: 'white', boxShadow: '0 4px 6px rgba(0,0,0,0.05)', fontSize: '1rem', outline: 'none' }} 
+          />
           <span style={{ position: 'absolute', left: '18px', top: '50%', transform: 'translateY(-50%)' }}>🔍</span>
         </div>
       </div>
@@ -194,7 +204,11 @@ function App() {
                 </div>
               </div>
             ))}
-            {productosVisibles.length === 0 && <p style={{ color: '#9CA3AF' }}>No hay productos en esta categoría.</p>}
+            {productosVisibles.length === 0 && (
+              <p style={{ color: '#9CA3AF', gridColumn: '1/-1', textAlign: 'center', padding: '20px' }}>
+                No hay productos disponibles en esta categoría actualmente.
+              </p>
+            )}
           </div>
         </div>
       </div>
@@ -211,7 +225,7 @@ function App() {
             <span style={{ fontSize: '0.7rem', color: '#1A73E8', fontWeight: 800, textTransform: 'uppercase' }}>{productoSeleccionado.categoria_nombre}</span>
             <h2 style={{ margin: '5px 0 15px 0', fontSize: '1.6rem', fontWeight: 800 }}>{productoSeleccionado.nombre}</h2>
             <div style={{ color: '#4B5563', fontSize: '0.95rem', lineHeight: '1.6' }}>
-              <p style={{ fontWeight: 700, color: '#111827', marginBottom: '12px' }}>{DESCRIPCIONES_DETALLADAS[productoSeleccionado.nombre]?.resumen || "Producto de alta calidad."}</p>
+              <p style={{ fontWeight: 700, color: '#111827', marginBottom: '12px' }}>{DESCRIPCIONES_DETALLADAS[productoSeleccionado.nombre]?.resumen || "Producto de alta calidad para el cuidado de tu acuario."}</p>
               <div style={{ whiteSpace: 'pre-line', marginBottom: '20px' }} dangerouslySetInnerHTML={{ __html: DESCRIPCIONES_DETALLADAS[productoSeleccionado.nombre]?.cuerpo || productoSeleccionado.descripcion }} />
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '30px', paddingTop: '20px', borderTop: '1px solid #F3F4F6' }}>
@@ -285,7 +299,7 @@ function App() {
         </>
       )}
 
-      {/* BARRA INFERIOR */}
+      {/* BARRA DE NAVEGACIÓN INFERIOR */}
       <div style={{ position: 'fixed', bottom: '20px', left: '50%', transform: 'translateX(-50%)', width: '90%', maxWidth: '400px', backgroundColor: 'rgba(255, 255, 255, 0.9)', backdropFilter: 'blur(12px)', borderRadius: '20px', padding: '12px 0', display: 'flex', justifyContent: 'space-around', boxShadow: '0 10px 15px rgba(0,0,0,0.1)', zIndex: 1000 }}>
         <div onClick={() => {setCategoriaActiva('Todos'); setBusqueda('');}} style={{ textAlign: 'center', color: categoriaActiva === 'Todos' ? '#1A73E8' : '#9CA3AF', cursor: 'pointer' }}>
           <div style={{ fontSize: '1.4rem' }}>⊞</div>
