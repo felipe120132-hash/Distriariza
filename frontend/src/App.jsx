@@ -70,16 +70,20 @@ function App() {
 
   useEffect(() => { cargarProductos(); }, []);
 
-  // FILTRO OPTIMIZADO: Más flexible con nombres largos de categorías
+  // FILTRO OPTIMIZADO: Ignora tildes, mayúsculas y espacios extra
   const productosVisibles = productos.filter(p => {
     const nombreProducto = p.nombre.toLowerCase();
     const queryBusqueda = busqueda.toLowerCase();
-    const categoriaProducto = (p.categoria_nombre || "").trim().toLowerCase();
-    const categoriaFiltro = categoriaActiva.trim().toLowerCase();
+    
+    // Función para normalizar texto (quita tildes y deja en minúsculas)
+    const normalizar = (texto) => 
+      texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase();
+
+    const categoriaProducto = normalizar(p.categoria_nombre || "");
+    const categoriaFiltro = normalizar(categoriaActiva);
 
     const coincideBusqueda = nombreProducto.includes(queryBusqueda);
     
-    // Nueva lógica: Coincide si es exacto o si la primera palabra de la categoría coincide
     const coincideCategoria = 
       categoriaActiva === 'Todos' || 
       categoriaProducto === categoriaFiltro ||
@@ -143,20 +147,29 @@ function App() {
       {/* SECCIÓN DE BÚSQUEDA Y TÍTULO */}
       <div style={{ padding: '40px 30px 20px 30px' }}>
         <h2 style={{ fontSize: 'clamp(1.8rem, 5vw, 2.4rem)', fontWeight: 800, margin: '0 0 20px 0', lineHeight: '1.2', color: '#111827' }}>
-          Todo lo que necesitas para tus<br />
-          <span style={{ color: '#1A73E8' }}>peces y hámsters.</span>
+          Seleccionando los mejores<br />
+          <span style={{ color: '#1A73E8' }}>ejemplares del mundo.</span>
         </h2>
         
-        {/* BARRA DE BÚSQUEDA CORTA */}
+        {/* BARRA DE BÚSQUEDA PROFESIONAL */}
         <div style={{ position: 'relative', width: '100%', maxWidth: '380px' }}>
           <input 
             type="text" 
-            placeholder="¿Qué mascota buscamos hoy?" 
+            placeholder="¿Qué mascota vamos a consentir hoy?" 
             value={busqueda} 
             onChange={(e) => setBusqueda(e.target.value)} 
-            style={{ width: '100%', padding: '14px 20px 14px 45px', borderRadius: '14px', border: 'none', backgroundColor: 'white', boxShadow: '0 4px 6px rgba(0,0,0,0.05)', fontSize: '0.95rem', outline: 'none' }} 
+            style={{ 
+              width: '100%', 
+              padding: '14px 20px 14px 50px', 
+              borderRadius: '14px', 
+              border: '1px solid #E5E7EB', 
+              backgroundColor: 'white', 
+              boxShadow: '0 4px 6px rgba(0,0,0,0.02)', 
+              fontSize: '0.95rem', 
+              outline: 'none' 
+            }} 
           />
-          <span style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)', opacity: 0.6 }}>🔍</span>
+          <span style={{ position: 'absolute', left: '18px', top: '50%', transform: 'translateY(-50%)', opacity: 0.5, fontSize: '1.1rem' }}>🔍</span>
         </div>
       </div>
 
@@ -165,7 +178,7 @@ function App() {
         <div style={{ marginBottom: '45px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
             <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700 }}>Explorar categorías</h3>
-            <span onClick={() => setCategoriaActiva('Todos')} style={{ color: '#1A73E8', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer' }}>Ver todo</span>
+            <span onClick={() => {setCategoriaActiva('Todos'); setBusqueda('');}} style={{ color: '#1A73E8', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer' }}>Ver todo</span>
           </div>
           
           <div style={{ display: 'flex', gap: '20px', overflowX: 'auto', paddingBottom: '15px', scrollbarWidth: 'none' }}>
@@ -179,7 +192,7 @@ function App() {
                   boxShadow: '0 4px 10px rgba(0,0,0,0.08)', transition: '0.3s',
                   border: '3px solid white'
                 }}>{col.icon}</div>
-                <p style={{ marginTop: '10px', fontSize: '0.7rem', fontWeight: 700, color: categoriaActiva === col.val ? '#1A73E8' : '#4B5563', lineHeight: '1.2' }}>{col.t}</p>
+                <p style={{ marginTop: '10px', fontSize: '0.7rem', fontWeight: 700, color: categoriaActiva === col.val ? '#1A73E8' : '#4B5563', lineHeight: '1.2', textTransform: 'uppercase' }}>{col.t}</p>
               </div>
             ))}
           </div>
@@ -207,13 +220,16 @@ function App() {
                 </div>
               ))
             ) : (
-              <p style={{ gridColumn: '1/-1', textAlign: 'center', padding: '40px', color: '#9CA3AF' }}>No se encontraron productos en esta categoría.</p>
+              <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '60px 20px' }}>
+                <div style={{ fontSize: '3rem', marginBottom: '10px' }}>🔍</div>
+                <p style={{ color: '#9CA3AF', fontWeight: 600 }}>No se encontraron productos en esta categoría.</p>
+              </div>
             )}
           </div>
         </div>
       </div>
 
-      {/* MODAL DE DETALLES (Corregido) */}
+      {/* MODAL DE DETALLES */}
       {productoSeleccionado && (
         <>
           <div onClick={() => setProductoSeleccionado(null)} style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 3000, backdropFilter: 'blur(8px)' }}></div>
@@ -224,7 +240,6 @@ function App() {
             </div>
             <h2 style={{ margin: '5px 0 15px 0', fontSize: '1.6rem', fontWeight: 800 }}>{productoSeleccionado.nombre}</h2>
             <div style={{ color: '#4B5563', fontSize: '0.95rem', lineHeight: '1.6' }}>
-              {/* Aquí se corrigió el nombre de la variable de DESCRIPCIONES */}
               <p style={{ fontWeight: 700, color: '#111827', marginBottom: '12px' }}>{DESCRIPCIONES_DETALLADAS[productoSeleccionado.nombre]?.resumen || "Calidad garantizada para tu mascota."}</p>
               <div style={{ whiteSpace: 'pre-line', marginBottom: '20px' }} dangerouslySetInnerHTML={{ __html: DESCRIPCIONES_DETALLADAS[productoSeleccionado.nombre]?.cuerpo || productoSeleccionado.descripcion }} />
             </div>
@@ -306,7 +321,7 @@ function App() {
           <span style={{ fontSize: '0.65rem', fontWeight: 800 }}>TIENDA</span>
         </div>
         <div onClick={() => setCarritoAbierto(true)} style={{ textAlign: 'center', color: '#9CA3AF', cursor: 'pointer' }}>
-          <div style={{ fontSize: '1.4rem', position: 'relative' }}>🛒</div>
+          <div style={{ fontSize: '1.4rem', position: 'relative' }}>🛒 {totalItems > 0 && <span style={{ position: 'absolute', top: '-2px', right: '-8px', backgroundColor: '#EF4444', width: '8px', height: '8px', borderRadius: '50%' }}></span>}</div>
           <span style={{ fontSize: '0.65rem', fontWeight: 800 }}>CARRITO</span>
         </div>
       </div>
