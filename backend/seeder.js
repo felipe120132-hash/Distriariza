@@ -18,10 +18,10 @@ const seedDatabase = async () => {
         // 3. Listado de productos del PDF
         const productos = [
             // Líquidos (ID: catLiq.insertId)
-            { nombre: 'Acuaprime 30ml', desc: 'Eliminador de cloro y metales pesados.', precio: 0, cat: catLiq.insertId, img: 'acuaprime-30.jpg' },
+            { nombre: 'Acuaprime 30ml', desc: 'Eliminador de cloro y metales pesados.', precio: 0, cat: catLiq.insertId, img: 'acuaprime-30.jpeg' },
             { nombre: 'Acuaprime 120ml', desc: 'Eliminador de cloro y metales pesados.', precio: 0, cat: catLiq.insertId, img: 'acuaprime-120.jpeg' },
-            { nombre: 'Cycle 120ml', desc: 'Suplemento biológico para acuarios.', precio: 0, cat: catLiq.insertId, img: 'cycle-120.jpg' },
-            { nombre: 'Test Plus Ultra PH', desc: 'Medidor de PH con mayor precisión.', precio: 0, cat: catLiq.insertId, img: 'test-ph.jpg' },
+            { nombre: 'Cycle 120ml', desc: 'Suplemento biológico para acuarios.', precio: 0, cat: catLiq.insertId, img: 'cycle-120.jpeg' },
+            { nombre: 'Test Plus Ultra PH', desc: 'Medidor de PH con mayor precisión.', precio: 0, cat: catLiq.insertId, img: 'test-ph.jpeg' },
             
             // Alimentos (ID: catAlim.insertId)
             { nombre: 'Nutri 5 Pellets', desc: 'Comida para toda clase de peces.', precio: 0, cat: catAlim.insertId, img: 'nutri5.jpg' },
