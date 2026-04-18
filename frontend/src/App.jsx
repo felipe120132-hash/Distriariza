@@ -79,6 +79,7 @@ function App() {
 
   useEffect(() => { cargarProductos(); }, []);
 
+  // LÓGICA DE FILTRADO CORREGIDA
   const productosVisibles = productos.filter(p => {
     const normalizar = (texto) => 
       texto ? texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase() : "";
@@ -89,10 +90,12 @@ function App() {
     const categoriaFiltro = normalizar(categoriaActiva);
 
     const coincideBusqueda = nombreProducto.includes(queryBusqueda);
+    
+    // Comprobación exacta o de inclusión total para evitar fallos en nombres largos
     const coincideCategoria = 
       categoriaActiva === 'Todos' || 
       categoriaProducto === categoriaFiltro ||
-      categoriaProducto.includes(categoriaFiltro.split(' ')[0]); 
+      categoriaProducto.includes(categoriaFiltro);
     
     return coincideBusqueda && coincideCategoria;
   });
@@ -152,7 +155,6 @@ function App() {
         boxShadow: '0 2px 10px rgba(0,0,0,0.05)' 
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          {/* LOGO AGREGADO AQUÍ */}
           <img 
             src="/Logo.jpeg" 
             alt="Logo" 
