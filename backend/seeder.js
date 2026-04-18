@@ -29,7 +29,7 @@ const seedDatabase = async () => {
             { nombre: 'Comida para kois', desc: 'Presentación por libra.', precio: 0, cat: catAlim.insertId, img: 'comida-kois.jpeg' },
 
             // Equipos (ID: catEq.insertId)
-            { nombre: 'Filtro 600L', desc: 'Sistema de filtración interna.', precio: 0, cat: catEq.insertId, img: 'filtro-600.jpeg' },
+            { nombre: 'Filtro 2450L', desc: 'Sistema de filtración interna.', precio: 0, cat: catEq.insertId, img: 'filtro-2450.jpeg' },
             { nombre: 'Termostato 100W', desc: 'Regulador de temperatura.', precio: 0, cat: catEq.insertId, img: 'termostato.jpeg' },
             { nombre: 'Comedero Automático', desc: 'Programable digitalmente.', precio: 0, cat: catEq.insertId, img: 'comedero.jpeg' }
         ];
