@@ -9,13 +9,10 @@ const seedDatabase = async () => {
         await db.query('SET FOREIGN_KEY_CHECKS = 1');
 
         console.log('--- Tablas limpias ---');
-
-        // 2. Insertar Categorías y obtener sus IDs
-        const [catLiq] = await db.query('INSERT INTO categorias (nombre) VALUES ("Líquidos Vitales")');
-        const [catAlim] = await db.query('INSERT INTO categorias (nombre) VALUES ("Alimentos")');
-        const [catEq] = await db.query('INSERT INTO categorias (nombre) VALUES ("Equipos")');
-        const [catAcc] = await db.query('INSERT INTO categorias (nombre) VALUES ("Accesorios")');
-
+        const [catLiq] = await db.query("INSERT INTO categorias (nombre) VALUES ('Líquidos Vitales')");
+        const [catAlim] = await db.query("INSERT INTO categorias (nombre) VALUES ('Alimentos')");
+        const [catEq] = await db.query("INSERT INTO categorias (nombre) VALUES ('Equipos')");
+        const [catAcc] = await db.query("INSERT INTO categorias (nombre) VALUES ('Accesorios')");
         console.log('--- Categorías creadas ---');
 
         // 3. Listado de productos del PDF

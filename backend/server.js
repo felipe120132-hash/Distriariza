@@ -19,7 +19,7 @@ app.use(morgan('dev'));
 // Usamos comas en lugar de slashes para que path.join haga su magia
 // 4. Servir archivos estáticos (Logo, Productos, etc.)
 // Al servir 'public', el acceso será: /productos/imagen.jpg o /assets/logo.png
-app.use(express.static(path.join(__dirname, 'public')));
+app.use('/productos', express.static(path.join(__dirname, 'public/productos')));
 
 // 5. Definir las rutas de la API
 app.use('/api/productos', productoRoutes);
