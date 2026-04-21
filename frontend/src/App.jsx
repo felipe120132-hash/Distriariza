@@ -67,39 +67,112 @@ const PantallaCarga = () => {
   );
 };
 
+// --- DESCRIPCIONES AMPLIADAS: ORDENADAS SEGÚN TU LISTA DE LÍQUIDOS ---
 const DESCRIPCIONES_DETALLADAS = {
+  "Acuaprime 30ml": {
+    resumen: "🛡️ Eliminador instantáneo de cloro y metales pesados.",
+    cuerpo: `Ideal para acondicionar el agua de grifo de forma inmediata.
+    • <b>Seguridad:</b> Protege la mucosa de los peces.
+    • <b>Práctico:</b> Tamaño ideal para nano-acuarios o viajes.`,
+    uso: "📝 <b>Uso:</b> Aplicar en cada cambio de agua."
+  },
   "Acuaprime 120ml": {
     resumen: "🛡️ Protección total para tus peces en cada cambio de agua.",
-    cuerpo: `Acuaprime es mucho más que un simple anticloro. Es un acondicionador completo diseñado para eliminar instantáneamente los elementos nocivos.
-    
-    ✨ <b>Beneficios Principales:</b>
-    • 🚀 <b>Eliminación Instantánea:</b> Neutraliza el cloro, las cloraminas y los metales pesados.
-    • 🐟 <b>Protección de Mucosa:</b> Contiene coloides que refuerzan la capa natural, reduciendo el estrés.
-    • 💧 <b>Súper Concentrado:</b> Una pequeña dosis trata una gran cantidad de litros.
-    • 🌍 <b>Seguro para Todos:</b> Ideal para agua dulce, marinos y estanques.`,
-    uso: "📝 <b>Modo de Uso:</b> Añade la dosis recomendada en cada cambio de agua para asegurar un ambiente apto desde el primer segundo."
+    cuerpo: `Acuaprime es un acondicionador completo diseñado para eliminar elementos nocivos.
+    • <b>Beneficios:</b> Neutraliza cloro, cloraminas y metales pesados.
+    • <b>Salud:</b> Reduce el estrés en peces nuevos.`,
+    uso: "📝 <b>Uso:</b> Dosificar según el litraje del acuario en cada recambio."
+  },
+  "Acuaprime 240ml": {
+    resumen: "🛡️ Protección eficiente para acuarios medianos.",
+    cuerpo: `Rendimiento superior para mantener tu acuario libre de tóxicos.
+    • <b>Confianza:</b> Fórmula concentrada de alta eficiencia.
+    • <b>Multiuso:</b> Apto para agua dulce y salada.`,
+    uso: "📝 <b>Uso:</b> Añadir directamente al agua nueva antes de ingresarla al tanque."
+  },
+  "Acuaprime Litro": {
+    resumen: "🛡️ Máximo ahorro y protección para grandes volúmenes.",
+    cuerpo: `La opción preferida por criadores y acuaristas con múltiples tanques.
+    • <b>Economía:</b> El mejor costo por litro del mercado.
+    • <b>Eficacia:</b> Neutralización química inmediata.`,
+    uso: "📝 <b>Uso:</b> Ideal para cambios de agua masivos."
+  },
+  "Cycle 30ml": {
+    resumen: "🦠 Suplemento biológico para un inicio seguro.",
+    cuerpo: `Contiene bacterias vivas que establecen el ciclo del nitrógeno.
+    • <b>Arranque:</b> Evita picos de amoníaco en acuarios nuevos.
+    • <b>Mantenimiento:</b> Refuerza la colonia bacteriana.`,
+    uso: "📝 <b>Uso:</b> Aplicar durante los primeros días del montaje."
   },
   "Cycle 120ml": {
     resumen: "🦠 Establece un ecosistema saludable de forma inmediata.",
-    cuerpo: `Fórmula avanzada con bacterias beneficiosas. Elimina el amoníaco y nitritos tóxicos, evitando el "síndrome del tanque nuevo".
-    
-    ✨ <b>Beneficios Principales:</b>
-    • ⏳ <b>Maduración Acelerada:</b> Introduce peces mucho más rápido.
-    • 🧹 <b>Elimina Tóxicos:</b> Transforma desechos en nitratos seguros.
-    • 🔋 <b>Refuerzo Biológico:</b> Ideal tras limpiezas de filtro.
-    • 🌊 <b>Fórmula Adaptable:</b> Agua dulce y salada.`,
-    uso: "📝 <b>Modo de Uso:</b> Agitar bien. Dosificar por 3 días seguidos al iniciar y semanalmente como mantenimiento."
+    cuerpo: `Fórmula avanzada que elimina amoníaco y nitritos tóxicos.
+    • <b>Estabilidad:</b> Previene enfermedades por mala calidad de agua.
+    • <b>Refuerzo:</b> Úsalo después de limpiar el filtro.`,
+    uso: "📝 <b>Uso:</b> Agitar bien y dosificar semanalmente."
   },
-  "Test PH": {
-    resumen: "🧪 Monitorea el parámetro más crítico para la vida de tus peces.",
-    cuerpo: `El nivel de PH determina si el agua es ácida, neutra o alcalina. Un PH inestable es la causa principal de estrés y enfermedades en el acuario.
-    
-    ✨ <b>Beneficios Principales:</b>
-    • ⏱️ <b>Resultados Inmediatos:</b> Lectura clara en menos de un minuto con escala de colores.
-    • 🎯 <b>Alta Precisión:</b> Detecta variaciones sutiles para correcciones rápidas.
-    • 📉 <b>Control de Salud:</b> Vital para especies específicas como discos (ácido) o cíclidos (alcalino).
-    • 🧪 <b>Rendimiento Extendido:</b> El reactivo rinde para múltiples pruebas mensuales.`,
-    uso: "📝 <b>Modo de Uso:</b> Toma una muestra en el tubo, agrega las gotas del reactivo, agita y compara el color con la tabla del empaque."
+  "Cycle 240ml": {
+    resumen: "🦠 Control biológico para acuarios establecidos.",
+    cuerpo: `Asegura una filtración biológica robusta y agua cristalina.
+    • <b>Limpieza:</b> Ayuda a degradar restos orgánicos en el fondo.
+    • <b>Salud:</b> Crea un entorno natural para tus peces.`,
+    uso: "📝 <b>Uso:</b> Dosificar proporcionalmente al volumen de agua."
+  },
+  "Cycle Litro": {
+    resumen: "🦠 Rendimiento profesional para sistemas grandes.",
+    cuerpo: `Ideal para baterías de acuarios o estanques de gran tamaño.
+    • <b>Potencia:</b> Millones de bacterias benéficas por ml.
+    • <b>Seguridad:</b> Imposible de sobredosificar, totalmente natural.`,
+    uso: "📝 <b>Uso:</b> Ideal para reactivar filtros después de medicaciones."
+  },
+  "Test Plus Ultra PH": {
+    resumen: "🧪 Medidor de PH con máxima precisión.",
+    cuerpo: `Monitorea el parámetro más crítico para la vida acuática.
+    • <b>Precisión:</b> Escala de colores detallada para lecturas exactas.
+    • <b>Control:</b> Evita variaciones bruscas de acidez/alcalinidad.`,
+    uso: "📝 <b>Uso:</b> Comparar la muestra de agua con la tabla colorimétrica."
+  },
+  "Alga Clear 20ml": {
+    resumen: "☀️ Adiós al agua verde y algas por luz solar.",
+    cuerpo: `Controla la propagación de algas indeseadas de forma segura.
+    • <b>Claridad:</b> Mantiene el cristal y decoraciones limpias.
+    • <b>Eficacia:</b> Actúa rápidamente sobre algas en suspensión.`,
+    uso: "📝 <b>Uso:</b> Usar preventivamente si el acuario recibe luz solar indirecta."
+  },
+  "Clarify 20ml": {
+    resumen: "💎 Claridad extrema para tu agua.",
+    cuerpo: `Agrupa partículas en suspensión para que el filtro las atrape.
+    • <b>Efecto:</b> Transforma el agua turbia en agua cristalina en minutos.
+    • <b>Seguro:</b> No altera los parámetros químicos del agua.`,
+    uso: "📝 <b>Uso:</b> Aplicar cuando el agua se vea opaca o blanquecina."
+  },
+  "Clarify 60ml": {
+    resumen: "💎 Tratamiento avanzado para claridad total.",
+    cuerpo: `Elimina la turbidez mecánica causada por el sustrato o desechos.
+    • <b>Rápido:</b> Resultados visibles poco tiempo después de la aplicación.
+    • <b>Potente:</b> Ideal para dejar el acuario impecable antes de un evento.`,
+    uso: "📝 <b>Uso:</b> Asegurarse de tener buena oxigenación durante el proceso."
+  },
+  "Antihongos 30ml": {
+    resumen: "🍄 Previene y trata infecciones por hongos.",
+    cuerpo: `Protección eficaz contra manchas blancas o algodonosas.
+    • <b>Prevención:</b> Evita que heridas físicas se conviertan en infecciones.
+    • <b>Cuidado:</b> Seguro para la mayoría de peces de ornato.`,
+    uso: "📝 <b>Uso:</b> Aplicar ante los primeros síntomas visuales en la piel."
+  },
+  "Tratamiento de agua ICK 30 ml": {
+    resumen: "🚑 Alivio contra la enfermedad del Punto Blanco.",
+    cuerpo: `Combate el parásito causante del ICK de manera efectiva.
+    • <b>Recuperación:</b> Alivia la irritación en la piel y branquias.
+    • <b>Específico:</b> Diseñado para cortar el ciclo de vida del parásito.`,
+    uso: "📝 <b>Uso:</b> Seguir el tratamiento completo incluso si los puntos desaparecen."
+  },
+  "Antihongos": {
+    resumen: "🛡️ Protección fúngica reforzada.",
+    cuerpo: `Mantiene el ambiente libre de hongos patógenos.
+    • <b>Acción:</b> Detiene la propagación de esporas en el agua.
+    • <b>Versátil:</b> Útil para desinfectar redes o accesorios nuevos.`,
+    uso: "📝 <b>Uso:</b> Dosificación estándar para prevención general."
   }
 };
 
