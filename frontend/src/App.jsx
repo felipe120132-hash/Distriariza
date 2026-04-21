@@ -1,47 +1,56 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
-// --- NUEVO: COMPONENTE DE CARGA CON BURBUJAS ---
+// --- NUEVO: PANTALLA DE CARGA MINIMALISTA Y LLAMATIVA ---
 const PantallaCarga = () => {
   return (
     <div style={{
       position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
-      backgroundColor: '#1A73E8', display: 'flex', flexDirection: 'column',
-      alignItems: 'center', justifyContent: 'center', zIndex: 9999, overflow: 'hidden'
+      // Degradado premium: Azul profundo a azul oscuro
+      background: 'linear-gradient(180deg, #1A73E8 0%, #0D47A1 100%)',
+      display: 'flex', flexDirection: 'column',
+      alignItems: 'center', justifyContent: 'center', zIndex: 9999
     }}>
       <style>{`
-        @keyframes subir {
-          0% { transform: translateY(100vh) scale(0.5); opacity: 0; }
-          50% { opacity: 0.8; }
-          100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+        @keyframes flotar {
+          0%, 100% { transform: translateY(0px) rotate(0deg); }
+          50% { transform: translateY(-25px) rotate(5deg); }
         }
-        .burbuja {
-          position: absolute; bottom: -20px; background: rgba(255, 255, 255, 0.3);
-          border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.5);
-          animation: subir linear infinite;
+        @keyframes pulso {
+          0%, 100% { opacity: 0.6; transform: scale(1); }
+          50% { opacity: 1; transform: scale(1.05); }
+        }
+        .icono-central {
+          font-size: 85px;
+          animation: flotar 3s ease-in-out infinite;
+          filter: drop-shadow(0 15px 25px rgba(0,0,0,0.3));
+          margin-bottom: 20px;
+        }
+        .marca-texto {
+          color: white;
+          text-align: center;
+          font-family: 'Inter', sans-serif;
+          animation: pulso 2s ease-in-out infinite;
         }
       `}</style>
       
-      {/* Generador de burbujas animadas */}
-      {[...Array(15)].map((_, i) => (
-        <div key={i} className="burbuja" style={{
-          left: `${Math.random() * 100}%`,
-          width: `${10 + Math.random() * 30}px`,
-          height: `${10 + Math.random() * 30}px`,
-          animationDuration: `${2 + Math.random() * 3}s`, // Más rápido para que se vean de inmediato
-          animationDelay: `${Math.random() * 1.5}s`
-        }} />
-      ))}
-
-      <div style={{ textAlign: 'center', color: 'white', zIndex: 10 }}>
-        <div style={{ fontSize: '3.5rem', marginBottom: '10px' }}>🐠</div>
-        <h2 style={{ fontWeight: 800, margin: 0, fontSize: '1.8rem' }}>Sumergiéndonos...</h2>
-        <p style={{ opacity: 0.9, fontSize: '1rem', marginTop: '5px' }}>Preparando el acuario</p>
+      <div className="icono-central">🐠</div>
+      
+      <div className="marca-texto">
+        <h2 style={{ 
+          margin: 0, fontSize: '2rem', fontWeight: 900, letterSpacing: '-1px' 
+        }}>
+          Distribuciones Ariza
+        </h2>
+        <p style={{ 
+          margin: '5px 0 0', fontSize: '1rem', opacity: 0.8, fontWeight: 300 
+        }}>
+          Sumergiéndonos en el catálogo...
+        </p>
       </div>
     </div>
   );
 };
-// ------------------------------------------------
 
 const DESCRIPCIONES_DETALLADAS = {
   "Acuaprime 120ml": {
@@ -89,8 +98,6 @@ function App() {
   const [categoriaActiva, setCategoriaActiva] = useState('Todos');
   const [pasoCarrito, setPasoCarrito] = useState('lista'); 
   const [datosEnvio, setDatosEnvio] = useState({ nombre: '', direccion: '', ciudad: '', telefono: '' });
-  
-  // --- NUEVO: ESTADO DE CARGA ---
   const [cargando, setCargando] = useState(true);
 
   const BACKEND_URL = "https://distriariza.onrender.com";
@@ -112,20 +119,17 @@ function App() {
     { t: 'HAMSTERS', val: 'Accesorios para hamsters', icon: '🐹' }
   ];
 
-  // --- MODIFICADO: FUNCIÓN DE CARGA PARA INCLUIR LA TRANSICIÓN ---
   const cargarProductos = async () => {
     try {
-      setCargando(true); // Iniciamos el estado de carga
+      setCargando(true);
       const res = await axios.get(`${BACKEND_URL}/api/productos`);
       setProductos(res.data);
     } catch (err) {
       console.error(err);
       setError("No se pudieron cargar los productos.");
     } finally {
-      // Damos 1.5 segundos de animación de burbujas antes de mostrar la página
-      setTimeout(() => {
-        setCargando(false);
-      }, 1500); 
+      // Tiempo suficiente para apreciar la animación minimalista
+      setTimeout(() => setCargando(false), 1800); 
     }
   };
 
@@ -134,21 +138,16 @@ function App() {
   const productosVisibles = productos.filter(p => {
     const normalizar = (texto) => 
       texto ? texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase() : "";
-
     const nombreProducto = normalizar(p.nombre);
     const queryBusqueda = normalizar(busqueda);
     const categoriaDelProducto = normalizar(p.categoria_nombre);
     const categoriaDelFiltro = normalizar(categoriaActiva);
-
     const coincideBusqueda = nombreProducto.includes(queryBusqueda);
-    
     if (categoriaActiva === 'Todos') return coincideBusqueda;
-
     const coincideCategoria = 
       categoriaDelProducto === categoriaDelFiltro || 
       categoriaDelProducto.includes(categoriaDelFiltro) ||
       categoriaDelFiltro.includes(categoriaDelProducto);
-    
     return coincideBusqueda && coincideCategoria;
   });
 
@@ -180,7 +179,6 @@ function App() {
                 `*Teléfono:* ${datosEnvio.telefono}\n\n` +
                 `*Productos:*\n${lista}\n\n` +
                 `*Total: ${formatoMoneda(totalCompra)}*`;
-    
     window.open(`https://wa.me/${numero}?text=${encodeURIComponent(msg)}`, '_blank');
     setPasoCarrito('confirmado');
   };
@@ -190,10 +188,7 @@ function App() {
     return url.startsWith('http') ? url : `${BACKEND_URL}/productos/${url}`;
   };
 
-  // --- NUEVO: SI ESTÁ CARGANDO, MUESTRA LAS BURBUJAS Y DETIENE EL RESTO ---
-  if (cargando) {
-    return <PantallaCarga />;
-  }
+  if (cargando) return <PantallaCarga />;
 
   return (
     <div style={{ paddingBottom: '100px', backgroundColor: '#F0F2F5', minHeight: '100vh', fontFamily: 'Inter, sans-serif' }}>
@@ -212,7 +207,6 @@ function App() {
             <span style={{ fontSize: '0.6rem', color: '#1A73E8', fontWeight: 700, letterSpacing: '1px' }}>FISH ACCESSORIES</span>
           </div>
         </div>
-
         <div onClick={() => setCarritoAbierto(true)} style={{ cursor: 'pointer', position: 'relative', fontSize: '1.3rem' }}>
           🛒 {totalItems > 0 && (
             <span style={{ position: 'absolute', top: '-5px', right: '-10px', backgroundColor: '#1A73E8', color: 'white', fontSize: '0.65rem', borderRadius: '50%', padding: '2px 6px', fontWeight: 'bold', border: '2px solid white' }}>
@@ -222,12 +216,10 @@ function App() {
         </div>
       </nav>
 
-      {/* SECCIÓN DE BÚSQUEDA */}
       <div style={{ padding: '40px 30px 20px 30px' }}>
         <h2 style={{ fontSize: 'clamp(1.8rem, 5vw, 2.4rem)', fontWeight: 800, margin: '0 0 20px 0', lineHeight: '1.2', color: '#111827' }}>
           Todo lo que necesitas para tus<br /><span style={{ color: '#1A73E8' }}>peces y hámsters.</span>
         </h2>
-        
         <div style={{ position: 'relative', width: '100%', maxWidth: '380px' }}>
           <input type="text" placeholder="¿Qué mascota vamos a consentir hoy?" value={busqueda} onChange={(e) => setBusqueda(e.target.value)} 
             style={{ width: '100%', padding: '14px 20px 14px 50px', borderRadius: '14px', border: '1px solid #E5E7EB', backgroundColor: 'white', boxShadow: '0 4px 6px rgba(0,0,0,0.02)', fontSize: '0.95rem', outline: 'none' }} />
@@ -236,13 +228,11 @@ function App() {
       </div>
 
       <div style={{ padding: '0 30px' }}>
-        {/* CATEGORÍAS */}
         <div style={{ marginBottom: '45px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
             <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700 }}>Explorar categorías</h3>
             <span onClick={() => {setCategoriaActiva('Todos'); setBusqueda('');}} style={{ color: '#1A73E8', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer' }}>Ver todo</span>
           </div>
-          
           <div style={{ display: 'flex', gap: '20px', overflowX: 'auto', paddingBottom: '15px', scrollbarWidth: 'none' }}>
             {colecciones.map((col, i) => (
               <div key={i} onClick={() => setCategoriaActiva(col.val)} style={{ minWidth: '90px', cursor: 'pointer', textAlign: 'center' }}>
@@ -257,12 +247,10 @@ function App() {
           </div>
         </div>
 
-        {/* LISTADO DE PRODUCTOS */}
         <div style={{ marginBottom: '60px' }}>
           <h3 style={{ margin: '0 0 25px 0', fontSize: '1.3rem', fontWeight: 700 }}>
             {categoriaActiva === 'Todos' ? 'Productos destacados' : categoriaActiva}
           </h3>
-          
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '25px' }}>
             {productosVisibles.map(p => (
               <div key={p.id} style={{ backgroundColor: 'white', borderRadius: '24px', padding: '15px', boxShadow: '0 4px 6px rgba(0,0,0,0.03)' }}>
@@ -281,7 +269,6 @@ function App() {
         </div>
       </div>
 
-      {/* MODAL DE DETALLES */}
       {productoSeleccionado && (
         <>
           <div onClick={() => setProductoSeleccionado(null)} style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 3000, backdropFilter: 'blur(8px)' }}></div>
@@ -303,7 +290,6 @@ function App() {
         </>
       )}
 
-      {/* CARRITO Y NAVEGACIÓN LATERAL */}
       {carritoAbierto && (
         <>
           <div onClick={() => { setCarritoAbierto(false); setPasoCarrito('lista'); }} style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.3)', zIndex: 1500 }}></div>
@@ -313,7 +299,6 @@ function App() {
               <h2 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800 }}>{pasoCarrito === 'lista' ? 'Tu Carrito' : 'Datos de Entrega'}</h2>
               <button onClick={() => { setCarritoAbierto(false); setPasoCarrito('lista'); }} style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer' }}>✕</button>
             </div>
-
             <div style={{ flex: 1, overflowY: 'auto', padding: '20px 30px' }}>
               {pasoCarrito === 'lista' && (
                 carrito.length === 0 ? <p style={{ textAlign: 'center', color: '#9CA3AF', marginTop: '40px' }}>Tu carrito está esperando productos.</p> : carrito.map(item => (
@@ -331,7 +316,6 @@ function App() {
                   </div>
                 ))
               )}
-
               {pasoCarrito === 'envio' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   <input type="text" placeholder="Nombre completo" style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #E5E7EB' }} onChange={(e) => setDatosEnvio({...datosEnvio, nombre: e.target.value})} />
@@ -340,7 +324,6 @@ function App() {
                   <input type="text" placeholder="Teléfono" style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #E5E7EB' }} onChange={(e) => setDatosEnvio({...datosEnvio, telefono: e.target.value})} />
                 </div>
               )}
-
               {pasoCarrito === 'confirmado' && (
                 <div style={{ textAlign: 'center', padding: '40px 10px' }}>
                   <div style={{ fontSize: '4rem' }}>✅</div>
@@ -349,7 +332,6 @@ function App() {
                 </div>
               )}
             </div>
-
             {carrito.length > 0 && pasoCarrito !== 'confirmado' && (
               <div style={{ padding: '25px 30px', backgroundColor: 'white', borderTop: '1px solid #f0f0f0' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
@@ -365,37 +347,16 @@ function App() {
         </>
       )}
 
-      {/* NAV INFERIOR CON EMOJI ACTUALIZADO */}
       <div style={{ position: 'fixed', bottom: '20px', left: '50%', transform: 'translateX(-50%)', width: '90%', maxWidth: '400px', backgroundColor: 'rgba(255, 255, 255, 0.9)', backdropFilter: 'blur(12px)', borderRadius: '20px', padding: '12px 0', display: 'flex', justifyContent: 'space-around', boxShadow: '0 10px 15px rgba(0,0,0,0.1)', zIndex: 1000 }}>
-        
-        {/* BOTÓN TIENDA CON EMOJI 🏪 */}
         <div onClick={() => {setCategoriaActiva('Todos'); setBusqueda('');}} style={{ textAlign: 'center', color: categoriaActiva === 'Todos' ? '#1A73E8' : '#9CA3AF', cursor: 'pointer' }}>
           <div style={{ fontSize: '1.4rem' }}>🏪</div>
           <span style={{ fontSize: '0.65rem', fontWeight: 800 }}>TIENDA</span>
         </div>
-        
-        {/* BOTÓN CARRITO */}
         <div onClick={() => setCarritoAbierto(true)} style={{ textAlign: 'center', color: '#9CA3AF', cursor: 'pointer', position: 'relative' }}>
           <div style={{ fontSize: '1.4rem', position: 'relative', display: 'inline-block' }}>
             🛒
             {totalItems > 0 && (
-              <span style={{ 
-                position: 'absolute', 
-                top: '-8px', 
-                right: '-12px', 
-                backgroundColor: '#EF4444', 
-                color: 'white', 
-                fontSize: '0.65rem', 
-                minWidth: '18px', 
-                height: '18px', 
-                borderRadius: '50%', 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center',
-                fontWeight: 'bold',
-                border: '2px solid white',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
-              }}>
+              <span style={{ position: 'absolute', top: '-8px', right: '-12px', backgroundColor: '#EF4444', color: 'white', fontSize: '0.65rem', minWidth: '18px', height: '18px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', border: '2px solid white', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
                 {totalItems}
               </span>
             )}
