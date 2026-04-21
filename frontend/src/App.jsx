@@ -1,53 +1,44 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
-// --- NUEVO: PANTALLA DE CARGA ESTILO FONDO MARINO PREMIUM ---
+// --- PANTALLA DE CARGA: ESTILO FONDO MARINO PREMIUM ---
 const PantallaCarga = () => {
   return (
     <div style={{
       position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
-      // Degradado que evoca la profundidad del océano
       background: 'linear-gradient(180deg, #1A73E8 0%, #083675 100%)',
       display: 'flex', flexDirection: 'column',
       alignItems: 'center', justifyContent: 'center', zIndex: 9999, overflow: 'hidden'
     }}>
-      {/* Estilos CSS para las animaciones y elementos de fondo */}
       <style>{`
         @keyframes pulsoBrillo {
-          0%, 100% { transform: scale(1); opacity: 0.8; filter: drop-shadow(0 0 15px rgba(135, 206, 250, 0.7)); }
-          50% { transform: scale(1.05); opacity: 1; filter: drop-shadow(0 0 30px rgba(135, 206, 250, 1)); }
+          0%, 100% { transform: scale(1); opacity: 0.8; filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.5)); }
+          50% { transform: scale(1.05); opacity: 1; filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.8)); }
         }
         @keyframes flotarLento {
           0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-10px); }
-        }
-        @keyframes subirBurbuja {
-          0% { transform: translateY(100vh) scale(0.5); opacity: 0; }
-          50% { opacity: 0.7; }
-          100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+          50% { transform: translateY(-15px); }
         }
         .contenedor-shell {
           position: relative;
           display: flex;
-          alignItems: center;
-          justifyContent: center;
+          align-items: center;
+          justify-content: center;
           width: 150px;
           height: 150px;
-          margin-bottom: 40px;
+          margin-bottom: 30px;
           animation: flotarLento 4s ease-in-out infinite;
         }
         .shell-icon {
-          font-size: 70px;
-          color: white;
+          font-size: 75px;
           animation: pulsoBrillo 3s ease-in-out infinite;
           z-index: 10;
         }
-        /* Círculo de luz detrás de la concha */
         .aura {
           position: absolute;
           width: 120px; height: 120px;
           border-radius: 50%;
-          background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(135, 206, 250, 0.2) 60%, rgba(255,255,255,0) 100%);
+          background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
           filter: blur(10px);
           animation: pulsoBrillo 3s ease-in-out infinite;
         }
@@ -57,56 +48,24 @@ const PantallaCarga = () => {
           font-family: 'Inter', sans-serif;
           z-index: 10;
         }
-        .burbuja-decorativa {
-          position: absolute; bottom: -20px; background: rgba(255, 255, 255, 0.2);
-          border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.3);
-          animation: subirBurbuja linear infinite;
-        }
       `}</style>
       
-      {/* Unas pocas burbujas muy sutiles para dar profundidad al fondo */}
-      {[...Array(6)].map((_, i) => (
-        <div key={i} className="burbuja-decorativa" style={{
-          left: `${10 + Math.random() * 80}%`,
-          width: `${15 + Math.random() * 25}px`,
-          height: `${15 + Math.random() * 25}px`,
-          animationDuration: `${4 + Math.random() * 4}s`,
-          animationDelay: `${Math.random() * 2s}`,
-          opacity: 0.1 + Math.random() * 0.2
-        }} />
-      ))}
-
-      {/* Contenedor central con la concha y el aura */}
       <div className="contenedor-shell">
         <div className="aura"></div>
-        {/* Usamos el emoji de concha marina 🐚 */}
         <div className="shell-icon">🐚</div>
       </div>
       
-      {/* Texto centrado y minimalista */}
       <div className="texto-marino">
-        <h2 style={{ 
-          fontSize: '1.6rem', 
-          fontWeight: '700', 
-          letterSpacing: '-0.5px',
-          margin: 0,
-          opacity: 0.95
-        }}>
-          Explorando el fondo marino...
+        <h2 style={{ fontSize: '1.6rem', fontWeight: '800', margin: 0, letterSpacing: '-0.5px' }}>
+          Distribuciones Ariza
         </h2>
-        <p style={{ 
-          fontSize: '0.95rem', 
-          opacity: 0.7, 
-          marginTop: '10px',
-          fontWeight: '300' 
-        }}>
-          Preparando tu experiencia en Distribuciones Ariza
+        <p style={{ fontSize: '0.95rem', opacity: 0.7, marginTop: '8px', fontWeight: '300' }}>
+          Sumergiéndonos en el catálogo...
         </p>
       </div>
     </div>
   );
 };
-// -----------------------------------------------------------
 
 const DESCRIPCIONES_DETALLADAS = {
   "Acuaprime 120ml": {
@@ -177,14 +136,13 @@ function App() {
 
   const cargarProductos = async () => {
     try {
-      setCargando(true);
       const res = await axios.get(`${BACKEND_URL}/api/productos`);
       setProductos(res.data);
     } catch (err) {
       console.error(err);
       setError("No se pudieron cargar los productos.");
     } finally {
-      // Tiempo de carga para apreciar el diseño (1.8s)
+      // Mantenemos la pantalla de carga 1.8s para que se vea la animación
       setTimeout(() => setCargando(false), 1800); 
     }
   };
@@ -244,6 +202,7 @@ function App() {
     return url.startsWith('http') ? url : `${BACKEND_URL}/productos/${url}`;
   };
 
+  // RENDERIZADO DE PANTALLA DE CARGA
   if (cargando) return <PantallaCarga />;
 
   return (
@@ -403,6 +362,7 @@ function App() {
         </>
       )}
 
+      {/* BARRA DE NAVEGACIÓN INFERIOR */}
       <div style={{ position: 'fixed', bottom: '20px', left: '50%', transform: 'translateX(-50%)', width: '90%', maxWidth: '400px', backgroundColor: 'rgba(255, 255, 255, 0.9)', backdropFilter: 'blur(12px)', borderRadius: '20px', padding: '12px 0', display: 'flex', justifyContent: 'space-around', boxShadow: '0 10px 15px rgba(0,0,0,0.1)', zIndex: 1000 }}>
         <div onClick={() => {setCategoriaActiva('Todos'); setBusqueda('');}} style={{ textAlign: 'center', color: categoriaActiva === 'Todos' ? '#1A73E8' : '#9CA3AF', cursor: 'pointer' }}>
           <div style={{ fontSize: '1.4rem' }}>🏪</div>
