@@ -1,56 +1,112 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
-// --- NUEVO: PANTALLA DE CARGA MINIMALISTA Y LLAMATIVA ---
+// --- NUEVO: PANTALLA DE CARGA ESTILO FONDO MARINO PREMIUM ---
 const PantallaCarga = () => {
   return (
     <div style={{
       position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
-      // Degradado premium: Azul profundo a azul oscuro
-      background: 'linear-gradient(180deg, #1A73E8 0%, #0D47A1 100%)',
+      // Degradado que evoca la profundidad del océano
+      background: 'linear-gradient(180deg, #1A73E8 0%, #083675 100%)',
       display: 'flex', flexDirection: 'column',
-      alignItems: 'center', justifyContent: 'center', zIndex: 9999
+      alignItems: 'center', justifyContent: 'center', zIndex: 9999, overflow: 'hidden'
     }}>
+      {/* Estilos CSS para las animaciones y elementos de fondo */}
       <style>{`
-        @keyframes flotar {
-          0%, 100% { transform: translateY(0px) rotate(0deg); }
-          50% { transform: translateY(-25px) rotate(5deg); }
+        @keyframes pulsoBrillo {
+          0%, 100% { transform: scale(1); opacity: 0.8; filter: drop-shadow(0 0 15px rgba(135, 206, 250, 0.7)); }
+          50% { transform: scale(1.05); opacity: 1; filter: drop-shadow(0 0 30px rgba(135, 206, 250, 1)); }
         }
-        @keyframes pulso {
-          0%, 100% { opacity: 0.6; transform: scale(1); }
-          50% { opacity: 1; transform: scale(1.05); }
+        @keyframes flotarLento {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-10px); }
         }
-        .icono-central {
-          font-size: 85px;
-          animation: flotar 3s ease-in-out infinite;
-          filter: drop-shadow(0 15px 25px rgba(0,0,0,0.3));
-          margin-bottom: 20px;
+        @keyframes subirBurbuja {
+          0% { transform: translateY(100vh) scale(0.5); opacity: 0; }
+          50% { opacity: 0.7; }
+          100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
         }
-        .marca-texto {
+        .contenedor-shell {
+          position: relative;
+          display: flex;
+          alignItems: center;
+          justifyContent: center;
+          width: 150px;
+          height: 150px;
+          margin-bottom: 40px;
+          animation: flotarLento 4s ease-in-out infinite;
+        }
+        .shell-icon {
+          font-size: 70px;
+          color: white;
+          animation: pulsoBrillo 3s ease-in-out infinite;
+          z-index: 10;
+        }
+        /* Círculo de luz detrás de la concha */
+        .aura {
+          position: absolute;
+          width: 120px; height: 120px;
+          border-radius: 50%;
+          background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(135, 206, 250, 0.2) 60%, rgba(255,255,255,0) 100%);
+          filter: blur(10px);
+          animation: pulsoBrillo 3s ease-in-out infinite;
+        }
+        .texto-marino {
           color: white;
           text-align: center;
           font-family: 'Inter', sans-serif;
-          animation: pulso 2s ease-in-out infinite;
+          z-index: 10;
+        }
+        .burbuja-decorativa {
+          position: absolute; bottom: -20px; background: rgba(255, 255, 255, 0.2);
+          border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.3);
+          animation: subirBurbuja linear infinite;
         }
       `}</style>
       
-      <div className="icono-central">🐠</div>
+      {/* Unas pocas burbujas muy sutiles para dar profundidad al fondo */}
+      {[...Array(6)].map((_, i) => (
+        <div key={i} className="burbuja-decorativa" style={{
+          left: `${10 + Math.random() * 80}%`,
+          width: `${15 + Math.random() * 25}px`,
+          height: `${15 + Math.random() * 25}px`,
+          animationDuration: `${4 + Math.random() * 4}s`,
+          animationDelay: `${Math.random() * 2s}`,
+          opacity: 0.1 + Math.random() * 0.2
+        }} />
+      ))}
+
+      {/* Contenedor central con la concha y el aura */}
+      <div className="contenedor-shell">
+        <div className="aura"></div>
+        {/* Usamos el emoji de concha marina 🐚 */}
+        <div className="shell-icon">🐚</div>
+      </div>
       
-      <div className="marca-texto">
+      {/* Texto centrado y minimalista */}
+      <div className="texto-marino">
         <h2 style={{ 
-          margin: 0, fontSize: '2rem', fontWeight: 900, letterSpacing: '-1px' 
+          fontSize: '1.6rem', 
+          fontWeight: '700', 
+          letterSpacing: '-0.5px',
+          margin: 0,
+          opacity: 0.95
         }}>
-          Distribuciones Ariza
+          Explorando el fondo marino...
         </h2>
         <p style={{ 
-          margin: '5px 0 0', fontSize: '1rem', opacity: 0.8, fontWeight: 300 
+          fontSize: '0.95rem', 
+          opacity: 0.7, 
+          marginTop: '10px',
+          fontWeight: '300' 
         }}>
-          Sumergiéndonos en el catálogo...
+          Preparando tu experiencia en Distribuciones Ariza
         </p>
       </div>
     </div>
   );
 };
+// -----------------------------------------------------------
 
 const DESCRIPCIONES_DETALLADAS = {
   "Acuaprime 120ml": {
@@ -128,7 +184,7 @@ function App() {
       console.error(err);
       setError("No se pudieron cargar los productos.");
     } finally {
-      // Tiempo suficiente para apreciar la animación minimalista
+      // Tiempo de carga para apreciar el diseño (1.8s)
       setTimeout(() => setCargando(false), 1800); 
     }
   };

@@ -20,9 +20,20 @@ const seedDatabase = async () => {
             // Líquidos (ID: catLiq.insertId)
             { nombre: 'Acuaprime 30ml', desc: 'Eliminador de cloro y metales pesados.', precio: 3.000, cat: catLiq.insertId, img: 'acuaprime-30.jpeg' },
             { nombre: 'Acuaprime 120ml', desc: 'Eliminador de cloro y metales pesados.', precio: 6.500, cat: catLiq.insertId, img: 'acuaprime-120.jpeg' },
+            { nombre: 'Acuaprime 240ml', desc: 'Eliminador de cloro y metales pesados.', precio: 11.500, cat: catLiq.insertId, img: 'acuaprime-240.jpeg' },
+            { nombre: 'Acuaprime Litro', desc: 'Eliminador de cloro y metales pesados.', precio: 29.000, cat: catLiq.insertId, img: 'acuaprime-litro.jpeg' },
+            { nombre: 'Cycle 30ml', desc: 'Suplemento biológico para acuarios.', precio: 3.000, cat: catLiq.insertId, img: 'cycle-30.jpeg' },
             { nombre: 'Cycle 120ml', desc: 'Suplemento biológico para acuarios.', precio: 6.500, cat: catLiq.insertId, img: 'cycle-120.jpeg' },
+            { nombre: 'Cycle 240ml', desc: 'Suplemento biológico para acuarios.', precio: 11.500, cat: catLiq.insertId, img: 'cycle-240.jpeg' },
+            { nombre: 'Cycle Litro', desc: 'Suplemento biológico para acuarios.', precio: 29.000, cat: catLiq.insertId, img: 'cycle-litro.jpeg' },
             { nombre: 'Test Plus Ultra PH', desc: 'Medidor de PH con mayor precisión.', precio: 5.500, cat: catLiq.insertId, img: 'test-ph.jpeg' },
-            
+            { nombre: 'Alga Clear 20ml', desc: 'Evita la propagación de algas causadas por la luz del sol.', precio: 4.500, cat: catLiq.insertId, img: 'alga-clear-20.jpeg' },
+            { nombre: 'Clarify 20ml', desc: 'Tratamiento para mejorar la claridad del agua.', precio: 3.000, cat: catLiq.insertId, img: 'clarify-20.jpeg' },
+            { nombre: 'Clarify 60ml', desc: 'Tratamiento para mejorar la claridad del agua.', precio: 6.500, cat: catLiq.insertId, img: 'clarify-60.jpeg' },
+            { nombre: 'Antihongos 30ml', desc: 'Previene la formación de hongos en el acuario.', precio: 1.300, cat: catLiq.insertId, img: 'antihongos-30.jpeg' },
+            { nombre: 'Tratamiento de agua ICK 30 ml', desc: 'Alivia enfermedades causadas por elpunto blanco.', precio: 1.300, cat: catLiq.insertId, img: 'ICK-30.jpeg' },
+            { nombre: 'Antihongos', desc: 'Previene la formación de hongos en el acuario.', precio: 3.000, cat: catLiq.insertId, img: 'antihongos.jpeg' },
+
             // Alimentos (ID: catAlim.insertId)
             { nombre: 'Nutri 5 Pellets', desc: 'Comida para toda clase de peces.', precio: 6.000, cat: catAlim.insertId, img: 'nutri5-pellets.jpeg' },
             { nombre: 'Betta Pellets 30gr', desc: 'Alimento especializado para Bettas.', precio: 5.500, cat: catAlim.insertId, img: 'betta.jpeg' },
