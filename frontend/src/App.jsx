@@ -1,6 +1,48 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
+// --- NUEVO: COMPONENTE DE CARGA CON BURBUJAS ---
+const PantallaCarga = () => {
+  return (
+    <div style={{
+      position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+      backgroundColor: '#1A73E8', display: 'flex', flexDirection: 'column',
+      alignItems: 'center', justifyContent: 'center', zIndex: 9999, overflow: 'hidden'
+    }}>
+      <style>{`
+        @keyframes subir {
+          0% { transform: translateY(100vh) scale(0.5); opacity: 0; }
+          50% { opacity: 0.8; }
+          100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+        }
+        .burbuja {
+          position: absolute; bottom: -20px; background: rgba(255, 255, 255, 0.3);
+          border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.5);
+          animation: subir linear infinite;
+        }
+      `}</style>
+      
+      {/* Generador de burbujas animadas */}
+      {[...Array(15)].map((_, i) => (
+        <div key={i} className="burbuja" style={{
+          left: `${Math.random() * 100}%`,
+          width: `${10 + Math.random() * 30}px`,
+          height: `${10 + Math.random() * 30}px`,
+          animationDuration: `${2 + Math.random() * 3}s`, // Más rápido para que se vean de inmediato
+          animationDelay: `${Math.random() * 1.5}s`
+        }} />
+      ))}
+
+      <div style={{ textAlign: 'center', color: 'white', zIndex: 10 }}>
+        <div style={{ fontSize: '3.5rem', marginBottom: '10px' }}>🐠</div>
+        <h2 style={{ fontWeight: 800, margin: 0, fontSize: '1.8rem' }}>Sumergiéndonos...</h2>
+        <p style={{ opacity: 0.9, fontSize: '1rem', marginTop: '5px' }}>Preparando el acuario</p>
+      </div>
+    </div>
+  );
+};
+// ------------------------------------------------
+
 const DESCRIPCIONES_DETALLADAS = {
   "Acuaprime 120ml": {
     resumen: "🛡️ Protección total para tus peces en cada cambio de agua.",
@@ -47,6 +89,9 @@ function App() {
   const [categoriaActiva, setCategoriaActiva] = useState('Todos');
   const [pasoCarrito, setPasoCarrito] = useState('lista'); 
   const [datosEnvio, setDatosEnvio] = useState({ nombre: '', direccion: '', ciudad: '', telefono: '' });
+  
+  // --- NUEVO: ESTADO DE CARGA ---
+  const [cargando, setCargando] = useState(true);
 
   const BACKEND_URL = "https://distriariza.onrender.com";
 
@@ -67,13 +112,20 @@ function App() {
     { t: 'HAMSTERS', val: 'Accesorios para hamsters', icon: '🐹' }
   ];
 
+  // --- MODIFICADO: FUNCIÓN DE CARGA PARA INCLUIR LA TRANSICIÓN ---
   const cargarProductos = async () => {
     try {
+      setCargando(true); // Iniciamos el estado de carga
       const res = await axios.get(`${BACKEND_URL}/api/productos`);
       setProductos(res.data);
     } catch (err) {
       console.error(err);
       setError("No se pudieron cargar los productos.");
+    } finally {
+      // Damos 1.5 segundos de animación de burbujas antes de mostrar la página
+      setTimeout(() => {
+        setCargando(false);
+      }, 1500); 
     }
   };
 
@@ -137,6 +189,11 @@ function App() {
     if (!url) return 'https://via.placeholder.com/300';
     return url.startsWith('http') ? url : `${BACKEND_URL}/productos/${url}`;
   };
+
+  // --- NUEVO: SI ESTÁ CARGANDO, MUESTRA LAS BURBUJAS Y DETIENE EL RESTO ---
+  if (cargando) {
+    return <PantallaCarga />;
+  }
 
   return (
     <div style={{ paddingBottom: '100px', backgroundColor: '#F0F2F5', minHeight: '100vh', fontFamily: 'Inter, sans-serif' }}>
