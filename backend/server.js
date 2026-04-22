@@ -56,7 +56,7 @@ app.get('/api/load-catalog', async (req, res) => {
             { nombre: 'Clarify 60ml', desc: 'Tratamiento para mejorar la claridad del agua.', precio: 6.500, cat: liqId, img: 'clarify-60.jpeg' },
             { nombre: 'Antihongos 30ml', desc: 'Previene la formación de hongos.', precio: 1.300, cat: liqId, img: 'antihongos-30.jpeg' },
             { nombre: 'Tratamiento ICK 30 ml', desc: 'Alivia enfermedades de punto blanco.', precio: 1.300, cat: liqId, img: 'ICK-30.jpeg' },
-            { nombre: 'Antihongos', desc: 'Previene la formación de hongos.', precio: 3.000, cat: liqId, img: 'antihongos.jpeg' },
+            { nombre: 'Antialgas', desc: 'Previene la formación de algas.', precio: 3.000, cat: liqId, img: 'antialgas.jpeg' },
             // Alimentos
             { nombre: 'Nutri 5 Pellets', desc: 'Comida para toda clase de peces.', precio: 6.000, cat: alimId, img: 'nutri5-pellets.jpeg' },
             { nombre: 'Betta Pellets 30gr', desc: 'Alimento especializado para Bettas.', precio: 5.500, cat: alimId, img: 'betta.jpeg' },
