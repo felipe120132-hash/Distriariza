@@ -67,7 +67,7 @@ const PantallaCarga = () => {
   );
 };
 
-// --- DESCRIPCIONES AMPLIADAS: ORDENADAS SEGÚN TU LISTA DE LÍQUIDOS ---
+// --- DESCRIPCIONES AMPLIADAS ---
 const DESCRIPCIONES_DETALLADAS = {
   "Acuaprime 30ml": {
     resumen: "🛡️ Eliminador instantáneo de cloro y metales pesados.",
@@ -190,11 +190,13 @@ function App() {
 
   const BACKEND_URL = "https://distriariza.onrender.com";
 
+  // MODIFICADO: Formato de moneda para pesos colombianos sin decimales
   const formatoMoneda = (valor) => {
     return new Intl.NumberFormat('es-CO', {
       style: 'currency',
       currency: 'COP',
-      minimumFractionDigits: 0
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
     }).format(valor);
   };
 
@@ -215,7 +217,6 @@ function App() {
       console.error(err);
       setError("No se pudieron cargar los productos.");
     } finally {
-      // Mantenemos la pantalla de carga 1.8s para que se vea la animación
       setTimeout(() => setCargando(false), 1800); 
     }
   };
@@ -253,7 +254,8 @@ function App() {
     );
   };
 
-  const totalCompra = carrito.reduce((acc, p) => acc + Number(p.precio) * p.cantidad, 0);
+  // MODIFICADO: Aseguramos que la suma no tenga errores de tipo
+  const totalCompra = carrito.reduce((acc, p) => acc + Math.round(Number(p.precio)) * p.cantidad, 0);
   const totalItems = carrito.reduce((acc, p) => acc + p.cantidad, 0);
 
   const finalizarPedidoWhatsApp = () => {
@@ -275,7 +277,6 @@ function App() {
     return url.startsWith('http') ? url : `${BACKEND_URL}/productos/${url}`;
   };
 
-  // RENDERIZADO DE PANTALLA DE CARGA
   if (cargando) return <PantallaCarga />;
 
   return (
@@ -396,10 +397,23 @@ function App() {
                       <p style={{ fontWeight: 600, fontSize: '0.9rem', margin: 0 }}>{item.nombre}</p>
                       <p style={{ color: '#1A73E8', fontWeight: 700 }}>{formatoMoneda(item.precio * item.cantidad)}</p>
                     </div>
+                    
+                    {/* MODIFICADO: Input editable con teclado */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <button onClick={() => restarCantidad(item.id)} style={{ border: 'none', background: '#f3f4f6', borderRadius: '8px', width: '25px', height: '25px' }}>-</button>
-                      <span style={{ fontWeight: 600 }}>{item.cantidad}</span>
-                      <button onClick={() => agregarAlCarrito(item)} style={{ border: 'none', background: '#f3f4f6', borderRadius: '8px', width: '25px', height: '25px' }}>+</button>
+                      <button onClick={() => restarCantidad(item.id)} style={{ border: 'none', background: '#f3f4f6', borderRadius: '8px', width: '25px', height: '25px', cursor: 'pointer' }}>-</button>
+                      <input 
+                        type="number" 
+                        min="1"
+                        value={item.cantidad}
+                        onChange={(e) => {
+                          const val = parseInt(e.target.value);
+                          if (!isNaN(val) && val >= 0) {
+                            setCarrito(prev => prev.map(i => i.id === item.id ? {...i, cantidad: val} : i).filter(i => i.cantidad > 0));
+                          }
+                        }}
+                        style={{ width: '40px', textAlign: 'center', border: '1px solid #ddd', borderRadius: '5px', fontWeight: 'bold' }}
+                      />
+                      <button onClick={() => agregarAlCarrito(item)} style={{ border: 'none', background: '#f3f4f6', borderRadius: '8px', width: '25px', height: '25px', cursor: 'pointer' }}>+</button>
                     </div>
                   </div>
                 ))

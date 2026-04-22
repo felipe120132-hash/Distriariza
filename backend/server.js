@@ -42,30 +42,30 @@ app.get('/api/load-catalog', async (req, res) => {
         // C. Listado de productos (Precios sin puntos para MySQL)
         const listaProductos = [
             // Líquidos
-            { nombre: 'Acuaprime 30ml', desc: 'Eliminador de cloro y metales pesados.', precio: 3.000, cat: liqId, img: 'acuaprime-30.jpeg' },
-            { nombre: 'Acuaprime 120ml', desc: 'Eliminador de cloro y metales pesados.', precio: 6.500, cat: liqId, img: 'acuaprime-120.jpeg' },
-            { nombre: 'Acuaprime 240ml', desc: 'Eliminador de cloro y metales pesados.', precio: 11.500, cat: liqId, img: 'acuaprime-240.jpeg' },
-            { nombre: 'Acuaprime Litro', desc: 'Eliminador de cloro y metales pesados.', precio: 29.000, cat: liqId, img: 'acuaprime-litro.jpeg' },
-            { nombre: 'Cycle 30ml', desc: 'Suplemento biológico para acuarios.', precio: 3.000, cat: liqId, img: 'cycle-30.jpeg' },
-            { nombre: 'Cycle 120ml', desc: 'Suplemento biológico para acuarios.', precio: 6.500 , cat: liqId, img: 'cycle-120.jpeg' },
-            { nombre: 'Cycle 240ml', desc: 'Suplemento biológico para acuarios.', precio: 11.500, cat: liqId, img: 'cycle-240.jpeg' },
-            { nombre: 'Cycle Litro', desc: 'Suplemento biológico para acuarios.', precio: 29.000, cat: liqId, img: 'cycle-litro.jpeg' },
-            { nombre: 'Test Plus Ultra PH', desc: 'Medidor de PH con mayor precisión.', precio: 5.500, cat: liqId, img: 'test-ph.jpeg' },
-            { nombre: 'Alga Clear 20ml', desc: 'Evita la propagación de algas por luz solar.', precio: 4.500, cat: liqId, img: 'alga-clear-20.jpeg' },
-            { nombre: 'Clarify 20ml', desc: 'Tratamiento para mejorar la claridad del agua.', precio: 3.000, cat: liqId, img: 'clarify-20.jpeg' },
-            { nombre: 'Clarify 60ml', desc: 'Tratamiento para mejorar la claridad del agua.', precio: 6.500, cat: liqId, img: 'clarify-60.jpeg' },
-            { nombre: 'Antihongos 30ml', desc: 'Previene la formación de hongos.', precio: 1.300, cat: liqId, img: 'antihongos-30.jpeg' },
-            { nombre: 'Tratamiento ICK 30 ml', desc: 'Alivia enfermedades de punto blanco.', precio: 1.300, cat: liqId, img: 'ICK-30.jpeg' },
-            { nombre: 'Antialgas', desc: 'Previene la formación de algas.', precio: 3.000, cat: liqId, img: 'antialgas.jpeg' },
+            { nombre: 'Acuaprime 30ml', desc: 'Eliminador de cloro y metales pesados.', precio: 3000, cat: liqId, img: 'acuaprime-30.jpeg' },
+            { nombre: 'Acuaprime 120ml', desc: 'Eliminador de cloro y metales pesados.', precio: 6500, cat: liqId, img: 'acuaprime-120.jpeg' },
+            { nombre: 'Acuaprime 240ml', desc: 'Eliminador de cloro y metales pesados.', precio: 11500, cat: liqId, img: 'acuaprime-240.jpeg' },
+            { nombre: 'Acuaprime Litro', desc: 'Eliminador de cloro y metales pesados.', precio: 29000, cat: liqId, img: 'acuaprime-litro.jpeg' },
+            { nombre: 'Cycle 30ml', desc: 'Suplemento biológico para acuarios.', precio: 3000, cat: liqId, img: 'cycle-30.jpeg' },
+            { nombre: 'Cycle 120ml', desc: 'Suplemento biológico para acuarios.', precio: 6500 , cat: liqId, img: 'cycle-120.jpeg' },
+            { nombre: 'Cycle 240ml', desc: 'Suplemento biológico para acuarios.', precio: 11500, cat: liqId, img: 'cycle-240.jpeg' },
+            { nombre: 'Cycle Litro', desc: 'Suplemento biológico para acuarios.', precio: 29000, cat: liqId, img: 'cycle-litro.jpeg' },
+            { nombre: 'Test Plus Ultra PH', desc: 'Medidor de PH con mayor precisión.', precio: 5500, cat: liqId, img: 'test-ph.jpeg' },
+            { nombre: 'Alga Clear 20ml', desc: 'Evita la propagación de algas por luz solar.', precio: 4500, cat: liqId, img: 'alga-clear-20.jpeg' },
+            { nombre: 'Clarify 20ml', desc: 'Tratamiento para mejorar la claridad del agua.', precio: 3000, cat: liqId, img: 'clarify-20.jpeg' },
+            { nombre: 'Clarify 60ml', desc: 'Tratamiento para mejorar la claridad del agua.', precio: 6500, cat: liqId, img: 'clarify-60.jpeg' },
+            { nombre: 'Antihongos 30ml', desc: 'Previene la formación de hongos.', precio: 1300, cat: liqId, img: 'antihongos-30.jpeg' },
+            { nombre: 'Tratamiento ICK 30 ml', desc: 'Alivia enfermedades de punto blanco.', precio: 1300, cat: liqId, img: 'ICK-30.jpeg' },
+            { nombre: 'Antialgas', desc: 'Previene la formación de algas.', precio: 3000, cat: liqId, img: 'antialgas.jpeg' },
             // Alimentos
-            { nombre: 'Nutri 5 Pellets', desc: 'Comida para toda clase de peces.', precio: 6.000, cat: alimId, img: 'nutri5-pellets.jpeg' },
-            { nombre: 'Betta Pellets 30gr', desc: 'Alimento especializado para Bettas.', precio: 5.500, cat: alimId, img: 'betta.jpeg' },
-            { nombre: 'Comida para kois', desc: 'Presentación por libra.', precio: 27.000, cat: alimId, img: 'comida-kois.jpeg' },
+            { nombre: 'Nutri 5 Pellets', desc: 'Comida para toda clase de peces.', precio: 6000, cat: alimId, img: 'nutri5-pellets.jpeg' },
+            { nombre: 'Betta Pellets 30gr', desc: 'Alimento especializado para Bettas.', precio: 5500, cat: alimId, img: 'betta.jpeg' },
+            { nombre: 'Comida para kois', desc: 'Presentación por libra.', precio: 27000, cat: alimId, img: 'comida-kois.jpeg' },
 
             // Equipos
-            { nombre: 'Filtro 2450L', desc: 'Sistema de filtración interna.', precio: 34.000, cat: eqId, img: 'filtro-2450.jpeg' },
-            { nombre: 'Termostato 100W', desc: 'Regulador de temperatura.', precio: 13.000, cat: eqId, img: 'termostato100.jpeg' },
-            { nombre: 'Comedero Automático', desc: 'Programable digitalmente.', precio: 43.000, cat: eqId, img: 'comedero3tiempos.jpeg' }
+            { nombre: 'Filtro 2450L', desc: 'Sistema de filtración interna.', precio: 34000, cat: eqId, img: 'filtro-2450.jpeg' },
+            { nombre: 'Termostato 100W', desc: 'Regulador de temperatura.', precio: 13000, cat: eqId, img: 'termostato100.jpeg' },
+            { nombre: 'Comedero Automático', desc: 'Programable digitalmente.', precio: 43000, cat: eqId, img: 'comedero3tiempos.jpeg' }
         ];
 
         // D. Transformar objetos a arrays de valores para el INSERT masivo
