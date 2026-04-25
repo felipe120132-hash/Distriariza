@@ -46,8 +46,6 @@ const GlobalStyles = ({ dark }) => (
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: var(--ink-3); border-radius: 99px; }
 
-    /* ── Aquarium hero ── */
-    /* ⚠ margin-bottom eliminado: ahora el <main> se monta encima */
     .aquarium-hero {
       position: relative;
       width: 100%;
@@ -119,7 +117,6 @@ const GlobalStyles = ({ dark }) => (
       position: absolute; bottom: 52px; left: 36px; z-index: 20;
     }
 
-    /* ── Loader ── */
     @keyframes spin { to { transform: rotate(360deg); } }
     .loader-ring {
       width: 40px; height: 40px;
@@ -129,7 +126,6 @@ const GlobalStyles = ({ dark }) => (
       animation: spin 0.8s linear infinite;
     }
 
-    /* ── Animations ── */
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(18px); }
       to   { opacity: 1; transform: translateY(0); }
@@ -141,18 +137,15 @@ const GlobalStyles = ({ dark }) => (
       to   { opacity: 1; }
     }
 
-    /* ── Cards ── */
     .prod-card { transition: transform 0.25s ease, box-shadow 0.25s ease; }
     .prod-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
 
-    /* ── Slide-in panel ── */
     @keyframes slideIn {
       from { transform: translateX(100%); opacity: 0; }
       to   { transform: translateX(0);   opacity: 1; }
     }
     .panel { animation: slideIn 0.32s cubic-bezier(0.22,1,0.36,1) both; }
 
-    /* ── Modal ── */
     @keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes modalIn {
       from { opacity: 0; transform: translate(-50%,-46%) scale(0.93); }
@@ -173,7 +166,6 @@ const GlobalStyles = ({ dark }) => (
     .modal-content-3 { animation: revealUp 0.35s 0.30s ease both; }
     .modal-content-4 { animation: revealUp 0.35s 0.38s ease both; }
 
-    /* ── Pill button ── */
     .pill-btn {
       display: inline-flex; align-items: center; gap: 6px;
       padding: 10px 20px; border-radius: 99px;
@@ -187,7 +179,6 @@ const GlobalStyles = ({ dark }) => (
     .pill-btn--ghost:hover { background: ${dark ? 'rgba(255,255,255,0.14)' : '#e2e2de'}; }
     .pill-btn--green { background: var(--green); color: #fff; }
 
-    /* ── Icon btn ── */
     .icon-btn {
       width: 36px; height: 36px; border-radius: 10px;
       border: none; background: ${dark ? 'rgba(255,255,255,0.1)' : '#ededea'}; color: var(--ink);
@@ -196,7 +187,6 @@ const GlobalStyles = ({ dark }) => (
     }
     .icon-btn:hover { background: ${dark ? 'rgba(255,255,255,0.18)' : '#ddddd9'}; }
 
-    /* ── Form input ── */
     .form-input {
       width: 100%; padding: 13px 16px; border-radius: 12px;
       border: 1.5px solid ${dark ? 'rgba(255,255,255,0.1)' : '#e5e5e1'};
@@ -208,7 +198,6 @@ const GlobalStyles = ({ dark }) => (
     .form-input::placeholder { color: var(--ink-3); }
     textarea.form-input { font-family: var(--font-body); }
 
-    /* ── Category pill ── */
     .cat-pill {
       flex-shrink: 0; padding: 8px 16px; border-radius: 99px;
       font-size: 0.78rem; font-weight: 600; border: none; cursor: pointer;
@@ -221,7 +210,6 @@ const GlobalStyles = ({ dark }) => (
     }
     .cat-pill--on { background: var(--ink); color: ${dark ? '#111' : 'var(--surface)'}; }
 
-    /* ── Dark mode toggle ── */
     .dark-toggle {
       width: 48px; height: 26px; border-radius: 99px; border: none; cursor: pointer;
       position: relative; transition: background 0.3s;
@@ -235,11 +223,9 @@ const GlobalStyles = ({ dark }) => (
       background: white; transition: left 0.3s cubic-bezier(0.34,1.56,0.64,1);
     }
 
-    /* ── Star rating ── */
     .star { cursor: pointer; transition: transform 0.15s; font-size: 1rem; }
     .star:hover { transform: scale(1.2); }
 
-    /* ── Best seller badge ── */
     @keyframes badgePop {
       0%   { transform: scale(0.6) rotate(-12deg); opacity: 0; }
       60%  { transform: scale(1.1) rotate(2deg); opacity: 1; }
@@ -247,18 +233,14 @@ const GlobalStyles = ({ dark }) => (
     }
     .badge-best { animation: badgePop 0.5s cubic-bezier(0.34,1.56,0.64,1) both; }
 
-    /* ── Horizontal scroll best sellers ── */
     .best-scroll {
       display: flex; gap: 16px; overflow-x: auto;
       padding-bottom: 12px; scrollbar-width: none;
     }
     .best-scroll::-webkit-scrollbar { display: none; }
 
-    /* ── Transitions ── */
     * { transition-property: background-color, border-color, color; transition-duration: 0.25s; }
     .fish, .caustic-ray, .bubble, .seaweed { transition: none !important; }
-
-    /* ── Parallax layer: sin transición para que no lag ── */
     .parallax-layer { transition: none !important; }
   `}</style>
 );
@@ -350,105 +332,47 @@ const PEBBLES = [
 ];
 
 /* ─────────────────────────────────────────────
-   AQUARIUM HERO  ← con parallax por capas
+   AQUARIUM HERO
 ───────────────────────────────────────────── */
 const AquariumHero = ({ busqueda, setBusqueda, scrollY = 0 }) => {
-  // Clamp al rango visible del hero para que el parallax
-  // solo actúe mientras el acuario está en pantalla
   const s = Math.max(0, Math.min(scrollY, 340));
-
   return (
     <div className="aquarium-hero">
-
-      {/* ── Capa 1: rayos de luz — se mueven muy lento ── */}
-      <div
-        className="parallax-layer"
-        style={{ position:'absolute', inset:0, transform:`translateY(${s * 0.08}px)`, willChange:'transform' }}
-      >
+      <div className="parallax-layer" style={{ position:'absolute', inset:0, transform:`translateY(${s * 0.08}px)`, willChange:'transform' }}>
         {RAYS.map((l, i) => (
-          <div key={i} className="caustic-ray"
-            style={{ left:`${l}%`, animationDelay:`${i*0.6}s`, animationDuration:`${3.5+i*0.3}s` }}
-          />
+          <div key={i} className="caustic-ray" style={{ left:`${l}%`, animationDelay:`${i*0.6}s`, animationDuration:`${3.5+i*0.3}s` }} />
         ))}
       </div>
-
-      {/* Reflejo del agua — siempre arriba del todo */}
       <div className="water-surface" />
-
-      {/* ── Capa 2: fondo de algas, piedras y arena — casi fija ── */}
-      <div
-        className="parallax-layer"
-        style={{ position:'absolute', inset:0, transform:`translateY(${s * 0.02}px)`, willChange:'transform' }}
-      >
+      <div className="parallax-layer" style={{ position:'absolute', inset:0, transform:`translateY(${s * 0.02}px)`, willChange:'transform' }}>
         {SEAWEEDS.map((sw, i) => (
-          <div key={i} className="seaweed" style={{
-            position:'absolute', bottom:'36px', left:sw.left,
-            width:sw.w, height:sw.h,
-            background:`linear-gradient(180deg,${sw.color} 0%,#14532d 100%)`,
-            borderRadius:'6px 6px 2px 2px',
-            animationDelay:sw.delay, animationDuration:sw.dur, zIndex:3
-          }} />
+          <div key={i} className="seaweed" style={{ position:'absolute', bottom:'36px', left:sw.left, width:sw.w, height:sw.h, background:`linear-gradient(180deg,${sw.color} 0%,#14532d 100%)`, borderRadius:'6px 6px 2px 2px', animationDelay:sw.delay, animationDuration:sw.dur, zIndex:3 }} />
         ))}
         {PEBBLES.map((p, i) => (
-          <div key={i} style={{
-            position:'absolute', bottom:`${36+(i%2)*4}px`, left:p.left,
-            width:p.size, height:p.size*0.65,
-            background:p.color, borderRadius:'50%', opacity:0.85, zIndex:4
-          }} />
+          <div key={i} style={{ position:'absolute', bottom:`${36+(i%2)*4}px`, left:p.left, width:p.size, height:p.size*0.65, background:p.color, borderRadius:'50%', opacity:0.85, zIndex:4 }} />
         ))}
         <div className="tank-sand" />
       </div>
-
-      {/* ── Capa 3: burbujas — velocidad media ── */}
-      <div
-        className="parallax-layer"
-        style={{ position:'absolute', inset:0, transform:`translateY(${s * 0.15}px)`, willChange:'transform' }}
-      >
+      <div className="parallax-layer" style={{ position:'absolute', inset:0, transform:`translateY(${s * 0.15}px)`, willChange:'transform' }}>
         {BUBBLE_DATA.map((b, i) => (
-          <div key={i} className="bubble" style={{
-            left:b.left, bottom:b.bottom, width:b.size, height:b.size,
-            animationDelay:b.delay, animationDuration:b.dur, zIndex:5
-          }} />
+          <div key={i} className="bubble" style={{ left:b.left, bottom:b.bottom, width:b.size, height:b.size, animationDelay:b.delay, animationDuration:b.dur, zIndex:5 }} />
         ))}
       </div>
-
-      {/* ── Capa 4: peces — los más rápidos, dan sensación de profundidad ── */}
-      <div
-        className="parallax-layer"
-        style={{ position:'absolute', inset:0, transform:`translateY(${s * 0.28}px)`, willChange:'transform' }}
-      >
+      <div className="parallax-layer" style={{ position:'absolute', inset:0, transform:`translateY(${s * 0.28}px)`, willChange:'transform' }}>
         {FISH_DATA.map(f => (
-          <div key={f.id} className={`fish fish-${f.dir}`}
-            style={{ top:f.top, zIndex:10, animationDuration:f.duration, animationDelay:f.delay }}>
-            {f.size > 36
-              ? <FishSVG color={f.color} accent={f.accent} size={f.size}/>
-              : <FishSmall color={f.color} size={f.size}/>
-            }
+          <div key={f.id} className={`fish fish-${f.dir}`} style={{ top:f.top, zIndex:10, animationDuration:f.duration, animationDelay:f.delay }}>
+            {f.size > 36 ? <FishSVG color={f.color} accent={f.accent} size={f.size}/> : <FishSmall color={f.color} size={f.size}/>}
           </div>
         ))}
       </div>
-
-      {/* ── Texto del hero: sube más rápido y se desvanece ── */}
-      <div
-        className="parallax-layer hero-text"
-        style={{
-          zIndex: 20,
-          transform: `translateY(${s * -0.45}px)`,
-          opacity: Math.max(0, 1 - s / 180),
-          willChange: 'transform, opacity',
-        }}
-      >
-        <p style={{ fontSize:'0.72rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'1.8px', color:'rgba(255,255,255,0.7)', marginBottom:'8px' }}>
-          Tienda en línea
-        </p>
+      <div className="parallax-layer hero-text" style={{ zIndex:20, transform:`translateY(${s * -0.45}px)`, opacity:Math.max(0, 1 - s / 180), willChange:'transform, opacity' }}>
+        <p style={{ fontSize:'0.72rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'1.8px', color:'rgba(255,255,255,0.7)', marginBottom:'8px' }}>Tienda en línea</p>
         <h1 style={{ fontFamily:'var(--font-display)', fontSize:'clamp(1.8rem,4.5vw,2.8rem)', fontWeight:700, color:'#fff', lineHeight:1.15, marginBottom:'20px', textShadow:'0 2px 12px rgba(0,0,0,0.35)' }}>
           Todo para tus<br/>peces y hámsters.
         </h1>
         <div style={{ position:'relative', maxWidth:'320px' }}>
           <span style={{ position:'absolute', left:'14px', top:'50%', transform:'translateY(-50%)', fontSize:'0.9rem', opacity:0.55 }}>🔍</span>
-          <input
-            type="text" placeholder="Buscar productos…"
-            value={busqueda} onChange={e => setBusqueda(e.target.value)}
+          <input type="text" placeholder="Buscar productos…" value={busqueda} onChange={e => setBusqueda(e.target.value)}
             style={{ width:'100%', padding:'13px 18px 13px 40px', borderRadius:'99px', border:'none', background:'rgba(255,255,255,0.18)', backdropFilter:'blur(10px)', color:'#fff', fontFamily:'var(--font-body)', fontSize:'0.88rem', outline:'none' }}
           />
         </div>
@@ -458,7 +382,7 @@ const AquariumHero = ({ busqueda, setBusqueda, scrollY = 0 }) => {
 };
 
 /* ─────────────────────────────────────────────
-   STAR RATING COMPONENT
+   STAR RATING
 ───────────────────────────────────────────── */
 const StarRating = ({ productId, ratings, onRate, readonly = false, size = '1rem' }) => {
   const [hover, setHover] = useState(0);
@@ -466,10 +390,8 @@ const StarRating = ({ productId, ratings, onRate, readonly = false, size = '1rem
   return (
     <div style={{ display:'flex', gap:'2px', alignItems:'center' }}>
       {[1,2,3,4,5].map(star => (
-        <span
-          key={star}
-          className={readonly ? '' : 'star'}
-          style={{ fontSize:size, color: (hover || current) >= star ? 'var(--gold)' : 'var(--ink-3)', lineHeight:1, cursor: readonly ? 'default' : 'pointer' }}
+        <span key={star} className={readonly ? '' : 'star'}
+          style={{ fontSize:size, color:(hover || current) >= star ? 'var(--gold)' : 'var(--ink-3)', lineHeight:1, cursor:readonly ? 'default' : 'pointer' }}
           onMouseEnter={() => !readonly && setHover(star)}
           onMouseLeave={() => !readonly && setHover(0)}
           onClick={() => !readonly && onRate(productId, star)}
@@ -504,7 +426,7 @@ const DESCRIPCIONES = {
 };
 
 /* ─────────────────────────────────────────────
-   COLECCIONES
+   CONSTANTES
 ───────────────────────────────────────────── */
 const COLECCIONES = [
   { label:'Líquidos',   val:'Líquidos vitales',             icon:'💧' },
@@ -520,30 +442,6 @@ const BEST_SELLER_NAMES = [
   'Clarify 20ml', 'Test Plus Ultra PH',
 ];
 
-const PRODUCT_COLORS = {
-  'Jaula para Hámster 257': [
-    { label:'Azul',    hex:'#4a90d9' },
-    { label:'Verde',   hex:'#4caf50' },
-    { label:'Rosado',  hex:'#f48fb1' },
-    { label:'Naranja', hex:'#ff9800' },
-  ],
-  'Jaula para Hámster S-11': [
-    { label:'Café',   hex:'#8d6e63' },
-    { label:'Rosado', hex:'#f48fb1' },
-    { label:'Verde',  hex:'#4caf50' },
-  ],
-  'Jaula para Hámster 268': [
-    { label:'Azul claro',  hex:'#81d4fa' },
-    { label:'Azul oscuro', hex:'#1565c0' },
-    { label:'Amarillo',    hex:'#fdd835' },
-    { label:'Rosado',      hex:'#f48fb1' },
-    { label:'Gris',        hex:'#90a4ae' },
-  ],
-};
-
-/* ─────────────────────────────────────────────
-   HELPERS
-───────────────────────────────────────────── */
 const BACKEND = "https://distriariza.onrender.com";
 
 const moneda = (v) =>
@@ -555,48 +453,12 @@ const imgSrc = (url) =>
 const normaliza = (s) => (s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase();
 
 /* ─────────────────────────────────────────────
-   COLOR PICKER COMPONENT
+   HELPERS UI
 ───────────────────────────────────────────── */
-const ColorPicker = ({ colors, selected, onSelect }) => (
-  <div>
-    <p style={{ fontSize:'0.68rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.8px', marginBottom:'8px' }}>
-      Color: <span style={{ color:'var(--ink)', fontWeight:700 }}>{selected || 'Selecciona uno'}</span>
-    </p>
-    <div style={{ display:'flex', flexWrap:'wrap', gap:'8px' }}>
-      {colors.map(c => (
-        <button
-          key={c.label}
-          title={c.label}
-          onClick={() => onSelect(c.label)}
-          style={{
-            width:'32px', height:'32px', borderRadius:'50%',
-            background: c.hex,
-            border: selected === c.label ? '3px solid var(--ink)' : '3px solid transparent',
-            outline: selected === c.label ? '2px solid var(--accent)' : '2px solid transparent',
-            outlineOffset:'2px',
-            cursor:'pointer',
-            transition:'transform 0.15s, outline 0.15s, border 0.15s',
-            transform: selected === c.label ? 'scale(1.18)' : 'scale(1)',
-            boxShadow:'0 2px 6px rgba(0,0,0,0.18)',
-            flexShrink:0,
-          }}
-          aria-label={c.label}
-        />
-      ))}
-    </div>
-    {selected && (
-      <p style={{ fontSize:'0.7rem', color:'var(--ink-3)', marginTop:'6px' }}>
-        ✓ Seleccionado: <strong style={{ color:'var(--ink)' }}>{selected}</strong>
-      </p>
-    )}
-  </div>
-);
-
 const Stepper = ({ value, onAdd, onRemove, onChange }) => (
   <div style={{ display:'flex', alignItems:'center', gap:'8px' }}>
     <button className="icon-btn" onClick={onRemove} aria-label="Restar">−</button>
-    <input
-      type="number" min="1" value={value}
+    <input type="number" min="1" value={value}
       onChange={(e) => { const v=parseInt(e.target.value); if(!isNaN(v) && v>=0) onChange(v); }}
       style={{ width:'36px', textAlign:'center', border:'1.5px solid var(--border)', borderRadius:'8px', padding:'5px 0', fontFamily:'var(--font-body)', fontWeight:600, fontSize:'0.9rem', background:'transparent', color:'var(--ink)' }}
     />
@@ -608,15 +470,9 @@ const Stepper = ({ value, onAdd, onRemove, onChange }) => (
    BEST SELLER CARD
 ───────────────────────────────────────────── */
 const BestCard = ({ p, onAdd, onOpen, ratings, onRate, rank }) => (
-  <div
-    className="prod-card"
-    style={{ background:'var(--card-bg)', borderRadius:'20px', overflow:'hidden', boxShadow:'var(--shadow-sm)', flexShrink:0, width:'200px' }}
-  >
+  <div className="prod-card" style={{ background:'var(--card-bg)', borderRadius:'20px', overflow:'hidden', boxShadow:'var(--shadow-sm)', flexShrink:0, width:'200px' }}>
     <div style={{ position:'relative' }}>
-      <div
-        onClick={() => onOpen(p)}
-        style={{ background:'var(--bg)', height:'150px', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', padding:'16px', borderRadius:'20px 20px 0 0' }}
-      >
+      <div onClick={() => onOpen(p)} style={{ background:'var(--bg)', height:'150px', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', padding:'16px', borderRadius:'20px 20px 0 0' }}>
         <img src={imgSrc(p.imagen_url)} alt={p.nombre} style={{ maxHeight:'100%', maxWidth:'100%', objectFit:'contain', transition:'transform 0.3s ease' }}
           onMouseOver={e => e.currentTarget.style.transform='scale(1.08)'}
           onMouseOut={e => e.currentTarget.style.transform='scale(1)'}
@@ -627,15 +483,11 @@ const BestCard = ({ p, onAdd, onOpen, ratings, onRate, rank }) => (
       </div>
     </div>
     <div style={{ padding:'12px 14px 14px' }}>
-      <h4 onClick={() => onOpen(p)} style={{ fontSize:'0.82rem', fontWeight:500, cursor:'pointer', marginBottom:'6px', lineHeight:1.3, color:'var(--ink)' }}>
-        {p.nombre}
-      </h4>
+      <h4 onClick={() => onOpen(p)} style={{ fontSize:'0.82rem', fontWeight:500, cursor:'pointer', marginBottom:'6px', lineHeight:1.3, color:'var(--ink)' }}>{p.nombre}</h4>
       <StarRating productId={p.id} ratings={ratings} onRate={onRate} size="0.85rem" />
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginTop:'10px' }}>
         <span style={{ fontSize:'0.95rem', fontWeight:600, color:'var(--ink)' }}>{moneda(p.precio)}</span>
-        <button className="pill-btn pill-btn--accent" onClick={() => onAdd(p)} style={{ padding:'6px 12px', fontSize:'0.72rem' }}>
-          + Añadir
-        </button>
+        <button className="pill-btn pill-btn--accent" onClick={() => onAdd(p)} style={{ padding:'6px 12px', fontSize:'0.72rem' }}>+ Añadir</button>
       </div>
     </div>
   </div>
@@ -651,11 +503,10 @@ const ProductCard = ({ p, onAdd, onOpen, ratings, onRate, isBestSeller }) => (
         🔥 Top
       </div>
     )}
-    <div
-      onClick={() => onOpen(p)}
+    <div onClick={() => onOpen(p)}
       style={{ background:'var(--bg)', height:'200px', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', padding:'20px', overflow:'hidden', borderRadius:'20px 20px 0 0', transition:'background 0.2s' }}
-      onMouseOver={e => e.currentTarget.style.background = 'var(--border)'}
-      onMouseOut={e => e.currentTarget.style.background = 'var(--bg)'}
+      onMouseOver={e => e.currentTarget.style.background='var(--border)'}
+      onMouseOut={e => e.currentTarget.style.background='var(--bg)'}
     >
       <img src={imgSrc(p.imagen_url)} alt={p.nombre}
         style={{ maxHeight:'100%', maxWidth:'100%', objectFit:'contain', transition:'transform 0.35s cubic-bezier(0.22,1,0.36,1)' }}
@@ -664,20 +515,14 @@ const ProductCard = ({ p, onAdd, onOpen, ratings, onRate, isBestSeller }) => (
       />
     </div>
     <div style={{ padding:'16px 18px 18px' }}>
-      <p style={{ fontSize:'0.68rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.8px', marginBottom:'4px' }}>
-        {p.categoria_nombre}
-      </p>
-      <h4 onClick={() => onOpen(p)} style={{ fontSize:'0.95rem', fontWeight:500, color:'var(--ink)', cursor:'pointer', marginBottom:'8px', lineHeight:1.3 }}>
-        {p.nombre}
-      </h4>
+      <p style={{ fontSize:'0.68rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.8px', marginBottom:'4px' }}>{p.categoria_nombre}</p>
+      <h4 onClick={() => onOpen(p)} style={{ fontSize:'0.95rem', fontWeight:500, color:'var(--ink)', cursor:'pointer', marginBottom:'8px', lineHeight:1.3 }}>{p.nombre}</h4>
       <div style={{ marginBottom:'12px' }}>
         <StarRating productId={p.id} ratings={ratings} onRate={onRate} size="0.9rem" />
       </div>
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
         <span style={{ fontSize:'1.1rem', fontWeight:600, color:'var(--ink)' }}>{moneda(p.precio)}</span>
-        <button className="pill-btn pill-btn--accent" onClick={() => onAdd(p)} style={{ padding:'8px 16px', fontSize:'0.78rem' }}>
-          + Añadir
-        </button>
+        <button className="pill-btn pill-btn--accent" onClick={() => onAdd(p)} style={{ padding:'8px 16px', fontSize:'0.78rem' }}>+ Añadir</button>
       </div>
     </div>
   </div>
@@ -693,33 +538,23 @@ const ProductModal = ({ p, onClose, onAdd, ratings, onRate }) => {
     <>
       <div className="modal-overlay" onClick={onClose} style={{ position:'fixed', inset:0, background:'rgba(10,10,10,0.6)', backdropFilter:'blur(8px)', WebkitBackdropFilter:'blur(8px)', zIndex:3000 }} />
       <div className="modal" style={{ position:'fixed', top:'50%', left:'50%', transform:'translate(-50%,-50%)', width:'90%', maxWidth:'480px', maxHeight:'90vh', overflowY:'auto', background:'var(--surface)', zIndex:3001, borderRadius:'28px', boxShadow:'0 32px 80px rgba(0,0,0,0.3)' }}>
-        <button onClick={onClose} style={{ position:'absolute', top:'16px', right:'16px', background:'rgba(128,128,128,0.15)', border:'none', borderRadius:'50%', width:'34px', height:'34px', cursor:'pointer', fontSize:'0.85rem', color:'var(--ink-2)', zIndex:10, display:'flex', alignItems:'center', justifyContent:'center', transition:'background 0.2s' }}
+        <button onClick={onClose} style={{ position:'absolute', top:'16px', right:'16px', background:'rgba(128,128,128,0.15)', border:'none', borderRadius:'50%', width:'34px', height:'34px', cursor:'pointer', fontSize:'0.85rem', color:'var(--ink-2)', zIndex:10, display:'flex', alignItems:'center', justifyContent:'center' }}
           onMouseOver={e => e.currentTarget.style.background='rgba(128,128,128,0.25)'}
           onMouseOut={e => e.currentTarget.style.background='rgba(128,128,128,0.15)'}
         >✕</button>
-
         <div style={{ background:'var(--bg)', borderRadius:'28px 28px 0 0', padding:'36px 28px 28px', display:'flex', alignItems:'center', justifyContent:'center', minHeight:'220px', overflow:'hidden', position:'relative' }}>
           {isBest && (
-            <div style={{ position:'absolute', top:'14px', left:'14px', background:'var(--gold)', color:'#000', borderRadius:'99px', padding:'4px 12px', fontSize:'0.66rem', fontWeight:700, letterSpacing:'0.5px' }}>
-              🔥 Más vendido
-            </div>
+            <div style={{ position:'absolute', top:'14px', left:'14px', background:'var(--gold)', color:'#000', borderRadius:'99px', padding:'4px 12px', fontSize:'0.66rem', fontWeight:700 }}>🔥 Más vendido</div>
           )}
           <img className="modal-img" src={imgSrc(p.imagen_url)} alt={p.nombre} style={{ maxHeight:'200px', maxWidth:'100%', objectFit:'contain', display:'block' }} />
         </div>
-
         <div style={{ padding:'24px 28px 28px' }}>
-          <p className="modal-content-1" style={{ fontSize:'0.68rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.9px', marginBottom:'6px' }}>
-            {p.categoria_nombre}
-          </p>
-          <h2 className="modal-content-2" style={{ fontFamily:'var(--font-display)', fontSize:'1.6rem', fontWeight:700, color:'var(--ink)', marginBottom:'10px', lineHeight:1.2 }}>
-            {p.nombre}
-          </h2>
-
+          <p className="modal-content-1" style={{ fontSize:'0.68rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.9px', marginBottom:'6px' }}>{p.categoria_nombre}</p>
+          <h2 className="modal-content-2" style={{ fontFamily:'var(--font-display)', fontSize:'1.6rem', fontWeight:700, color:'var(--ink)', marginBottom:'10px', lineHeight:1.2 }}>{p.nombre}</h2>
           <div className="modal-content-2" style={{ marginBottom:'18px' }}>
             <p style={{ fontSize:'0.7rem', color:'var(--ink-3)', fontWeight:600, marginBottom:'6px' }}>TU VALORACIÓN</p>
             <StarRating productId={p.id} ratings={ratings} onRate={onRate} size="1.3rem" />
           </div>
-
           <div className="modal-content-3" style={{ color:'var(--ink-2)', fontSize:'0.9rem', lineHeight:1.75, marginBottom:'28px' }}>
             {desc ? (
               <>
@@ -734,15 +569,12 @@ const ProductModal = ({ p, onClose, onAdd, ratings, onRate }) => {
               <p>{p.descripcion || 'Calidad garantizada para tu mascota.'}</p>
             )}
           </div>
-
           <div className="modal-content-4" style={{ display:'flex', justifyContent:'space-between', alignItems:'center', borderTop:'1px solid var(--border)', paddingTop:'20px' }}>
             <div>
               <p style={{ fontSize:'0.68rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.6px', marginBottom:'3px' }}>Precio</p>
               <span style={{ fontSize:'1.6rem', fontWeight:600, color:'var(--ink)', letterSpacing:'-0.5px' }}>{moneda(p.precio)}</span>
             </div>
-            <button className="pill-btn pill-btn--accent" onClick={() => { onAdd(p); onClose(); }} style={{ padding:'14px 28px', fontSize:'0.9rem' }}>
-              Añadir al carrito
-            </button>
+            <button className="pill-btn pill-btn--accent" onClick={() => { onAdd(p); onClose(); }} style={{ padding:'14px 28px', fontSize:'0.9rem' }}>Añadir al carrito</button>
           </div>
         </div>
       </div>
@@ -780,7 +612,6 @@ const CartPanel = ({ carrito, onClose, onAdd, onRemove, onChangeQty, totalCompra
           )}
           <button onClick={() => { onClose(); setPaso('lista'); }} style={{ background:'none', border:'none', cursor:'pointer', fontSize:'1rem', color:'var(--ink-2)' }}>✕</button>
         </div>
-
         <div style={{ flex:1, overflowY:'auto', padding:'20px 28px' }}>
           {paso === 'lista' && (
             carrito.length === 0
@@ -798,7 +629,6 @@ const CartPanel = ({ carrito, onClose, onAdd, onRemove, onChangeQty, totalCompra
                 </div>
               ))
           )}
-
           {paso === 'envio' && (
             <div style={{ display:'flex', flexDirection:'column', gap:'12px', marginTop:'4px' }}>
               {[{key:'nombre',ph:'Nombre completo'},{key:'direccion',ph:'Dirección'},{key:'ciudad',ph:'Ciudad'},{key:'telefono',ph:'Teléfono'}].map(({ key, ph }) => (
@@ -806,27 +636,22 @@ const CartPanel = ({ carrito, onClose, onAdd, onRemove, onChangeQty, totalCompra
               ))}
             </div>
           )}
-
           {paso === 'confirmado' && (
             <div style={{ textAlign:'center', padding:'60px 16px' }}>
               <div style={{ fontSize:'3.5rem', marginBottom:'16px' }}>✅</div>
               <h3 style={{ fontFamily:'var(--font-display)', fontSize:'1.4rem', marginBottom:'8px', color:'var(--ink)' }}>Pedido enviado</h3>
               <p style={{ color:'var(--ink-3)', fontSize:'0.9rem', marginBottom:'28px' }}>Te contactaremos pronto por WhatsApp.</p>
-              <button className="pill-btn pill-btn--ghost" onClick={() => { onClose(); setPaso('lista'); }} style={{ width:'100%', justifyContent:'center', padding:'14px' }}>
-                Volver a la tienda
-              </button>
+              <button className="pill-btn pill-btn--ghost" onClick={() => { onClose(); setPaso('lista'); }} style={{ width:'100%', justifyContent:'center', padding:'14px' }}>Volver a la tienda</button>
             </div>
           )}
         </div>
-
         {carrito.length > 0 && paso !== 'confirmado' && (
           <div style={{ padding:'20px 28px', borderTop:'1px solid var(--border)', background:'var(--surface)' }}>
             <div style={{ display:'flex', justifyContent:'space-between', alignItems:'baseline', marginBottom:'16px' }}>
               <span style={{ fontSize:'0.82rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.6px' }}>Total</span>
               <span style={{ fontSize:'1.4rem', fontWeight:600, color:'var(--ink)' }}>{moneda(totalCompra)}</span>
             </div>
-            <button
-              className={`pill-btn ${paso==='lista'?'pill-btn--accent':'pill-btn--green'}`}
+            <button className={`pill-btn ${paso==='lista'?'pill-btn--accent':'pill-btn--green'}`}
               onClick={paso==='lista' ? () => setPaso('envio') : enviarWhatsApp}
               style={{ width:'100%', justifyContent:'center', padding:'15px', fontSize:'0.9rem' }}
             >
@@ -840,7 +665,7 @@ const CartPanel = ({ carrito, onClose, onAdd, onRemove, onChangeQty, totalCompra
 };
 
 /* ─────────────────────────────────────────────
-   REVIEWS INICIALES
+   REVIEWS INICIALES (fijas, siempre visibles)
 ───────────────────────────────────────────── */
 const REVIEWS_INICIALES = [
   { id:'r1', nombre:'Valentina Ospina', avatar:'🐠', estrellas:5, fecha:'hace 2 días',    texto:'Llevo 3 años comprando en Distribuciones Ariza y nunca me han fallado. El Acuaprime es increíble, mis peces nunca han estado tan saludables. El envío fue súper rápido y el empaque llegó perfecto. ¡100% recomendado!', producto:'Acuaprime 120ml' },
@@ -852,24 +677,14 @@ const REVIEWS_INICIALES = [
 ];
 
 /* ─────────────────────────────────────────────
-   REVIEWS PANEL
+   REVIEWS PANEL ← MODIFICADO: usa backend
 ───────────────────────────────────────────── */
 const ReviewsPanel = ({ onClose, dark }) => {
-  const STORAGE_KEY = 'ariza_reviews_v1';
+  const avatares = ['🐠','🐡','🐟','🦈','🐙','🐬','🦑','🐹','🐾'];
 
-  const [reviews, setReviews] = useState(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        const userIds = new Set(parsed.map(r => r.id));
-        const missing = REVIEWS_INICIALES.filter(r => !userIds.has(r.id));
-        return [...parsed, ...missing];
-      }
-    } catch (_) {}
-    return REVIEWS_INICIALES;
-  });
-
+  // ── Estado ──────────────────────────────────
+  const [reviews, setReviews]     = useState(REVIEWS_INICIALES);
+  const [cargando, setCargando]   = useState(true);
   const [tab, setTab]             = useState('ver');
   const [nombre, setNombre]       = useState('');
   const [texto, setTexto]         = useState('');
@@ -879,39 +694,76 @@ const ReviewsPanel = ({ onClose, dark }) => {
   const [enviado, setEnviado]     = useState(false);
   const [error, setError]         = useState('');
 
-  const avatares = ['🐠','🐡','🐟','🦈','🐙','🐬','🦑','🐹','🐾'];
-
+  // ── Cargar del backend al abrir ─────────────
   useEffect(() => {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(reviews)); } catch (_) {}
-  }, [reviews]);
+    setCargando(true);
+    axios.get(`${BACKEND}/api/resenas`)
+      .then(r => {
+        // Las del backend primero, luego las iniciales que no estén duplicadas
+        const backendIds = new Set(r.data.map(rev => String(rev.id)));
+        const sinDup = REVIEWS_INICIALES.filter(rev => !backendIds.has(String(rev.id)));
+        const backendFormateadas = r.data.map(rev => ({
+          id:        String(rev.id),
+          nombre:    rev.autor,
+          avatar:    avatares[Math.floor(Math.random() * avatares.length)],
+          estrellas: rev.calificacion,
+          fecha:     new Date(rev.creado_en).toLocaleDateString('es-CO', { day:'numeric', month:'short', year:'numeric' }),
+          texto:     rev.comentario,
+          producto:  rev.producto_nombre || 'Producto general',
+        }));
+        setReviews([...backendFormateadas, ...sinDup]);
+      })
+      .catch(() => {
+        // Si falla la red, mostramos solo las iniciales
+        setReviews(REVIEWS_INICIALES);
+      })
+      .finally(() => setCargando(false));
+  }, []);
 
-  const handleSubmit = () => {
+  // ── Publicar reseña ─────────────────────────
+  const handleSubmit = async () => {
     if (!nombre.trim())           return setError('Por favor ingresa tu nombre.');
     if (estrellas === 0)          return setError('Por favor selecciona una calificación.');
     if (texto.trim().length < 10) return setError('Escribe un comentario más detallado (mínimo 10 caracteres).');
     setError('');
-    const nueva = {
-      id: `r${Date.now()}`,
-      nombre: nombre.trim(),
-      avatar: avatares[Math.floor(Math.random() * avatares.length)],
-      estrellas,
-      fecha: 'justo ahora',
-      texto: texto.trim(),
-      producto: producto.trim() || 'Producto general',
-    };
-    setReviews(prev => [nueva, ...prev]);
-    setNombre(''); setTexto(''); setProducto(''); setEstrellas(0);
-    setEnviado(true);
-    setTab('ver');
-    setTimeout(() => setEnviado(false), 4000);
+
+    try {
+      const res = await axios.post(`${BACKEND}/api/resenas`, {
+        producto_id:     1,
+        producto_nombre: producto.trim() || 'Producto general',
+        autor:           nombre.trim(),
+        calificacion:    estrellas,
+        comentario:      texto.trim(),
+      });
+      const nueva = {
+        id:        String(res.data.id),
+        nombre:    nombre.trim(),
+        avatar:    avatares[Math.floor(Math.random() * avatares.length)],
+        estrellas,
+        fecha:     'justo ahora',
+        texto:     texto.trim(),
+        producto:  producto.trim() || 'Producto general',
+      };
+      setReviews(prev => [nueva, ...prev]);
+      setNombre(''); setTexto(''); setProducto(''); setEstrellas(0);
+      setEnviado(true);
+      setTab('ver');
+      setTimeout(() => setEnviado(false), 4000);
+    } catch {
+      setError('No se pudo publicar la reseña. Verificá tu conexión.');
+    }
   };
 
-  const promedio = (reviews.reduce((s, r) => s + r.estrellas, 0) / reviews.length).toFixed(1);
+  const promedio = reviews.length > 0
+    ? (reviews.reduce((s, r) => s + r.estrellas, 0) / reviews.length).toFixed(1)
+    : '5.0';
 
   return (
     <>
       <div onClick={onClose} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.3)', zIndex:1500 }} />
       <div className="panel" style={{ position:'fixed', top:0, right:0, width:'100%', maxWidth:'420px', height:'100%', background:'var(--surface)', zIndex:2000, display:'flex', flexDirection:'column' }}>
+
+        {/* ── Header ── */}
         <div style={{ padding:'24px 28px 0', borderBottom:'1px solid var(--border)' }}>
           <div style={{ display:'flex', alignItems:'center', marginBottom:'16px' }}>
             <h2 style={{ fontFamily:'var(--font-display)', fontSize:'1.25rem', fontWeight:700, color:'var(--ink)', flex:1 }}>Reseñas</h2>
@@ -924,14 +776,20 @@ const ReviewsPanel = ({ onClose, dark }) => {
           </div>
           <div style={{ display:'flex', gap:'4px', marginBottom:'-1px' }}>
             {[{ key:'ver', label:`💬 Leer (${reviews.length})` }, { key:'escribir', label:'✏️ Escribir' }].map(t => (
-              <button key={t.key} onClick={() => setTab(t.key)} style={{ padding:'10px 18px', border:'none', cursor:'pointer', fontFamily:'var(--font-body)', fontSize:'0.8rem', fontWeight:600, background:'none', color: tab === t.key ? 'var(--accent)' : 'var(--ink-3)', borderBottom: tab === t.key ? '2px solid var(--accent)' : '2px solid transparent', transition:'color 0.2s, border-color 0.2s' }}>{t.label}</button>
+              <button key={t.key} onClick={() => setTab(t.key)} style={{ padding:'10px 18px', border:'none', cursor:'pointer', fontFamily:'var(--font-body)', fontSize:'0.8rem', fontWeight:600, background:'none', color: tab===t.key ? 'var(--accent)' : 'var(--ink-3)', borderBottom: tab===t.key ? '2px solid var(--accent)' : '2px solid transparent', transition:'color 0.2s, border-color 0.2s' }}>
+                {t.label}
+              </button>
             ))}
           </div>
         </div>
 
+        {/* ── Contenido ── */}
         <div style={{ flex:1, overflowY:'auto', padding:'20px 28px' }}>
+
+          {/* ══ TAB: VER ══ */}
           {tab === 'ver' && (
             <>
+              {/* Resumen de calificaciones */}
               <div style={{ background:'var(--bg)', borderRadius:'16px', padding:'18px 20px', marginBottom:'20px', display:'flex', gap:'20px', alignItems:'center' }}>
                 <div style={{ textAlign:'center', flexShrink:0 }}>
                   <p style={{ fontFamily:'var(--font-display)', fontSize:'2.6rem', fontWeight:700, color:'var(--ink)', lineHeight:1 }}>{promedio}</p>
@@ -945,7 +803,7 @@ const ReviewsPanel = ({ onClose, dark }) => {
                 <div style={{ flex:1 }}>
                   {[5,4,3,2,1].map(s => {
                     const count = reviews.filter(r => r.estrellas === s).length;
-                    const pct   = Math.round((count / reviews.length) * 100);
+                    const pct   = reviews.length > 0 ? Math.round((count / reviews.length) * 100) : 0;
                     return (
                       <div key={s} style={{ display:'flex', alignItems:'center', gap:'6px', marginBottom:'4px' }}>
                         <span style={{ fontSize:'0.68rem', color:'var(--ink-3)', width:'7px', textAlign:'right' }}>{s}</span>
@@ -960,48 +818,59 @@ const ReviewsPanel = ({ onClose, dark }) => {
                 </div>
               </div>
 
+              {/* Confirmación de publicación */}
               {enviado && (
                 <div style={{ background:'rgba(34,197,94,0.1)', border:'1px solid rgba(34,197,94,0.3)', borderRadius:'12px', padding:'12px 16px', marginBottom:'16px', fontSize:'0.82rem', color:'#16a34a', display:'flex', alignItems:'center', gap:'8px' }}>
-                  ✅ ¡Gracias! Tu reseña ya está publicada.
+                  ✅ ¡Gracias! Tu reseña ya está publicada y visible para todos.
                 </div>
               )}
 
-              <div style={{ display:'flex', flexDirection:'column', gap:'14px' }}>
-                {reviews.map((r, i) => (
-                  <div key={r.id} className="fade-up" style={{ background:'var(--card-bg)', borderRadius:'16px', padding:'18px 20px', border:`1px solid var(--border)`, animationDelay:`${i * 0.04}s` }}>
-                    <div style={{ display:'flex', alignItems:'center', gap:'10px', marginBottom:'10px' }}>
-                      <div style={{ width:'38px', height:'38px', borderRadius:'50%', background: dark ? 'rgba(255,255,255,0.08)' : '#f0f0ee', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'1.25rem', flexShrink:0 }}>
-                        {r.avatar}
+              {/* Lista de reseñas / loader */}
+              {cargando ? (
+                <div style={{ display:'flex', justifyContent:'center', padding:'40px 0' }}>
+                  <div className="loader-ring" />
+                </div>
+              ) : (
+                <div style={{ display:'flex', flexDirection:'column', gap:'14px' }}>
+                  {reviews.map((r, i) => (
+                    <div key={r.id} className="fade-up" style={{ background:'var(--card-bg)', borderRadius:'16px', padding:'18px 20px', border:'1px solid var(--border)', animationDelay:`${i * 0.04}s` }}>
+                      <div style={{ display:'flex', alignItems:'center', gap:'10px', marginBottom:'10px' }}>
+                        <div style={{ width:'38px', height:'38px', borderRadius:'50%', background: dark ? 'rgba(255,255,255,0.08)' : '#f0f0ee', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'1.25rem', flexShrink:0 }}>
+                          {r.avatar}
+                        </div>
+                        <div style={{ flex:1, minWidth:0 }}>
+                          <p style={{ fontWeight:600, fontSize:'0.85rem', color:'var(--ink)', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{r.nombre}</p>
+                          <p style={{ fontSize:'0.64rem', color:'var(--ink-3)', marginTop:'1px' }}>{r.fecha}</p>
+                        </div>
+                        <div style={{ display:'flex', gap:'1px', flexShrink:0 }}>
+                          {[1,2,3,4,5].map(s => (
+                            <span key={s} style={{ fontSize:'0.72rem', color: s <= r.estrellas ? 'var(--gold)' : 'var(--ink-3)' }}>★</span>
+                          ))}
+                        </div>
                       </div>
-                      <div style={{ flex:1, minWidth:0 }}>
-                        <p style={{ fontWeight:600, fontSize:'0.85rem', color:'var(--ink)', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{r.nombre}</p>
-                        <p style={{ fontSize:'0.64rem', color:'var(--ink-3)', marginTop:'1px' }}>{r.fecha}</p>
-                      </div>
-                      <div style={{ display:'flex', gap:'1px', flexShrink:0 }}>
-                        {[1,2,3,4,5].map(s => (
-                          <span key={s} style={{ fontSize:'0.72rem', color: s <= r.estrellas ? 'var(--gold)' : 'var(--ink-3)' }}>★</span>
-                        ))}
+                      <p style={{ fontSize:'0.83rem', color:'var(--ink-2)', lineHeight:1.65, marginBottom:'10px' }}>"{r.texto}"</p>
+                      <div style={{ display:'inline-flex', alignItems:'center', gap:'4px', background: dark ? 'rgba(26,92,255,0.15)' : 'rgba(26,92,255,0.07)', borderRadius:'99px', padding:'3px 9px' }}>
+                        <span style={{ fontSize:'0.55rem' }}>🛒</span>
+                        <span style={{ fontSize:'0.64rem', fontWeight:600, color:'var(--accent)' }}>{r.producto}</span>
                       </div>
                     </div>
-                    <p style={{ fontSize:'0.83rem', color:'var(--ink-2)', lineHeight:1.65, marginBottom:'10px' }}>"{r.texto}"</p>
-                    <div style={{ display:'inline-flex', alignItems:'center', gap:'4px', background: dark ? 'rgba(26,92,255,0.15)' : 'rgba(26,92,255,0.07)', borderRadius:'99px', padding:'3px 9px' }}>
-                      <span style={{ fontSize:'0.55rem' }}>🛒</span>
-                      <span style={{ fontSize:'0.64rem', fontWeight:600, color:'var(--accent)' }}>{r.producto}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </>
           )}
 
+          {/* ══ TAB: ESCRIBIR ══ */}
           {tab === 'escribir' && (
             <div>
               <div style={{ marginBottom:'20px' }}>
                 <p style={{ fontSize:'0.72rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.7px', marginBottom:'10px' }}>Tu calificación *</p>
                 <div style={{ display:'flex', gap:'8px', alignItems:'center' }}>
                   {[1,2,3,4,5].map(s => (
-                    <span key={s} className="star" style={{ fontSize:'2rem', color:(hoverStar||estrellas) >= s ? 'var(--gold)' : 'var(--ink-3)', cursor:'pointer', lineHeight:1 }}
-                      onMouseEnter={() => setHoverStar(s)} onMouseLeave={() => setHoverStar(0)} onClick={() => setEstrellas(s)}>★</span>
+                    <span key={s} className="star"
+                      style={{ fontSize:'2rem', color:(hoverStar||estrellas) >= s ? 'var(--gold)' : 'var(--ink-3)', cursor:'pointer', lineHeight:1 }}
+                      onMouseEnter={() => setHoverStar(s)} onMouseLeave={() => setHoverStar(0)} onClick={() => setEstrellas(s)}
+                    >★</span>
                   ))}
                   {estrellas > 0 && (
                     <span style={{ fontSize:'0.78rem', color:'var(--ink-3)', marginLeft:'4px' }}>
@@ -1021,7 +890,10 @@ const ReviewsPanel = ({ onClose, dark }) => {
                 </div>
                 <div>
                   <p style={{ fontSize:'0.72rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.7px', marginBottom:'6px' }}>Tu comentario *</p>
-                  <textarea className="form-input" placeholder="Cuéntanos tu experiencia con el producto o la tienda..." value={texto} onChange={e => setTexto(e.target.value)} rows={5} style={{ resize:'vertical', minHeight:'110px', lineHeight:1.6 }} />
+                  <textarea className="form-input" placeholder="Cuéntanos tu experiencia con el producto o la tienda..."
+                    value={texto} onChange={e => setTexto(e.target.value)} rows={5}
+                    style={{ resize:'vertical', minHeight:'110px', lineHeight:1.6 }}
+                  />
                   <p style={{ fontSize:'0.65rem', color: texto.length < 10 && texto.length > 0 ? '#ef4444' : 'var(--ink-3)', marginTop:'4px', textAlign:'right' }}>
                     {texto.length} / mínimo 10 caracteres
                   </p>
@@ -1047,20 +919,19 @@ const ReviewsPanel = ({ onClose, dark }) => {
    APP ROOT
 ───────────────────────────────────────────── */
 export default function App() {
-  const [productos, setProductos]     = useState([]);
-  const [carrito, setCarrito]         = useState([]);
-  const [error, setError]             = useState(null);
-  const [cartOpen, setCartOpen]       = useState(false);
-  const [reviewsOpen, setReviewsOpen] = useState(false);
+  const [productos, setProductos]       = useState([]);
+  const [carrito, setCarrito]           = useState([]);
+  const [error, setError]               = useState(null);
+  const [cartOpen, setCartOpen]         = useState(false);
+  const [reviewsOpen, setReviewsOpen]   = useState(false);
   const [seleccionado, setSeleccionado] = useState(null);
-  const [busqueda, setBusqueda]       = useState('');
-  const [categoria, setCategoria]     = useState('Todos');
-  const [cargando, setCargando]       = useState(true);
-  const [dark, setDark]               = useState(false);
-  const [ratings, setRatings]         = useState({});
+  const [busqueda, setBusqueda]         = useState('');
+  const [categoria, setCategoria]       = useState('Todos');
+  const [cargando, setCargando]         = useState(true);
+  const [dark, setDark]                 = useState(false);
+  const [ratings, setRatings]           = useState({});
+  const [scrollY, setScrollY]           = useState(0);
 
-  /* ── 🆕 Scroll para el parallax ── */
-  const [scrollY, setScrollY] = useState(0);
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -1080,22 +951,14 @@ export default function App() {
       return ex ? prev.map(i => i.id===p.id ? {...i, cantidad:i.cantidad+1} : i) : [...prev, {...p, cantidad:1}];
     }), []);
 
-  const removeOne = (id) =>
-    setCarrito(prev => prev.map(i => i.id===id ? {...i, cantidad:i.cantidad-1} : i).filter(i => i.cantidad>0));
-
-  const setQty = (id, v) =>
-    setCarrito(prev => prev.map(i => i.id===id ? {...i, cantidad:v} : i).filter(i => i.cantidad>0));
-
-  const handleRate = (productId, stars) =>
-    setRatings(prev => ({...prev, [productId]: stars}));
+  const removeOne  = (id) => setCarrito(prev => prev.map(i => i.id===id ? {...i, cantidad:i.cantidad-1} : i).filter(i => i.cantidad>0));
+  const setQty     = (id, v) => setCarrito(prev => prev.map(i => i.id===id ? {...i, cantidad:v} : i).filter(i => i.cantidad>0));
+  const handleRate = (productId, stars) => setRatings(prev => ({...prev, [productId]: stars}));
 
   const totalItems  = carrito.reduce((s,i) => s+i.cantidad, 0);
   const totalCompra = carrito.reduce((s,i) => s+Math.round(Number(i.precio))*i.cantidad, 0);
 
-  const bestSellers = BEST_SELLER_NAMES
-    .map(name => productos.find(p => p.nombre === name))
-    .filter(Boolean)
-    .slice(0, 5);
+  const bestSellers = BEST_SELLER_NAMES.map(name => productos.find(p => p.nombre === name)).filter(Boolean).slice(0, 5);
 
   const visibles = productos.filter(p => {
     const matchBusq = normaliza(p.nombre).includes(normaliza(busqueda));
@@ -1112,14 +975,7 @@ export default function App() {
       <GlobalStyles dark={dark}/>
 
       {/* ── NAVBAR ── */}
-      <nav style={{
-        position:'sticky', top:0, zIndex:1000,
-        background: dark ? 'rgba(17,17,21,0.9)' : 'rgba(245,244,241,0.88)',
-        backdropFilter:'blur(16px)',
-        borderBottom:`1px solid var(--border)`,
-        display:'flex', alignItems:'center', justifyContent:'space-between',
-        padding:'0 28px', height:'64px'
-      }}>
+      <nav style={{ position:'sticky', top:0, zIndex:1000, background: dark ? 'rgba(17,17,21,0.9)' : 'rgba(245,244,241,0.88)', backdropFilter:'blur(16px)', borderBottom:`1px solid var(--border)`, display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 28px', height:'64px' }}>
         <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
           <img src="/Logo.jpeg" alt="Logo" style={{ height:'38px', width:'38px', borderRadius:'10px', objectFit:'cover' }} onError={e => e.target.src='https://via.placeholder.com/38?text=A'} />
           <div>
@@ -1143,45 +999,16 @@ export default function App() {
         </div>
       </nav>
 
-      {/* ══════════════════════════════════════════
-          🆕 ESTRUCTURA CON PARALLAX STICKY
-          El acuario queda pegado bajo el navbar
-          y el <main> se desliza sobre él.
-      ══════════════════════════════════════════ */}
+      {/* ── HERO + MAIN ── */}
       <div style={{ position:'relative' }}>
-
-        {/* ── Hero pegado: siempre visible detrás del contenido ── */}
-        <div style={{
-          position: 'sticky',
-          top: 64,           /* altura exacta del navbar */
-          zIndex: 0,
-          height: 340,
-          overflow: 'hidden',
-        }}>
-          <AquariumHero
-            busqueda={busqueda}
-            setBusqueda={setBusqueda}
-            scrollY={scrollY}
-          />
+        <div style={{ position:'sticky', top:64, zIndex:0, height:340, overflow:'hidden' }}>
+          <AquariumHero busqueda={busqueda} setBusqueda={setBusqueda} scrollY={scrollY} />
         </div>
 
-        {/* ── Contenido principal: se monta sobre el acuario ── */}
-        <main style={{
-          position: 'relative',
-          zIndex: 1,
-          background: 'var(--bg)',
-          borderRadius: '28px 28px 0 0',
-          /* "tira" hacia arriba para solaparse con el hero */
-          marginTop: -32,
-          padding: '48px 24px 120px',
-          /* sombra hacia arriba para dar profundidad */
-          boxShadow: '0 -8px 40px rgba(0,0,0,0.13)',
-          /* centra el contenido igual que antes */
-          maxWidth: 'none',
-        }}>
-          <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <main style={{ position:'relative', zIndex:1, background:'var(--bg)', borderRadius:'28px 28px 0 0', marginTop:-32, padding:'48px 24px 120px', boxShadow:'0 -8px 40px rgba(0,0,0,0.13)', maxWidth:'none' }}>
+          <div style={{ maxWidth:1200, margin:'0 auto' }}>
 
-            {/* ── BEST SELLERS ── */}
+            {/* Best sellers */}
             {bestSellers.length > 0 && (
               <section style={{ marginBottom:'48px' }}>
                 <div style={{ display:'flex', alignItems:'center', gap:'10px', marginBottom:'20px' }}>
@@ -1197,12 +1024,10 @@ export default function App() {
               </section>
             )}
 
-            {/* ── CATEGORIES ── */}
+            {/* Categorías */}
             <section style={{ marginBottom:'40px' }}>
               <div style={{ display:'flex', gap:'8px', overflowX:'auto', paddingBottom:'6px', scrollbarWidth:'none' }}>
-                <button className={`cat-pill ${categoria==='Todos'?'cat-pill--on':'cat-pill--off'}`} onClick={() => { setCategoria('Todos'); setBusqueda(''); }}>
-                  Todos
-                </button>
+                <button className={`cat-pill ${categoria==='Todos'?'cat-pill--on':'cat-pill--off'}`} onClick={() => { setCategoria('Todos'); setBusqueda(''); }}>Todos</button>
                 {COLECCIONES.map((c) => (
                   <button key={c.val} className={`cat-pill ${categoria===c.val?'cat-pill--on':'cat-pill--off'}`} onClick={() => setCategoria(c.val)}>
                     {c.icon} {c.label}
@@ -1211,27 +1036,18 @@ export default function App() {
               </div>
             </section>
 
-            {/* ── PRODUCTS GRID ── */}
+            {/* Grilla de productos */}
             <section>
               <div style={{ display:'flex', justifyContent:'space-between', alignItems:'baseline', marginBottom:'24px' }}>
-                <h2 style={{ fontSize:'1rem', fontWeight:600, color:'var(--ink)' }}>
-                  {categoria === 'Todos' ? 'Todos los productos' : categoria}
-                </h2>
+                <h2 style={{ fontSize:'1rem', fontWeight:600, color:'var(--ink)' }}>{categoria === 'Todos' ? 'Todos los productos' : categoria}</h2>
                 <span style={{ fontSize:'0.8rem', color:'var(--ink-3)' }}>{visibles.length} resultado{visibles.length!==1&&'s'}</span>
               </div>
-
               {error && <p style={{ color:'#ef4444', textAlign:'center', padding:'40px' }}>{error}</p>}
-
               <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(230px, 1fr))', gap:'20px' }}>
                 {visibles.map(p => (
-                  <ProductCard
-                    key={p.id} p={p} onAdd={addItem} onOpen={setSeleccionado}
-                    ratings={ratings} onRate={handleRate}
-                    isBestSeller={BEST_SELLER_NAMES.includes(p.nombre)}
-                  />
+                  <ProductCard key={p.id} p={p} onAdd={addItem} onOpen={setSeleccionado} ratings={ratings} onRate={handleRate} isBestSeller={BEST_SELLER_NAMES.includes(p.nombre)} />
                 ))}
               </div>
-
               {visibles.length === 0 && !error && (
                 <div style={{ textAlign:'center', padding:'80px 20px' }}>
                   <p style={{ fontSize:'2rem', marginBottom:'12px' }}>🔍</p>
@@ -1245,14 +1061,7 @@ export default function App() {
       </div>
 
       {/* ── BOTTOM NAV ── */}
-      <div style={{
-        position:'fixed', bottom:'16px', left:'50%', transform:'translateX(-50%)',
-        background: dark ? 'rgba(26,26,30,0.95)' : 'rgba(255,255,255,0.92)',
-        backdropFilter:'blur(14px)', borderRadius:'99px', padding:'10px 32px',
-        display:'flex', gap:'36px', alignItems:'center',
-        boxShadow:'0 4px 24px rgba(0,0,0,0.15)', zIndex:900,
-        border:`1px solid var(--border)`
-      }}>
+      <div style={{ position:'fixed', bottom:'16px', left:'50%', transform:'translateX(-50%)', background: dark ? 'rgba(26,26,30,0.95)' : 'rgba(255,255,255,0.92)', backdropFilter:'blur(14px)', borderRadius:'99px', padding:'10px 32px', display:'flex', gap:'36px', alignItems:'center', boxShadow:'0 4px 24px rgba(0,0,0,0.15)', zIndex:900, border:`1px solid var(--border)` }}>
         <button onClick={() => { setCategoria('Todos'); setBusqueda(''); }} style={{ background:'none', border:'none', cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', gap:'2px' }}>
           <span style={{ fontSize:'1.2rem' }}>🏪</span>
           <span style={{ fontSize:'0.58rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.6px', color:categoria==='Todos'?'var(--accent)':'var(--ink-3)' }}>Tienda</span>
