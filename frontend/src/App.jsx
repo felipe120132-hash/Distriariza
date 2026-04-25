@@ -758,7 +758,7 @@ const REVIEWS_INICIALES = [
   {
     id: 'r1', nombre: 'Valentina Ospina', avatar: '🐠', estrellas: 5,
     fecha: 'hace 2 días',
-    texto: 'Llevo 3 años comprando en Distribuciones Ariza y nunca me han fallado. El Acuaprime es increíble, mis peces nunca han estado tan saludables. El envío fue súper rápido y el empaque llegó perfecto. ¡100% recomendado!',
+    texto: 'Llevo tiempo comprando en Distribuciones Ariza y nunca me han fallado. El Acuaprime es increíble, mis peces nunca han estado tan saludables. El envío fue súper rápido y el empaque llegó perfecto. ¡100% recomendado!',
     producto: 'Acuaprime 120ml',
   },
   {
