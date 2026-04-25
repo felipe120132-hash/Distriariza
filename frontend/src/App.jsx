@@ -88,20 +88,23 @@ const GlobalStyles = () => (
     }
     .seaweed { animation: sway ease-in-out infinite; }
 
-    /* fish swim left→right: starts off-screen left, ends off-screen right */
+    /* 
+      Fish facing RIGHT by default in SVG.
+      swimRight: nada de izquierda a derecha → pez mira derecha (sin flip)
+      swimLeft:  nada de derecha a izquierda → pez mira izquierda (flip con scaleX(-1))
+    */
     @keyframes swimRight {
-      0%   { left: -120px; }
-      100% { left: calc(100% + 120px); }
+      0%   { transform: translateX(-150px) scaleX(1); }
+      100% { transform: translateX(calc(100vw + 150px)) scaleX(1); }
     }
-    /* fish swim right→left: starts off-screen right, ends off-screen left */
     @keyframes swimLeft {
-      0%   { right: -120px; }
-      100% { right: calc(100% + 120px); }
+      0%   { transform: translateX(calc(100vw + 150px)) scaleX(-1); }
+      100% { transform: translateX(-150px) scaleX(-1); }
     }
     .fish {
       position: absolute;
       pointer-events: none;
-      will-change: left, right;
+      will-change: transform;
     }
     .fish-r { animation: swimRight linear infinite; }
     .fish-l { animation: swimLeft  linear infinite; }
@@ -261,12 +264,10 @@ const Loader = () => (
    AQUARIUM HERO
 ───────────────────────────────────────────── */
 
-/* SVG fish shapes — all face RIGHT by default */
-const FishSVG = ({ color = '#f97316', size = 40, accent = '#fbbf24', flip = false }) => (
-  <svg
-    width={size} height={size * 0.55} viewBox="0 0 80 44" fill="none"
-    style={flip ? { transform: 'scaleX(-1)' } : {}}
-  >
+/* SVG fish shapes — todos miran hacia la DERECHA por defecto.
+   El volteo lo maneja el keyframe swimLeft con scaleX(-1). */
+const FishSVG = ({ color = '#f97316', size = 40, accent = '#fbbf24' }) => (
+  <svg width={size} height={size * 0.55} viewBox="0 0 80 44" fill="none">
     <path d="M64 22 L80 6 L80 38 Z" fill={accent} opacity="0.9"/>
     <ellipse cx="38" cy="22" rx="28" ry="16" fill={color}/>
     <ellipse cx="34" cy="25" rx="18" ry="9" fill="rgba(255,255,255,0.18)"/>
@@ -279,11 +280,8 @@ const FishSVG = ({ color = '#f97316', size = 40, accent = '#fbbf24', flip = fals
   </svg>
 );
 
-const FishSmall = ({ color = '#06b6d4', size = 28, flip = false }) => (
-  <svg
-    width={size} height={size * 0.55} viewBox="0 0 60 33" fill="none"
-    style={flip ? { transform: 'scaleX(-1)' } : {}}
-  >
+const FishSmall = ({ color = '#06b6d4', size = 28 }) => (
+  <svg width={size} height={size * 0.55} viewBox="0 0 60 33" fill="none">
     <path d="M48 16.5 L60 4 L60 29 Z" fill={color} opacity="0.7"/>
     <ellipse cx="28" cy="16" rx="22" ry="13" fill={color}/>
     <ellipse cx="24" cy="19" rx="14" ry="7" fill="rgba(255,255,255,0.2)"/>
@@ -378,8 +376,8 @@ const AquariumHero = ({ busqueda, setBusqueda }) => (
         animationDelay: f.delay,
       }}>
         {f.size > 36
-          ? <FishSVG color={f.color} accent={f.accent} size={f.size} flip={f.dir === 'l'}/>
-          : <FishSmall color={f.color} size={f.size} flip={f.dir === 'l'}/>
+          ? <FishSVG color={f.color} accent={f.accent} size={f.size}/>
+          : <FishSmall color={f.color} size={f.size}/>
         }
       </div>
     ))}
