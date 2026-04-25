@@ -1,475 +1,643 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
-// --- PANTALLA DE CARGA: ESTILO FONDO MARINO PREMIUM ---
-const PantallaCarga = () => {
-  return (
-    <div style={{
-      position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
-      background: 'linear-gradient(180deg, #1A73E8 0%, #083675 100%)',
-      display: 'flex', flexDirection: 'column',
-      alignItems: 'center', justifyContent: 'center', zIndex: 9999, overflow: 'hidden'
-    }}>
-      <style>{`
-        @keyframes pulsoBrillo {
-          0%, 100% { transform: scale(1); opacity: 0.8; filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.5)); }
-          50% { transform: scale(1.05); opacity: 1; filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.8)); }
-        }
-        @keyframes flotarLento {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-15px); }
-        }
-        .contenedor-shell {
-          position: relative;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 150px;
-          height: 150px;
-          margin-bottom: 30px;
-          animation: flotarLento 4s ease-in-out infinite;
-        }
-        .shell-icon {
-          font-size: 75px;
-          animation: pulsoBrillo 3s ease-in-out infinite;
-          z-index: 10;
-        }
-        .aura {
-          position: absolute;
-          width: 120px; height: 120px;
-          border-radius: 50%;
-          background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
-          filter: blur(10px);
-          animation: pulsoBrillo 3s ease-in-out infinite;
-        }
-        .texto-marino {
-          color: white;
-          text-align: center;
-          font-family: 'Inter', sans-serif;
-          z-index: 10;
-        }
-      `}</style>
-      
-      <div className="contenedor-shell">
-        <div className="aura"></div>
-        <div className="shell-icon">🐚</div>
-      </div>
-      
-      <div className="texto-marino">
-        <h2 style={{ fontSize: '1.6rem', fontWeight: '800', margin: 0, letterSpacing: '-0.5px' }}>
-          Distribuciones Ariza
-        </h2>
-        <p style={{ fontSize: '0.95rem', opacity: 0.7, marginTop: '8px', fontWeight: '300' }}>
-          Sumergiéndonos en el catálogo...
-        </p>
+/* ─────────────────────────────────────────────
+   GLOBAL STYLES  (injected once)
+───────────────────────────────────────────── */
+const GlobalStyles = () => (
+  <style>{`
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@500;700&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:     #0f0f0f;
+      --ink-2:   #6b6b6b;
+      --ink-3:   #b0b0b0;
+      --surface: #ffffff;
+      --bg:      #f5f4f1;
+      --accent:  #1a5cff;
+      --accent-h:#0040d8;
+      --green:   #22c55e;
+      --radius:  16px;
+      --font-body: 'DM Sans', sans-serif;
+      --font-display: 'Playfair Display', serif;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 20px rgba(0,0,0,0.08);
+      --shadow-lg: 0 12px 40px rgba(0,0,0,0.12);
+    }
+
+    body { font-family: var(--font-body); background: var(--bg); color: var(--ink); }
+
+    input:focus { outline: 2px solid var(--accent); outline-offset: 0; }
+
+    /* hide number spinners */
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--ink-3); border-radius: 99px; }
+
+    /* ── Loader ── */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loader-ring {
+      width: 40px; height: 40px;
+      border: 2px solid var(--bg);
+      border-top-color: var(--ink);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    /* ── Fade-in ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-up { animation: fadeUp 0.45s ease both; }
+
+    /* ── Product card hover ── */
+    .prod-card { transition: transform 0.25s ease, box-shadow 0.25s ease; }
+    .prod-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+
+    /* ── Slide-in panel ── */
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to   { transform: translateX(0);   opacity: 1; }
+    }
+    .panel { animation: slideIn 0.32s cubic-bezier(0.22,1,0.36,1) both; }
+
+    /* ── Modal ── */
+    @keyframes modalIn {
+      from { opacity: 0; transform: translate(-50%,-48%) scale(0.96); }
+      to   { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+    }
+    .modal { animation: modalIn 0.3s cubic-bezier(0.22,1,0.36,1) both; }
+
+    /* ── Pill button ── */
+    .pill-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 10px 20px; border-radius: 99px;
+      font-family: var(--font-body); font-size: 0.82rem; font-weight: 600;
+      border: none; cursor: pointer; transition: background 0.2s, transform 0.15s;
+    }
+    .pill-btn:active { transform: scale(0.97); }
+    .pill-btn--accent { background: var(--accent); color: #fff; }
+    .pill-btn--accent:hover { background: var(--accent-h); }
+    .pill-btn--ghost { background: #ededea; color: var(--ink); }
+    .pill-btn--ghost:hover { background: #e2e2de; }
+    .pill-btn--green { background: var(--green); color: #fff; }
+
+    /* ── Icon btn ── */
+    .icon-btn {
+      width: 36px; height: 36px; border-radius: 10px;
+      border: none; background: #ededea; color: var(--ink);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 0.9rem; transition: background 0.15s;
+    }
+    .icon-btn:hover { background: #ddddd9; }
+
+    /* ── Form input ── */
+    .form-input {
+      width: 100%; padding: 13px 16px; border-radius: 12px;
+      border: 1.5px solid #e5e5e1; background: var(--surface);
+      font-family: var(--font-body); font-size: 0.9rem; color: var(--ink);
+      transition: border-color 0.2s;
+    }
+    .form-input:focus { border-color: var(--accent); }
+    .form-input::placeholder { color: var(--ink-3); }
+
+    /* ── Category pill ── */
+    .cat-pill {
+      flex-shrink: 0; padding: 8px 16px; border-radius: 99px;
+      font-size: 0.78rem; font-weight: 600; border: none; cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .cat-pill--off { background: var(--surface); color: var(--ink-2); box-shadow: var(--shadow-sm); }
+    .cat-pill--on  { background: var(--ink);     color: var(--surface); }
+  `}</style>
+);
+
+/* ─────────────────────────────────────────────
+   LOADER
+───────────────────────────────────────────── */
+const Loader = () => (
+  <div style={{
+    position: 'fixed', inset: 0, background: '#f5f4f1',
+    display: 'flex', flexDirection: 'column',
+    alignItems: 'center', justifyContent: 'center', gap: '28px', zIndex: 9999
+  }}>
+    <div style={{ textAlign: 'center' }}>
+      <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.6rem', color: 'var(--ink)', letterSpacing: '-0.5px' }}>
+        Distribuciones Ariza
+      </p>
+      <p style={{ fontSize: '0.8rem', color: 'var(--ink-3)', marginTop: '6px', fontWeight: 400 }}>
+        Cargando catálogo
+      </p>
+    </div>
+    <div className="loader-ring" />
+  </div>
+);
+
+/* ─────────────────────────────────────────────
+   DESCRIPCIONES
+───────────────────────────────────────────── */
+const DESCRIPCIONES = {
+  "Acuaprime 30ml": { resumen: "Eliminador instantáneo de cloro y metales pesados.", cuerpo: "Ideal para acondicionar el agua de grifo de forma inmediata. Protege la mucosa de los peces y es perfecto para nano-acuarios o viajes.", uso: "Aplicar en cada cambio de agua." },
+  "Acuaprime 120ml": { resumen: "Protección total en cada cambio de agua.", cuerpo: "Acondicionador completo que neutraliza cloro, cloraminas y metales pesados. Reduce el estrés en peces nuevos.", uso: "Dosificar según litraje en cada recambio." },
+  "Acuaprime 240ml": { resumen: "Protección eficiente para acuarios medianos.", cuerpo: "Fórmula concentrada de alta eficiencia, apta para agua dulce y salada.", uso: "Añadir al agua nueva antes de ingresarla al tanque." },
+  "Acuaprime Litro": { resumen: "Máximo ahorro para grandes volúmenes.", cuerpo: "La opción preferida por criadores. Neutralización química inmediata al mejor costo por litro.", uso: "Ideal para cambios de agua masivos." },
+  "Cycle 30ml": { resumen: "Suplemento biológico para un inicio seguro.", cuerpo: "Bacterias vivas que establecen el ciclo del nitrógeno. Evita picos de amoníaco en acuarios nuevos.", uso: "Aplicar durante los primeros días del montaje." },
+  "Cycle 120ml": { resumen: "Ecosistema saludable de forma inmediata.", cuerpo: "Elimina amoníaco y nitritos tóxicos. Úsalo también después de limpiar el filtro.", uso: "Agitar bien y dosificar semanalmente." },
+  "Cycle 240ml": { resumen: "Control biológico para acuarios establecidos.", cuerpo: "Asegura filtración biológica robusta y agua cristalina. Ayuda a degradar restos orgánicos.", uso: "Dosificar proporcionalmente al volumen." },
+  "Cycle Litro": { resumen: "Rendimiento profesional para sistemas grandes.", cuerpo: "Millones de bacterias benéficas por ml. 100% natural, imposible de sobredosificar.", uso: "Ideal para reactivar filtros tras medicaciones." },
+  "Test Plus Ultra PH": { resumen: "Medidor de PH con máxima precisión.", cuerpo: "Monitorea el parámetro más crítico para la vida acuática. Escala de colores detallada para lecturas exactas.", uso: "Comparar la muestra con la tabla colorimétrica." },
+  "Alga Clear 20ml": { resumen: "Controla algas indeseadas de forma segura.", cuerpo: "Mantiene el cristal y decoraciones limpias. Actúa sobre algas en suspensión causadas por luz solar.", uso: "Usar preventivamente si el acuario recibe luz indirecta." },
+  "Clarify 20ml": { resumen: "Agua cristalina en minutos.", cuerpo: "Agrupa partículas en suspensión para que el filtro las atrape. No altera los parámetros químicos.", uso: "Aplicar cuando el agua se vea opaca o blanquecina." },
+  "Clarify 60ml": { resumen: "Tratamiento avanzado para claridad total.", cuerpo: "Elimina turbidez mecánica causada por sustrato o desechos. Resultados visibles muy rápido.", uso: "Asegurar buena oxigenación durante el proceso." },
+  "Antihongos 30ml": { resumen: "Previene y trata infecciones fúngicas.", cuerpo: "Evita que heridas físicas se conviertan en infecciones. Seguro para la mayoría de peces de ornato.", uso: "Aplicar ante los primeros síntomas visuales." },
+  "Tratamiento de agua ICK 30 ml": { resumen: "Alivio contra el Punto Blanco.", cuerpo: "Combate el parásito causante del ICK. Alivia la irritación en piel y branquias.", uso: "Seguir el tratamiento completo aunque desaparezcan los puntos." },
+  "Antihongos": { resumen: "Protección fúngica reforzada.", cuerpo: "Detiene la propagación de esporas en el agua. Útil para desinfectar redes o accesorios.", uso: "Dosificación estándar para prevención general." }
+};
+
+/* ─────────────────────────────────────────────
+   COLECCIONES
+───────────────────────────────────────────── */
+const COLECCIONES = [
+  { label: 'Líquidos',    val: 'Líquidos vitales',            icon: '💧' },
+  { label: 'Comida',      val: 'Alimentos',                   icon: '🫙' },
+  { label: 'Vacaciones',  val: 'Productos para tus vacaciones',icon: '🏖️' },
+  { label: 'Accesorios',  val: 'Accesorios',                  icon: '🎨' },
+  { label: 'Equipos',     val: 'Equipos',                     icon: '⚙️' },
+  { label: 'Hámsters',    val: 'Accesorios para hamsters',    icon: '🐹' },
+];
+
+/* ─────────────────────────────────────────────
+   HELPERS
+───────────────────────────────────────────── */
+const BACKEND = "https://distriariza.onrender.com";
+
+const moneda = (v) =>
+  new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(v);
+
+const imgSrc = (url) =>
+  !url ? 'https://via.placeholder.com/300' : url.startsWith('http') ? url : `${BACKEND}/productos/${url}`;
+
+const normaliza = (s) => (s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase();
+
+/* ─────────────────────────────────────────────
+   QUANTITY STEPPER
+───────────────────────────────────────────── */
+const Stepper = ({ value, onAdd, onRemove, onChange }) => (
+  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+    <button className="icon-btn" onClick={onRemove} aria-label="Restar">−</button>
+    <input
+      type="number" min="1" value={value}
+      onChange={(e) => { const v = parseInt(e.target.value); if (!isNaN(v) && v >= 0) onChange(v); }}
+      style={{ width: '36px', textAlign: 'center', border: '1.5px solid #e5e5e1', borderRadius: '8px', padding: '5px 0', fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: '0.9rem', background: 'transparent', color: 'var(--ink)' }}
+    />
+    <button className="icon-btn" onClick={onAdd} aria-label="Sumar">+</button>
+  </div>
+);
+
+/* ─────────────────────────────────────────────
+   PRODUCT CARD
+───────────────────────────────────────────── */
+const ProductCard = ({ p, onAdd, onOpen }) => (
+  <div className="prod-card fade-up" style={{ background: 'var(--surface)', borderRadius: '20px', overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
+    {/* image */}
+    <div
+      onClick={() => onOpen(p)}
+      style={{ background: 'var(--bg)', height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: '20px' }}
+    >
+      <img src={imgSrc(p.imagen_url)} alt={p.nombre} style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain', transition: 'transform 0.3s' }}
+        onMouseOver={e => e.currentTarget.style.transform = 'scale(1.05)'}
+        onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
+      />
+    </div>
+    {/* info */}
+    <div style={{ padding: '16px 18px 18px' }}>
+      <p style={{ fontSize: '0.68rem', color: 'var(--ink-3)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '4px' }}>
+        {p.categoria_nombre}
+      </p>
+      <h4
+        onClick={() => onOpen(p)}
+        style={{ fontSize: '0.95rem', fontWeight: 500, color: 'var(--ink)', cursor: 'pointer', marginBottom: '14px', lineHeight: 1.3 }}
+      >
+        {p.nombre}
+      </h4>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--ink)' }}>{moneda(p.precio)}</span>
+        <button
+          className="pill-btn pill-btn--accent"
+          onClick={() => onAdd(p)}
+          style={{ padding: '8px 16px', fontSize: '0.78rem' }}
+        >
+          + Añadir
+        </button>
       </div>
     </div>
+  </div>
+);
+
+/* ─────────────────────────────────────────────
+   PRODUCT MODAL
+───────────────────────────────────────────── */
+const ProductModal = ({ p, onClose, onAdd }) => {
+  const desc = DESCRIPCIONES[p.nombre];
+  return (
+    <>
+      <div
+        onClick={onClose}
+        style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(6px)', zIndex: 3000 }}
+      />
+      <div
+        className="modal"
+        style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: '90%', maxWidth: '460px', maxHeight: '88vh', overflowY: 'auto', background: 'var(--surface)', zIndex: 3001, borderRadius: '24px', padding: '28px' }}
+      >
+        {/* close */}
+        <button
+          onClick={onClose}
+          style={{ position: 'absolute', top: '18px', right: '18px', background: '#f0f0ee', border: 'none', borderRadius: '50%', width: '32px', height: '32px', cursor: 'pointer', fontSize: '0.85rem', color: 'var(--ink-2)' }}
+        >✕</button>
+
+        {/* image */}
+        <div style={{ background: 'var(--bg)', borderRadius: '18px', padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '22px', minHeight: '200px' }}>
+          <img src={imgSrc(p.imagen_url)} alt={p.nombre} style={{ maxHeight: '190px', maxWidth: '100%', objectFit: 'contain' }} />
+        </div>
+
+        {/* category */}
+        <p style={{ fontSize: '0.7rem', color: 'var(--ink-3)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '6px' }}>
+          {p.categoria_nombre}
+        </p>
+
+        {/* name */}
+        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', fontWeight: 700, color: 'var(--ink)', marginBottom: '14px', lineHeight: 1.25 }}>
+          {p.nombre}
+        </h2>
+
+        {/* description */}
+        {desc ? (
+          <div style={{ color: 'var(--ink-2)', fontSize: '0.9rem', lineHeight: 1.7, marginBottom: '24px' }}>
+            <p style={{ color: 'var(--ink)', fontWeight: 500, marginBottom: '8px' }}>{desc.resumen}</p>
+            <p style={{ marginBottom: '10px' }}>{desc.cuerpo}</p>
+            <p style={{ fontSize: '0.82rem', color: 'var(--ink-3)', borderTop: '1px solid #f0f0ee', paddingTop: '10px' }}>
+              <strong style={{ color: 'var(--ink-2)' }}>Uso:</strong> {desc.uso}
+            </p>
+          </div>
+        ) : (
+          <p style={{ color: 'var(--ink-2)', fontSize: '0.9rem', marginBottom: '24px' }}>{p.descripcion || 'Calidad garantizada para tu mascota.'}</p>
+        )}
+
+        {/* footer */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #f0f0ee', paddingTop: '20px' }}>
+          <div>
+            <p style={{ fontSize: '0.7rem', color: 'var(--ink-3)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '2px' }}>Precio</p>
+            <span style={{ fontSize: '1.5rem', fontWeight: 600, color: 'var(--ink)' }}>{moneda(p.precio)}</span>
+          </div>
+          <button
+            className="pill-btn pill-btn--accent"
+            onClick={() => { onAdd(p); onClose(); }}
+            style={{ padding: '13px 24px', fontSize: '0.88rem' }}
+          >
+            Añadir al carrito
+          </button>
+        </div>
+      </div>
+    </>
   );
 };
 
-// --- DESCRIPCIONES AMPLIADAS ---
-const DESCRIPCIONES_DETALLADAS = {
-  "Acuaprime 30ml": {
-    resumen: "🛡️ Eliminador instantáneo de cloro y metales pesados.",
-    cuerpo: `Ideal para acondicionar el agua de grifo de forma inmediata.
-    • <b>Seguridad:</b> Protege la mucosa de los peces.
-    • <b>Práctico:</b> Tamaño ideal para nano-acuarios o viajes.`,
-    uso: "📝 <b>Uso:</b> Aplicar en cada cambio de agua."
-  },
-  "Acuaprime 120ml": {
-    resumen: "🛡️ Protección total para tus peces en cada cambio de agua.",
-    cuerpo: `Acuaprime es un acondicionador completo diseñado para eliminar elementos nocivos.
-    • <b>Beneficios:</b> Neutraliza cloro, cloraminas y metales pesados.
-    • <b>Salud:</b> Reduce el estrés en peces nuevos.`,
-    uso: "📝 <b>Uso:</b> Dosificar según el litraje del acuario en cada recambio."
-  },
-  "Acuaprime 240ml": {
-    resumen: "🛡️ Protección eficiente para acuarios medianos.",
-    cuerpo: `Rendimiento superior para mantener tu acuario libre de tóxicos.
-    • <b>Confianza:</b> Fórmula concentrada de alta eficiencia.
-    • <b>Multiuso:</b> Apto para agua dulce y salada.`,
-    uso: "📝 <b>Uso:</b> Añadir directamente al agua nueva antes de ingresarla al tanque."
-  },
-  "Acuaprime Litro": {
-    resumen: "🛡️ Máximo ahorro y protección para grandes volúmenes.",
-    cuerpo: `La opción preferida por criadores y acuaristas con múltiples tanques.
-    • <b>Economía:</b> El mejor costo por litro del mercado.
-    • <b>Eficacia:</b> Neutralización química inmediata.`,
-    uso: "📝 <b>Uso:</b> Ideal para cambios de agua masivos."
-  },
-  "Cycle 30ml": {
-    resumen: "🦠 Suplemento biológico para un inicio seguro.",
-    cuerpo: `Contiene bacterias vivas que establecen el ciclo del nitrógeno.
-    • <b>Arranque:</b> Evita picos de amoníaco en acuarios nuevos.
-    • <b>Mantenimiento:</b> Refuerza la colonia bacteriana.`,
-    uso: "📝 <b>Uso:</b> Aplicar durante los primeros días del montaje."
-  },
-  "Cycle 120ml": {
-    resumen: "🦠 Establece un ecosistema saludable de forma inmediata.",
-    cuerpo: `Fórmula avanzada que elimina amoníaco y nitritos tóxicos.
-    • <b>Estabilidad:</b> Previene enfermedades por mala calidad de agua.
-    • <b>Refuerzo:</b> Úsalo después de limpiar el filtro.`,
-    uso: "📝 <b>Uso:</b> Agitar bien y dosificar semanalmente."
-  },
-  "Cycle 240ml": {
-    resumen: "🦠 Control biológico para acuarios establecidos.",
-    cuerpo: `Asegura una filtración biológica robusta y agua cristalina.
-    • <b>Limpieza:</b> Ayuda a degradar restos orgánicos en el fondo.
-    • <b>Salud:</b> Crea un entorno natural para tus peces.`,
-    uso: "📝 <b>Uso:</b> Dosificar proporcionalmente al volumen de agua."
-  },
-  "Cycle Litro": {
-    resumen: "🦠 Rendimiento profesional para sistemas grandes.",
-    cuerpo: `Ideal para baterías de acuarios o estanques de gran tamaño.
-    • <b>Potencia:</b> Millones de bacterias benéficas por ml.
-    • <b>Seguridad:</b> Imposible de sobredosificar, totalmente natural.`,
-    uso: "📝 <b>Uso:</b> Ideal para reactivar filtros después de medicaciones."
-  },
-  "Test Plus Ultra PH": {
-    resumen: "🧪 Medidor de PH con máxima precisión.",
-    cuerpo: `Monitorea el parámetro más crítico para la vida acuática.
-    • <b>Precisión:</b> Escala de colores detallada para lecturas exactas.
-    • <b>Control:</b> Evita variaciones bruscas de acidez/alcalinidad.`,
-    uso: "📝 <b>Uso:</b> Comparar la muestra de agua con la tabla colorimétrica."
-  },
-  "Alga Clear 20ml": {
-    resumen: "☀️ Adiós al agua verde y algas por luz solar.",
-    cuerpo: `Controla la propagación de algas indeseadas de forma segura.
-    • <b>Claridad:</b> Mantiene el cristal y decoraciones limpias.
-    • <b>Eficacia:</b> Actúa rápidamente sobre algas en suspensión.`,
-    uso: "📝 <b>Uso:</b> Usar preventivamente si el acuario recibe luz solar indirecta."
-  },
-  "Clarify 20ml": {
-    resumen: "💎 Claridad extrema para tu agua.",
-    cuerpo: `Agrupa partículas en suspensión para que el filtro las atrape.
-    • <b>Efecto:</b> Transforma el agua turbia en agua cristalina en minutos.
-    • <b>Seguro:</b> No altera los parámetros químicos del agua.`,
-    uso: "📝 <b>Uso:</b> Aplicar cuando el agua se vea opaca o blanquecina."
-  },
-  "Clarify 60ml": {
-    resumen: "💎 Tratamiento avanzado para claridad total.",
-    cuerpo: `Elimina la turbidez mecánica causada por el sustrato o desechos.
-    • <b>Rápido:</b> Resultados visibles poco tiempo después de la aplicación.
-    • <b>Potente:</b> Ideal para dejar el acuario impecable antes de un evento.`,
-    uso: "📝 <b>Uso:</b> Asegurarse de tener buena oxigenación durante el proceso."
-  },
-  "Antihongos 30ml": {
-    resumen: "🍄 Previene y trata infecciones por hongos.",
-    cuerpo: `Protección eficaz contra manchas blancas o algodonosas.
-    • <b>Prevención:</b> Evita que heridas físicas se conviertan en infecciones.
-    • <b>Cuidado:</b> Seguro para la mayoría de peces de ornato.`,
-    uso: "📝 <b>Uso:</b> Aplicar ante los primeros síntomas visuales en la piel."
-  },
-  "Tratamiento de agua ICK 30 ml": {
-    resumen: "🚑 Alivio contra la enfermedad del Punto Blanco.",
-    cuerpo: `Combate el parásito causante del ICK de manera efectiva.
-    • <b>Recuperación:</b> Alivia la irritación en la piel y branquias.
-    • <b>Específico:</b> Diseñado para cortar el ciclo de vida del parásito.`,
-    uso: "📝 <b>Uso:</b> Seguir el tratamiento completo incluso si los puntos desaparecen."
-  },
-  "Antihongos": {
-    resumen: "🛡️ Protección fúngica reforzada.",
-    cuerpo: `Mantiene el ambiente libre de hongos patógenos.
-    • <b>Acción:</b> Detiene la propagación de esporas en el agua.
-    • <b>Versátil:</b> Útil para desinfectar redes o accesorios nuevos.`,
-    uso: "📝 <b>Uso:</b> Dosificación estándar para prevención general."
-  }
-};
+/* ─────────────────────────────────────────────
+   CART PANEL
+───────────────────────────────────────────── */
+const CartPanel = ({ carrito, onClose, onAdd, onRemove, onChangeQty, totalCompra, totalItems }) => {
+  const [paso, setPaso] = useState('lista');
+  const [datos, setDatos] = useState({ nombre: '', direccion: '', ciudad: '', telefono: '' });
 
-function App() {
-  const [productos, setProductos] = useState([]);
-  const [carrito, setCarrito] = useState([]);
-  const [error, setError] = useState(null);
-  const [carritoAbierto, setCarritoAbierto] = useState(false);
-  const [productoSeleccionado, setProductoSeleccionado] = useState(null);
-  const [busqueda, setBusqueda] = useState('');
-  const [categoriaActiva, setCategoriaActiva] = useState('Todos');
-  const [pasoCarrito, setPasoCarrito] = useState('lista'); 
-  const [datosEnvio, setDatosEnvio] = useState({ nombre: '', direccion: '', ciudad: '', telefono: '' });
-  const [cargando, setCargando] = useState(true);
-
-  const BACKEND_URL = "https://distriariza.onrender.com";
-
-  // MODIFICADO: Formato de moneda para pesos colombianos sin decimales
-  const formatoMoneda = (valor) => {
-    return new Intl.NumberFormat('es-CO', {
-      style: 'currency',
-      currency: 'COP',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(valor);
-  };
-
-  const colecciones = [
-    { t: 'LÍQUIDOS', val: 'Líquidos vitales', icon: '💧' },
-    { t: 'COMIDA', val: 'Alimentos', icon: '🍱' },
-    { t: 'VACACIONES', val: 'Productos para tus vacaciones', icon: '🏖️' },
-    { t: 'ACCESORIOS', val: 'Accesorios', icon: '🎨' },
-    { t: 'EQUIPOS', val: 'Equipos', icon: '⚙️' },
-    { t: 'HAMSTERS', val: 'Accesorios para hamsters', icon: '🐹' }
-  ];
-
-  const cargarProductos = async () => {
-    try {
-      const res = await axios.get(`${BACKEND_URL}/api/productos`);
-      setProductos(res.data);
-    } catch (err) {
-      console.error(err);
-      setError("No se pudieron cargar los productos.");
-    } finally {
-      setTimeout(() => setCargando(false), 1800); 
-    }
-  };
-
-  useEffect(() => { cargarProductos(); }, []);
-
-  const productosVisibles = productos.filter(p => {
-    const normalizar = (texto) => 
-      texto ? texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase() : "";
-    const nombreProducto = normalizar(p.nombre);
-    const queryBusqueda = normalizar(busqueda);
-    const categoriaDelProducto = normalizar(p.categoria_nombre);
-    const categoriaDelFiltro = normalizar(categoriaActiva);
-    const coincideBusqueda = nombreProducto.includes(queryBusqueda);
-    if (categoriaActiva === 'Todos') return coincideBusqueda;
-    const coincideCategoria = 
-      categoriaDelProducto === categoriaDelFiltro || 
-      categoriaDelProducto.includes(categoriaDelFiltro) ||
-      categoriaDelFiltro.includes(categoriaDelProducto);
-    return coincideBusqueda && coincideCategoria;
-  });
-
-  const agregarAlCarrito = (p) => {
-    setCarrito((prev) => {
-      const existe = prev.find((item) => item.id === p.id);
-      return existe 
-        ? prev.map((item) => item.id === p.id ? { ...item, cantidad: item.cantidad + 1 } : item)
-        : [...prev, { ...p, cantidad: 1 }];
-    });
-  };
-
-  const restarCantidad = (id) => {
-    setCarrito((prev) => 
-      prev.map((i) => i.id === id ? { ...i, cantidad: i.cantidad - 1 } : i).filter((i) => i.cantidad > 0)
-    );
-  };
-
-  // MODIFICADO: Aseguramos que la suma no tenga errores de tipo
-  const totalCompra = carrito.reduce((acc, p) => acc + Math.round(Number(p.precio)) * p.cantidad, 0);
-  const totalItems = carrito.reduce((acc, p) => acc + p.cantidad, 0);
-
-  const finalizarPedidoWhatsApp = () => {
-    const numero = "573219627376";
+  const enviarWhatsApp = () => {
     const lista = carrito.map(p => `• ${p.nombre} (x${p.cantidad})`).join('\n');
-    const msg = `*NUEVO PEDIDO - DISTRIBUCIONES ARIZA*\n\n` +
-                `*Cliente:* ${datosEnvio.nombre}\n` +
-                `*Dirección:* ${datosEnvio.direccion}\n` +
-                `*Ciudad:* ${datosEnvio.ciudad}\n` +
-                `*Teléfono:* ${datosEnvio.telefono}\n\n` +
-                `*Productos:*\n${lista}\n\n` +
-                `*Total: ${formatoMoneda(totalCompra)}*`;
-    window.open(`https://wa.me/${numero}?text=${encodeURIComponent(msg)}`, '_blank');
-    setPasoCarrito('confirmado');
+    const msg = `*NUEVO PEDIDO - DISTRIBUCIONES ARIZA*\n\n*Cliente:* ${datos.nombre}\n*Dirección:* ${datos.direccion}\n*Ciudad:* ${datos.ciudad}\n*Teléfono:* ${datos.telefono}\n\n*Productos:*\n${lista}\n\n*Total: ${moneda(totalCompra)}*`;
+    window.open(`https://wa.me/573219627376?text=${encodeURIComponent(msg)}`, '_blank');
+    setPaso('confirmado');
   };
-
-  const obtenerRutaImagen = (url) => {
-    if (!url) return 'https://via.placeholder.com/300';
-    return url.startsWith('http') ? url : `${BACKEND_URL}/productos/${url}`;
-  };
-
-  if (cargando) return <PantallaCarga />;
 
   return (
-    <div style={{ paddingBottom: '100px', backgroundColor: '#F0F2F5', minHeight: '100vh', fontFamily: 'Inter, sans-serif' }}>
-      
-      {/* NAVBAR */}
-      <nav style={{ 
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
-        padding: '10px 25px', backgroundColor: 'white', position: 'sticky', top: 0, 
-        zIndex: 1000, borderBottom: '1px solid #E5E7EB', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' 
+    <>
+      <div onClick={() => { onClose(); setPaso('lista'); }} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.25)', zIndex: 1500 }} />
+      <div
+        className="panel"
+        style={{ position: 'fixed', top: 0, right: 0, width: '100%', maxWidth: '400px', height: '100%', background: 'var(--surface)', zIndex: 2000, display: 'flex', flexDirection: 'column' }}
+      >
+        {/* header */}
+        <div style={{ display: 'flex', alignItems: 'center', padding: '24px 28px', borderBottom: '1px solid #f0f0ee' }}>
+          {paso === 'envio' && (
+            <button onClick={() => setPaso('lista')} style={{ background: 'none', border: 'none', cursor: 'pointer', marginRight: '14px', fontSize: '1.1rem', color: 'var(--ink-2)' }}>←</button>
+          )}
+          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.25rem', fontWeight: 700, color: 'var(--ink)', flex: 1 }}>
+            {paso === 'lista' ? 'Carrito' : paso === 'envio' ? 'Datos de entrega' : '¡Listo!'}
+          </h2>
+          {totalItems > 0 && paso === 'lista' && (
+            <span style={{ fontSize: '0.75rem', color: 'var(--ink-3)', marginRight: '12px' }}>{totalItems} {totalItems === 1 ? 'producto' : 'productos'}</span>
+          )}
+          <button onClick={() => { onClose(); setPaso('lista'); }} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1rem', color: 'var(--ink-2)' }}>✕</button>
+        </div>
+
+        {/* body */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: '20px 28px' }}>
+
+          {/* — Lista — */}
+          {paso === 'lista' && (
+            carrito.length === 0
+              ? (
+                <div style={{ textAlign: 'center', marginTop: '60px' }}>
+                  <p style={{ fontSize: '2.5rem', marginBottom: '12px' }}>🛒</p>
+                  <p style={{ color: 'var(--ink-3)', fontSize: '0.9rem' }}>Tu carrito está vacío.</p>
+                </div>
+              )
+              : carrito.map(item => (
+                <div key={item.id} style={{ display: 'flex', gap: '14px', alignItems: 'center', paddingBlock: '16px', borderBottom: '1px solid #f5f5f3' }}>
+                  <div style={{ background: 'var(--bg)', borderRadius: '12px', padding: '8px', flexShrink: 0 }}>
+                    <img src={imgSrc(item.imagen_url)} alt={item.nombre} style={{ width: '52px', height: '52px', objectFit: 'contain' }} />
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <p style={{ fontSize: '0.85rem', fontWeight: 500, marginBottom: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.nombre}</p>
+                    <p style={{ fontSize: '0.82rem', color: 'var(--ink-2)' }}>{moneda(item.precio * item.cantidad)}</p>
+                  </div>
+                  <Stepper
+                    value={item.cantidad}
+                    onAdd={() => onAdd(item)}
+                    onRemove={() => onRemove(item.id)}
+                    onChange={(v) => onChangeQty(item.id, v)}
+                  />
+                </div>
+              ))
+          )}
+
+          {/* — Envío — */}
+          {paso === 'envio' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '4px' }}>
+              {[
+                { key: 'nombre',    ph: 'Nombre completo' },
+                { key: 'direccion', ph: 'Dirección' },
+                { key: 'ciudad',    ph: 'Ciudad' },
+                { key: 'telefono',  ph: 'Teléfono' },
+              ].map(({ key, ph }) => (
+                <input key={key} className="form-input" placeholder={ph}
+                  value={datos[key]}
+                  onChange={e => setDatos(d => ({ ...d, [key]: e.target.value }))}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* — Confirmado — */}
+          {paso === 'confirmado' && (
+            <div style={{ textAlign: 'center', padding: '60px 16px' }}>
+              <div style={{ fontSize: '3.5rem', marginBottom: '16px' }}>✅</div>
+              <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.4rem', marginBottom: '8px' }}>Pedido enviado</h3>
+              <p style={{ color: 'var(--ink-3)', fontSize: '0.9rem', marginBottom: '28px' }}>Te contactaremos pronto por WhatsApp.</p>
+              <button
+                className="pill-btn pill-btn--ghost"
+                onClick={() => { onClose(); setPaso('lista'); }}
+                style={{ width: '100%', justifyContent: 'center', padding: '14px' }}
+              >
+                Volver a la tienda
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* footer */}
+        {carrito.length > 0 && paso !== 'confirmado' && (
+          <div style={{ padding: '20px 28px', borderTop: '1px solid #f0f0ee', background: 'var(--surface)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '16px' }}>
+              <span style={{ fontSize: '0.82rem', color: 'var(--ink-3)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.6px' }}>Total</span>
+              <span style={{ fontSize: '1.4rem', fontWeight: 600 }}>{moneda(totalCompra)}</span>
+            </div>
+            <button
+              className={`pill-btn ${paso === 'lista' ? 'pill-btn--accent' : 'pill-btn--green'}`}
+              onClick={paso === 'lista' ? () => setPaso('envio') : enviarWhatsApp}
+              style={{ width: '100%', justifyContent: 'center', padding: '15px', fontSize: '0.9rem' }}
+            >
+              {paso === 'lista' ? 'Continuar' : 'Pedir por WhatsApp →'}
+            </button>
+          </div>
+        )}
+      </div>
+    </>
+  );
+};
+
+/* ─────────────────────────────────────────────
+   APP
+───────────────────────────────────────────── */
+export default function App() {
+  const [productos, setProductos] = useState([]);
+  const [carrito, setCarrito]     = useState([]);
+  const [error, setError]         = useState(null);
+  const [cartOpen, setCartOpen]   = useState(false);
+  const [seleccionado, setSeleccionado] = useState(null);
+  const [busqueda, setBusqueda]   = useState('');
+  const [categoria, setCategoria] = useState('Todos');
+  const [cargando, setCargando]   = useState(true);
+
+  useEffect(() => {
+    axios.get(`${BACKEND}/api/productos`)
+      .then(r => setProductos(r.data))
+      .catch(() => setError('No se pudieron cargar los productos.'))
+      .finally(() => setTimeout(() => setCargando(false), 1600));
+  }, []);
+
+  /* cart helpers */
+  const addItem = (p) =>
+    setCarrito(prev => {
+      const ex = prev.find(i => i.id === p.id);
+      return ex ? prev.map(i => i.id === p.id ? { ...i, cantidad: i.cantidad + 1 } : i) : [...prev, { ...p, cantidad: 1 }];
+    });
+
+  const removeOne = (id) =>
+    setCarrito(prev => prev.map(i => i.id === id ? { ...i, cantidad: i.cantidad - 1 } : i).filter(i => i.cantidad > 0));
+
+  const setQty = (id, v) =>
+    setCarrito(prev => prev.map(i => i.id === id ? { ...i, cantidad: v } : i).filter(i => i.cantidad > 0));
+
+  const totalItems   = carrito.reduce((s, i) => s + i.cantidad, 0);
+  const totalCompra  = carrito.reduce((s, i) => s + Math.round(Number(i.precio)) * i.cantidad, 0);
+
+  /* filter */
+  const visibles = productos.filter(p => {
+    const matchBusq = normaliza(p.nombre).includes(normaliza(busqueda));
+    if (categoria === 'Todos') return matchBusq;
+    const cat = normaliza(p.categoria_nombre);
+    const flt = normaliza(categoria);
+    return matchBusq && (cat === flt || cat.includes(flt) || flt.includes(cat));
+  });
+
+  if (cargando) return (<><GlobalStyles /><Loader /></>);
+
+  return (
+    <>
+      <GlobalStyles />
+
+      {/* ── NAVBAR ── */}
+      <nav style={{
+        position: 'sticky', top: 0, zIndex: 1000,
+        background: 'rgba(245,244,241,0.85)', backdropFilter: 'blur(14px)',
+        borderBottom: '1px solid rgba(0,0,0,0.06)',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '0 28px', height: '64px'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <img src="/Logo.jpeg" alt="Logo" style={{ height: '50px', width: 'auto', borderRadius: '8px', objectFit: 'contain' }} 
-            onError={(e) => { e.target.src = "https://via.placeholder.com/50?text=Logo" }} />
-          <div style={{ lineHeight: '1' }}>
-            <h1 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#111827' }}>Distribuciones Ariza</h1>
-            <span style={{ fontSize: '0.6rem', color: '#1A73E8', fontWeight: 700, letterSpacing: '1px' }}>FISH ACCESSORIES</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <img
+            src="/Logo.jpeg" alt="Logo"
+            style={{ height: '38px', width: '38px', borderRadius: '10px', objectFit: 'cover' }}
+            onError={e => e.target.src = 'https://via.placeholder.com/38?text=A'}
+          />
+          <div>
+            <p style={{ fontFamily: 'var(--font-display)', fontSize: '0.95rem', fontWeight: 700, color: 'var(--ink)', lineHeight: 1 }}>Distribuciones Ariza</p>
+            <p style={{ fontSize: '0.58rem', color: 'var(--accent)', fontWeight: 700, letterSpacing: '1.2px', textTransform: 'uppercase', marginTop: '2px' }}>Fish Accessories</p>
           </div>
         </div>
-        <div onClick={() => setCarritoAbierto(true)} style={{ cursor: 'pointer', position: 'relative', fontSize: '1.3rem' }}>
-          🛒 {totalItems > 0 && (
-            <span style={{ position: 'absolute', top: '-5px', right: '-10px', backgroundColor: '#1A73E8', color: 'white', fontSize: '0.65rem', borderRadius: '50%', padding: '2px 6px', fontWeight: 'bold', border: '2px solid white' }}>
+
+        <button
+          onClick={() => setCartOpen(true)}
+          style={{ position: 'relative', background: 'none', border: 'none', cursor: 'pointer', padding: '8px', borderRadius: '12px' }}
+        >
+          <span style={{ fontSize: '1.25rem' }}>🛒</span>
+          {totalItems > 0 && (
+            <span style={{
+              position: 'absolute', top: '2px', right: '2px',
+              background: 'var(--accent)', color: '#fff',
+              fontSize: '0.6rem', fontWeight: 700,
+              width: '18px', height: '18px', borderRadius: '50%',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              border: '2px solid var(--bg)'
+            }}>
               {totalItems}
             </span>
           )}
-        </div>
+        </button>
       </nav>
 
-      <div style={{ padding: '40px 30px 20px 30px' }}>
-        <h2 style={{ fontSize: 'clamp(1.8rem, 5vw, 2.4rem)', fontWeight: 800, margin: '0 0 20px 0', lineHeight: '1.2', color: '#111827' }}>
-          Todo lo que necesitas para tus<br /><span style={{ color: '#1A73E8' }}>peces y hámsters.</span>
-        </h2>
-        <div style={{ position: 'relative', width: '100%', maxWidth: '380px' }}>
-          <input type="text" placeholder="¿Qué mascota vamos a consentir hoy?" value={busqueda} onChange={(e) => setBusqueda(e.target.value)} 
-            style={{ width: '100%', padding: '14px 20px 14px 50px', borderRadius: '14px', border: '1px solid #E5E7EB', backgroundColor: 'white', boxShadow: '0 4px 6px rgba(0,0,0,0.02)', fontSize: '0.95rem', outline: 'none' }} />
-          <span style={{ position: 'absolute', left: '18px', top: '50%', transform: 'translateY(-50%)', opacity: 0.5, fontSize: '1.1rem' }}>🔍</span>
-        </div>
-      </div>
+      <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 24px 120px' }}>
 
-      <div style={{ padding: '0 30px' }}>
-        <div style={{ marginBottom: '45px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
-            <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700 }}>Explorar categorías</h3>
-            <span onClick={() => {setCategoriaActiva('Todos'); setBusqueda('');}} style={{ color: '#1A73E8', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer' }}>Ver todo</span>
+        {/* ── HERO ── */}
+        <section style={{ marginBottom: '48px' }}>
+          <p style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--accent)', marginBottom: '10px' }}>
+            Tienda en línea
+          </p>
+          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem, 5vw, 3rem)', fontWeight: 700, color: 'var(--ink)', lineHeight: 1.15, marginBottom: '28px' }}>
+            Todo para tus<br />peces y hámsters.
+          </h1>
+
+          {/* search */}
+          <div style={{ position: 'relative', maxWidth: '360px' }}>
+            <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', fontSize: '0.9rem', opacity: 0.4 }}>🔍</span>
+            <input
+              type="text"
+              placeholder="Buscar productos..."
+              value={busqueda}
+              onChange={e => setBusqueda(e.target.value)}
+              className="form-input"
+              style={{ paddingLeft: '38px', borderRadius: '99px' }}
+            />
           </div>
-          <div style={{ display: 'flex', gap: '20px', overflowX: 'auto', paddingBottom: '15px', scrollbarWidth: 'none' }}>
-            {colecciones.map((col, i) => (
-              <div key={i} onClick={() => setCategoriaActiva(col.val)} style={{ minWidth: '90px', cursor: 'pointer', textAlign: 'center' }}>
-                <div style={{ 
-                  width: '75px', height: '75px', borderRadius: '50%', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.8rem',
-                  backgroundColor: categoriaActiva === col.val ? '#1A73E8' : 'white', color: categoriaActiva === col.val ? 'white' : '#111827',
-                  boxShadow: '0 4px 10px rgba(0,0,0,0.08)', transition: '0.3s', border: '3px solid white'
-                }}>{col.icon}</div>
-                <p style={{ marginTop: '10px', fontSize: '0.7rem', fontWeight: 700, color: categoriaActiva === col.val ? '#1A73E8' : '#4B5563', lineHeight: '1.2', textTransform: 'uppercase' }}>{col.t}</p>
-              </div>
+        </section>
+
+        {/* ── CATEGORIES ── */}
+        <section style={{ marginBottom: '40px' }}>
+          <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '6px', scrollbarWidth: 'none' }}>
+            <button
+              className={`cat-pill ${categoria === 'Todos' ? 'cat-pill--on' : 'cat-pill--off'}`}
+              onClick={() => { setCategoria('Todos'); setBusqueda(''); }}
+            >
+              Todos
+            </button>
+            {COLECCIONES.map((c) => (
+              <button
+                key={c.val}
+                className={`cat-pill ${categoria === c.val ? 'cat-pill--on' : 'cat-pill--off'}`}
+                onClick={() => setCategoria(c.val)}
+              >
+                {c.icon} {c.label}
+              </button>
             ))}
           </div>
-        </div>
+        </section>
 
-        <div style={{ marginBottom: '60px' }}>
-          <h3 style={{ margin: '0 0 25px 0', fontSize: '1.3rem', fontWeight: 700 }}>
-            {categoriaActiva === 'Todos' ? 'Productos destacados' : categoriaActiva}
-          </h3>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '25px' }}>
-            {productosVisibles.map(p => (
-              <div key={p.id} style={{ backgroundColor: 'white', borderRadius: '24px', padding: '15px', boxShadow: '0 4px 6px rgba(0,0,0,0.03)' }}>
-                <div onClick={() => setProductoSeleccionado(p)} style={{ backgroundColor: '#F9FAFB', borderRadius: '18px', height: '220px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '15px', cursor: 'pointer', overflow: 'hidden' }}>
-                  <img src={obtenerRutaImagen(p.imagen_url)} alt={p.nombre} style={{ width: '85%', height: '85%', objectFit: 'contain' }} />
-                </div>
-                <p style={{ margin: '0', fontSize: '0.65rem', color: '#6B7280', textTransform: 'uppercase', fontWeight: 700 }}>{p.categoria_nombre}</p>
-                <h4 onClick={() => setProductoSeleccionado(p)} style={{ margin: '4px 0 12px 0', fontSize: '1rem', fontWeight: 600, cursor: 'pointer' }}>{p.nombre}</h4>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '1.1rem', fontWeight: 700, color: '#1A73E8' }}>{formatoMoneda(p.precio)}</span>
-                  <button onClick={() => agregarAlCarrito(p)} style={{ width: '38px', height: '38px', borderRadius: '10px', backgroundColor: '#1A73E8', color: 'white', border: 'none', cursor: 'pointer', fontSize: '1.2rem' }}>+</button>
-                </div>
-              </div>
+        {/* ── PRODUCTS ── */}
+        <section>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '24px' }}>
+            <h2 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--ink)' }}>
+              {categoria === 'Todos' ? 'Todos los productos' : categoria}
+            </h2>
+            <span style={{ fontSize: '0.8rem', color: 'var(--ink-3)' }}>{visibles.length} resultado{visibles.length !== 1 && 's'}</span>
+          </div>
+
+          {error && <p style={{ color: '#ef4444', textAlign: 'center', padding: '40px' }}>{error}</p>}
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))', gap: '20px' }}>
+            {visibles.map(p => (
+              <ProductCard key={p.id} p={p} onAdd={addItem} onOpen={setSeleccionado} />
             ))}
           </div>
-        </div>
+
+          {visibles.length === 0 && !error && (
+            <div style={{ textAlign: 'center', padding: '80px 20px' }}>
+              <p style={{ fontSize: '2rem', marginBottom: '12px' }}>🔍</p>
+              <p style={{ color: 'var(--ink-3)' }}>No se encontraron productos.</p>
+            </div>
+          )}
+        </section>
+      </main>
+
+      {/* ── BOTTOM NAV ── */}
+      <div style={{
+        position: 'fixed', bottom: '16px', left: '50%', transform: 'translateX(-50%)',
+        background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(14px)',
+        borderRadius: '99px', padding: '10px 28px',
+        display: 'flex', gap: '32px', alignItems: 'center',
+        boxShadow: '0 4px 24px rgba(0,0,0,0.1)', zIndex: 900
+      }}>
+        <button
+          onClick={() => { setCategoria('Todos'); setBusqueda(''); }}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}
+        >
+          <span style={{ fontSize: '1.2rem' }}>🏪</span>
+          <span style={{ fontSize: '0.58rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.6px', color: categoria === 'Todos' ? 'var(--accent)' : 'var(--ink-3)' }}>Tienda</span>
+        </button>
+
+        <button
+          onClick={() => setCartOpen(true)}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', position: 'relative' }}
+        >
+          <span style={{ fontSize: '1.2rem' }}>🛒</span>
+          {totalItems > 0 && (
+            <span style={{ position: 'absolute', top: '-4px', right: '-10px', background: '#ef4444', color: '#fff', fontSize: '0.58rem', width: '17px', height: '17px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, border: '2px solid #fff' }}>
+              {totalItems}
+            </span>
+          )}
+          <span style={{ fontSize: '0.58rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.6px', color: 'var(--ink-3)' }}>Carrito</span>
+        </button>
       </div>
 
-      {productoSeleccionado && (
-        <>
-          <div onClick={() => setProductoSeleccionado(null)} style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 3000, backdropFilter: 'blur(8px)' }}></div>
-          <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '90%', maxWidth: '480px', maxHeight: '85vh', overflowY: 'auto', backgroundColor: 'white', zIndex: 3001, borderRadius: '32px', padding: '30px' }}>
-            <button onClick={() => setProductoSeleccionado(null)} style={{ position: 'absolute', top: '20px', right: '20px', background: '#F3F4F6', border: 'none', borderRadius: '50%', width: '35px', height: '35px', cursor: 'pointer' }}>✕</button>
-            <div style={{ backgroundColor: '#F9FAFB', borderRadius: '24px', padding: '20px', textAlign: 'center', marginBottom: '20px' }}>
-              <img src={obtenerRutaImagen(productoSeleccionado.imagen_url)} alt={productoSeleccionado.nombre} style={{ maxHeight: '200px', maxWidth: '100%', objectFit: 'contain' }} />
-            </div>
-            <h2 style={{ margin: '5px 0 15px 0', fontSize: '1.6rem', fontWeight: 800 }}>{productoSeleccionado.nombre}</h2>
-            <div style={{ color: '#4B5563', fontSize: '0.95rem', lineHeight: '1.6' }}>
-              <p style={{ fontWeight: 700, color: '#111827', marginBottom: '12px' }}>{DESCRIPCIONES_DETALLADAS[productoSeleccionado.nombre]?.resumen || "Calidad garantizada para tu mascota."}</p>
-              <div style={{ whiteSpace: 'pre-line', marginBottom: '20px' }} dangerouslySetInnerHTML={{ __html: DESCRIPCIONES_DETALLADAS[productoSeleccionado.nombre]?.cuerpo || productoSeleccionado.descripcion }} />
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '30px', paddingTop: '20px', borderTop: '1px solid #F3F4F6' }}>
-              <div style={{ fontSize: '1.6rem', fontWeight: 800 }}>{formatoMoneda(productoSeleccionado.precio)}</div>
-              <button onClick={() => { agregarAlCarrito(productoSeleccionado); setProductoSeleccionado(null); }} style={{ backgroundColor: '#1A73E8', color: 'white', padding: '16px 25px', borderRadius: '18px', border: 'none', fontWeight: 700, cursor: 'pointer' }}>Añadir 🛒</button>
-            </div>
-          </div>
-        </>
+      {/* ── MODALS ── */}
+      {seleccionado && (
+        <ProductModal p={seleccionado} onClose={() => setSeleccionado(null)} onAdd={addItem} />
       )}
 
-      {carritoAbierto && (
-        <>
-          <div onClick={() => { setCarritoAbierto(false); setPasoCarrito('lista'); }} style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.3)', zIndex: 1500 }}></div>
-          <div style={{ position: 'fixed', top: 0, right: 0, width: '100%', maxWidth: '420px', height: '100%', backgroundColor: '#F9FAFB', zIndex: 2000, display: 'flex', flexDirection: 'column' }}>
-            <div style={{ display: 'flex', alignItems: 'center', padding: '30px', borderBottom: '1px solid #f0f0f0' }}>
-              {pasoCarrito === 'envio' && <button onClick={() => setPasoCarrito('lista')} style={{ background: 'none', border: 'none', cursor: 'pointer', marginRight: '15px', fontSize: '1.2rem' }}>←</button>}
-              <h2 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800 }}>{pasoCarrito === 'lista' ? 'Tu Carrito' : 'Datos de Entrega'}</h2>
-              <button onClick={() => { setCarritoAbierto(false); setPasoCarrito('lista'); }} style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer' }}>✕</button>
-            </div>
-            <div style={{ flex: 1, overflowY: 'auto', padding: '20px 30px' }}>
-              {pasoCarrito === 'lista' && (
-                carrito.length === 0 ? <p style={{ textAlign: 'center', color: '#9CA3AF', marginTop: '40px' }}>Tu carrito está esperando productos.</p> : carrito.map(item => (
-                  <div key={item.id} style={{ display: 'flex', gap: '15px', marginBottom: '15px', backgroundColor: 'white', padding: '15px', borderRadius: '20px' }}>
-                    <img src={obtenerRutaImagen(item.imagen_url)} alt={item.nombre} style={{ width: '50px', height: '50px', objectFit: 'contain' }} />
-                    <div style={{ flex: 1 }}>
-                      <p style={{ fontWeight: 600, fontSize: '0.9rem', margin: 0 }}>{item.nombre}</p>
-                      <p style={{ color: '#1A73E8', fontWeight: 700 }}>{formatoMoneda(item.precio * item.cantidad)}</p>
-                    </div>
-                    
-                    {/* MODIFICADO: Input editable con teclado */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <button onClick={() => restarCantidad(item.id)} style={{ border: 'none', background: '#f3f4f6', borderRadius: '8px', width: '25px', height: '25px', cursor: 'pointer' }}>-</button>
-                      <input 
-                        type="number" 
-                        min="1"
-                        value={item.cantidad}
-                        onChange={(e) => {
-                          const val = parseInt(e.target.value);
-                          if (!isNaN(val) && val >= 0) {
-                            setCarrito(prev => prev.map(i => i.id === item.id ? {...i, cantidad: val} : i).filter(i => i.cantidad > 0));
-                          }
-                        }}
-                        style={{ width: '40px', textAlign: 'center', border: '1px solid #ddd', borderRadius: '5px', fontWeight: 'bold' }}
-                      />
-                      <button onClick={() => agregarAlCarrito(item)} style={{ border: 'none', background: '#f3f4f6', borderRadius: '8px', width: '25px', height: '25px', cursor: 'pointer' }}>+</button>
-                    </div>
-                  </div>
-                ))
-              )}
-              {pasoCarrito === 'envio' && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  <input type="text" placeholder="Nombre completo" style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #E5E7EB' }} onChange={(e) => setDatosEnvio({...datosEnvio, nombre: e.target.value})} />
-                  <input type="text" placeholder="Dirección" style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #E5E7EB' }} onChange={(e) => setDatosEnvio({...datosEnvio, direccion: e.target.value})} />
-                  <input type="text" placeholder="Ciudad" style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #E5E7EB' }} onChange={(e) => setDatosEnvio({...datosEnvio, ciudad: e.target.value})} />
-                  <input type="text" placeholder="Teléfono" style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #E5E7EB' }} onChange={(e) => setDatosEnvio({...datosEnvio, telefono: e.target.value})} />
-                </div>
-              )}
-              {pasoCarrito === 'confirmado' && (
-                <div style={{ textAlign: 'center', padding: '40px 10px' }}>
-                  <div style={{ fontSize: '4rem' }}>✅</div>
-                  <h3 style={{ fontSize: '1.5rem', fontWeight: 800 }}>¡Pedido Procesado!</h3>
-                  <button onClick={() => { setCarrito([]); setCarritoAbierto(false); setPasoCarrito('lista'); }} style={{ width: '100%', marginTop: '20px', padding: '16px', backgroundColor: '#F3F4F6', borderRadius: '15px', border: 'none', fontWeight: 700 }}>Regresar</button>
-                </div>
-              )}
-            </div>
-            {carrito.length > 0 && pasoCarrito !== 'confirmado' && (
-              <div style={{ padding: '25px 30px', backgroundColor: 'white', borderTop: '1px solid #f0f0f0' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
-                  <span style={{ fontWeight: 600, color: '#6B7280' }}>Total:</span>
-                  <span style={{ fontSize: '1.6rem', fontWeight: 800 }}>{formatoMoneda(totalCompra)}</span>
-                </div>
-                <button onClick={pasoCarrito === 'lista' ? () => setPasoCarrito('envio') : finalizarPedidoWhatsApp} style={{ width: '100%', padding: '18px', backgroundColor: pasoCarrito === 'lista' ? '#1A73E8' : '#25D366', color: 'white', borderRadius: '18px', border: 'none', fontWeight: 700 }}>
-                  {pasoCarrito === 'lista' ? 'Siguiente paso' : 'Pedir por WhatsApp 🚀'}
-                </button>
-              </div>
-            )}
-          </div>
-        </>
+      {cartOpen && (
+        <CartPanel
+          carrito={carrito}
+          onClose={() => setCartOpen(false)}
+          onAdd={addItem}
+          onRemove={removeOne}
+          onChangeQty={setQty}
+          totalCompra={totalCompra}
+          totalItems={totalItems}
+        />
       )}
-
-      {/* BARRA DE NAVEGACIÓN INFERIOR */}
-      <div style={{ position: 'fixed', bottom: '20px', left: '50%', transform: 'translateX(-50%)', width: '90%', maxWidth: '400px', backgroundColor: 'rgba(255, 255, 255, 0.9)', backdropFilter: 'blur(12px)', borderRadius: '20px', padding: '12px 0', display: 'flex', justifyContent: 'space-around', boxShadow: '0 10px 15px rgba(0,0,0,0.1)', zIndex: 1000 }}>
-        <div onClick={() => {setCategoriaActiva('Todos'); setBusqueda('');}} style={{ textAlign: 'center', color: categoriaActiva === 'Todos' ? '#1A73E8' : '#9CA3AF', cursor: 'pointer' }}>
-          <div style={{ fontSize: '1.4rem' }}>🏪</div>
-          <span style={{ fontSize: '0.65rem', fontWeight: 800 }}>TIENDA</span>
-        </div>
-        <div onClick={() => setCarritoAbierto(true)} style={{ textAlign: 'center', color: '#9CA3AF', cursor: 'pointer', position: 'relative' }}>
-          <div style={{ fontSize: '1.4rem', position: 'relative', display: 'inline-block' }}>
-            🛒
-            {totalItems > 0 && (
-              <span style={{ position: 'absolute', top: '-8px', right: '-12px', backgroundColor: '#EF4444', color: 'white', fontSize: '0.65rem', minWidth: '18px', height: '18px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', border: '2px solid white', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
-                {totalItems}
-              </span>
-            )}
-          </div>
-          <br />
-          <span style={{ fontSize: '0.65rem', fontWeight: 800 }}>CARRITO</span>
-        </div>
-      </div>
-    </div>
+    </>
   );
 }
-
-export default App;
