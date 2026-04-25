@@ -88,11 +88,6 @@ const GlobalStyles = ({ dark }) => (
     }
     .seaweed { animation: sway ease-in-out infinite; }
 
-    /*
-      Los peces SVG tienen nariz en la DERECHA y cola en la IZQUIERDA → miran a la DERECHA.
-      swimRight: va izq→der, pez ya mira derecha → sin flip, scaleX(1) ✓
-      swimLeft:  va der→izq, hay que voltear → scaleX(-1) para que mire izquierda ✓
-    */
     @keyframes swimRight {
       0%   { transform: translateX(-160px) scaleX(1); }
       100% { transform: translateX(calc(100vw + 160px)) scaleX(1); }
@@ -288,38 +283,19 @@ const Loader = () => (
 );
 
 /* ─────────────────────────────────────────────
-   FISH SVGs  (todos miran a la IZQUIERDA por defecto)
-   swimRight usa scaleX(-1) para voltearlos → miran a la derecha
-   swimLeft  no voltea   → miran izquierda  (dirección correcta)
+   FISH SVGs
 ───────────────────────────────────────────── */
-/*
-  Pez mirando claramente a la DERECHA:
-  - Cola de abanico en la IZQUIERDA (x=0..18)
-  - Cuerpo ovalado en el centro
-  - Nariz puntiaguda en la DERECHA (x=76)
-  - Ojo cerca del extremo derecho (x=62)
-
-  swimRight = scaleX(1)  → mira derecha, va a la derecha ✓
-  swimLeft  = scaleX(-1) → flip, mira izquierda, va a la izquierda ✓
-*/
 const FishSVG = ({ color = '#f97316', size = 40, accent = '#fbbf24' }) => (
   <svg width={size} height={size * 0.55} viewBox="0 0 80 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-    {/* Cola de abanico — IZQUIERDA */}
     <path d="M18 22 L0 4  L4 22  L0 40 Z" fill={accent} opacity="0.95"/>
-    {/* Aleta dorsal — arriba */}
     <path d="M36 8 Q44 0 52 7 L50 14 Q44 10 36 14 Z" fill={accent} opacity="0.85"/>
-    {/* Cuerpo principal */}
     <ellipse cx="44" cy="22" rx="28" ry="16" fill={color}/>
-    {/* Brillo */}
     <ellipse cx="46" cy="17" rx="14" ry="7" fill="rgba(255,255,255,0.22)" transform="rotate(-10 46 17)"/>
-    {/* Nariz puntiaguda — DERECHA */}
     <path d="M70 22 L58 14 L58 30 Z" fill={color}/>
     <path d="M76 22 L62 13 L62 31 Z" fill={accent} opacity="0.7"/>
-    {/* Ojo — lado derecho del cuerpo */}
     <circle cx="60" cy="18" r="4.5" fill="white"/>
     <circle cx="61" cy="18" r="2.5" fill="#1a1a2e"/>
     <circle cx="61.8" cy="17" r="0.9" fill="white"/>
-    {/* Escamas */}
     <path d="M38 10 Q36 22 38 34" stroke="rgba(0,0,0,0.09)" strokeWidth="1.4" fill="none"/>
     <path d="M28 13 Q26 22 28 31" stroke="rgba(0,0,0,0.07)" strokeWidth="1.2" fill="none"/>
   </svg>
@@ -327,14 +303,10 @@ const FishSVG = ({ color = '#f97316', size = 40, accent = '#fbbf24' }) => (
 
 const FishSmall = ({ color = '#06b6d4', size = 28 }) => (
   <svg width={size} height={size * 0.55} viewBox="0 0 64 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-    {/* Cola — IZQUIERDA */}
     <path d="M14 18 L0 4  L3 18  L0 32 Z" fill={color} opacity="0.8"/>
-    {/* Cuerpo */}
     <ellipse cx="36" cy="18" rx="22" ry="13" fill={color}/>
     <ellipse cx="37" cy="13" rx="11" ry="6" fill="rgba(255,255,255,0.22)" transform="rotate(-8 37 13)"/>
-    {/* Nariz — DERECHA */}
     <path d="M60 18 L50 11 L50 25 Z" fill={color} opacity="0.8"/>
-    {/* Ojo — lado derecho */}
     <circle cx="49" cy="14" r="3.8" fill="white"/>
     <circle cx="50" cy="14" r="2" fill="#1a1a2e"/>
     <circle cx="50.7" cy="13.2" r="0.7" fill="white"/>
@@ -479,7 +451,6 @@ const COLECCIONES = [
   { label:'Hámsters',   val:'Accesorios para hamsters',     icon:'🐹' },
 ];
 
-/* IDs or names of best-seller products (top 5 for the special section) */
 const BEST_SELLER_NAMES = [
   'Acuaprime 120ml', 'Cycle 120ml', 'Alga Clear 20ml',
   'Clarify 20ml', 'Test Plus Ultra PH',
@@ -514,7 +485,7 @@ const Stepper = ({ value, onAdd, onRemove, onChange }) => (
 );
 
 /* ─────────────────────────────────────────────
-   BEST SELLER CARD  (horizontal scroll)
+   BEST SELLER CARD
 ───────────────────────────────────────────── */
 const BestCard = ({ p, onAdd, onOpen, ratings, onRate, rank }) => (
   <div
@@ -531,7 +502,6 @@ const BestCard = ({ p, onAdd, onOpen, ratings, onRate, rank }) => (
           onMouseOut={e => e.currentTarget.style.transform='scale(1)'}
         />
       </div>
-      {/* rank badge */}
       <div className="badge-best" style={{ position:'absolute', top:'10px', left:'10px', background: rank===1 ? '#f59e0b' : rank===2 ? '#94a3b8' : rank===3 ? '#cd7c3a' : 'var(--accent)', color:'#fff', borderRadius:'99px', padding:'3px 10px', fontSize:'0.65rem', fontWeight:700, letterSpacing:'0.5px', boxShadow:'0 2px 8px rgba(0,0,0,0.2)' }}>
         #{rank} más vendido
       </div>
@@ -625,7 +595,6 @@ const ProductModal = ({ p, onClose, onAdd, ratings, onRate }) => {
             {p.nombre}
           </h2>
 
-          {/* Stars in modal */}
           <div className="modal-content-2" style={{ marginBottom:'18px' }}>
             <p style={{ fontSize:'0.7rem', color:'var(--ink-3)', fontWeight:600, marginBottom:'6px' }}>TU VALORACIÓN</p>
             <StarRating productId={p.id} ratings={ratings} onRate={onRate} size="1.3rem" />
@@ -679,7 +648,6 @@ const CartPanel = ({ carrito, onClose, onAdd, onRemove, onChangeQty, totalCompra
     <>
       <div onClick={() => { onClose(); setPaso('lista'); }} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.3)', zIndex:1500 }} />
       <div className="panel" style={{ position:'fixed', top:0, right:0, width:'100%', maxWidth:'400px', height:'100%', background:'var(--surface)', zIndex:2000, display:'flex', flexDirection:'column' }}>
-        {/* header */}
         <div style={{ display:'flex', alignItems:'center', padding:'24px 28px', borderBottom:'1px solid var(--border)' }}>
           {paso === 'envio' && (
             <button onClick={() => setPaso('lista')} style={{ background:'none', border:'none', cursor:'pointer', marginRight:'14px', fontSize:'1.1rem', color:'var(--ink-2)' }}>←</button>
@@ -752,51 +720,21 @@ const CartPanel = ({ carrito, onClose, onAdd, onRemove, onChangeQty, totalCompra
 };
 
 /* ─────────────────────────────────────────────
-   RESEÑAS INICIALES (pre-cargadas)
+   REVIEWS INICIALES
 ───────────────────────────────────────────── */
 const REVIEWS_INICIALES = [
-  {
-    id: 'r1', nombre: 'Valentina Ospina', avatar: '🐠', estrellas: 5,
-    fecha: 'hace 2 días',
-    texto: 'Llevo 3 años comprando en Distribuciones Ariza y nunca me han fallado. El Acuaprime es increíble, mis peces nunca han estado tan saludables. El envío fue súper rápido y el empaque llegó perfecto. ¡100% recomendado!',
-    producto: 'Acuaprime 120ml',
-  },
-  {
-    id: 'r2', nombre: 'Carlos Mendoza', avatar: '🐡', estrellas: 5,
-    fecha: 'hace 5 días',
-    texto: 'Compré el Cycle para iniciar mi primer acuario plantado y los resultados son sorprendentes. El agua cristalina desde la primera semana, sin pico de amoniaco. El asesoramiento que dan por WhatsApp también es excelente.',
-    producto: 'Cycle 120ml',
-  },
-  {
-    id: 'r3', nombre: 'Mariana Ríos', avatar: '🐹', estrellas: 5,
-    fecha: 'hace 1 semana',
-    texto: 'Los accesorios para mi hámster son de muy buena calidad, se nota que son productos pensados en el bienestar del animal. Mi Coco está feliz desde que llegó su nueva rueda. El precio es justo y la atención al cliente es de primera.',
-    producto: 'Accesorios para hamsters',
-  },
-  {
-    id: 'r4', nombre: 'Andrés Castaño', avatar: '🐟', estrellas: 5,
-    fecha: 'hace 2 semanas',
-    texto: 'El Alga Clear salvó mi acuario. Tenía una plaga de algas horrible por el sol de la ventana y en menos de 4 días desapareció completamente sin afectar a mis peces. Definitivamente el mejor producto para ese problema.',
-    producto: 'Alga Clear 20ml',
-  },
-  {
-    id: 'r5', nombre: 'Luisa Fernanda Torres', avatar: '🦈', estrellas: 5,
-    fecha: 'hace 3 semanas',
-    texto: 'Excelente tienda. Tienen todo lo que necesito en un solo lugar, desde tratamientos hasta comida especializada. Los productos son originales y de marcas confiables. Mi acuario marino lleva 2 años perfecto gracias a Ariza.',
-    producto: 'Clarify 60ml',
-  },
-  {
-    id: 'r6', nombre: 'Santiago Gómez', avatar: '🐠', estrellas: 5,
-    fecha: 'hace 1 mes',
-    texto: 'Pedí por WhatsApp y me respondieron en minutos. El proceso de compra fue muy fácil, el pago seguro y el producto llegó bien sellado y en perfecto estado. El Clarify hace exactamente lo que promete, agua como vidrio.',
-    producto: 'Clarify 20ml',
-  },
+  { id:'r1', nombre:'Valentina Ospina', avatar:'🐠', estrellas:5, fecha:'hace 2 días',    texto:'Llevo 3 años comprando en Distribuciones Ariza y nunca me han fallado. El Acuaprime es increíble, mis peces nunca han estado tan saludables. El envío fue súper rápido y el empaque llegó perfecto. ¡100% recomendado!', producto:'Acuaprime 120ml' },
+  { id:'r2', nombre:'Carlos Mendoza',   avatar:'🐡', estrellas:5, fecha:'hace 5 días',    texto:'Compré el Cycle para iniciar mi primer acuario plantado y los resultados son sorprendentes. El agua cristalina desde la primera semana, sin pico de amoniaco. El asesoramiento por WhatsApp también es excelente.', producto:'Cycle 120ml' },
+  { id:'r3', nombre:'Mariana Ríos',     avatar:'🐹', estrellas:5, fecha:'hace 1 semana',  texto:'Los accesorios para mi hámster son de muy buena calidad, se nota que son productos pensados en el bienestar del animal. Mi Coco está feliz desde que llegó su nueva jaula. El precio es justo y la atención al cliente es de primera.', producto:'Accesorios para hamsters' },
+  { id:'r4', nombre:'Andrés Castaño',   avatar:'🐟', estrellas:5, fecha:'hace 2 semanas', texto:'El Alga Clear salvó mi acuario. Tenía una plaga de algas horrible por el sol de la ventana y en menos de 4 días desapareció completamente sin afectar a mis peces. Definitivamente el mejor producto para ese problema.', producto:'Alga Clear 20ml' },
+  { id:'r5', nombre:'Luisa Torres',     avatar:'🦈', estrellas:5, fecha:'hace 3 semanas', texto:'Excelente tienda. Tienen todo lo que necesito en un solo lugar, desde tratamientos hasta comida especializada. Los productos son originales y de marcas confiables. Mi acuario marino lleva 2 años perfecto gracias a Ariza.', producto:'Clarify 60ml' },
+  { id:'r6', nombre:'Santiago Gómez',   avatar:'🐠', estrellas:5, fecha:'hace 1 mes',     texto:'Pedí por WhatsApp y me respondieron en minutos. El proceso de compra fue muy fácil, el pago seguro y el producto llegó bien sellado y en perfecto estado. El Clarify hace exactamente lo que promete, agua como vidrio.', producto:'Clarify 20ml' },
 ];
 
 /* ─────────────────────────────────────────────
-   REVIEWS SECTION COMPONENT
+   REVIEWS PANEL  (slide-in, igual que el carrito)
 ───────────────────────────────────────────── */
-const ReviewsSection = ({ dark }) => {
+const ReviewsPanel = ({ onClose, dark }) => {
   const STORAGE_KEY = 'ariza_reviews_v1';
 
   const [reviews, setReviews] = useState(() => {
@@ -804,7 +742,6 @@ const ReviewsSection = ({ dark }) => {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        // Merge: user reviews first, then any initial ones not already present
         const userIds = new Set(parsed.map(r => r.id));
         const missing = REVIEWS_INICIALES.filter(r => !userIds.has(r.id));
         return [...parsed, ...missing];
@@ -813,24 +750,24 @@ const ReviewsSection = ({ dark }) => {
     return REVIEWS_INICIALES;
   });
 
-  const [nombre, setNombre]       = useState('');
-  const [texto, setTexto]         = useState('');
-  const [producto, setProducto]   = useState('');
+  const [tab, setTab]           = useState('ver');   // 'ver' | 'escribir'
+  const [nombre, setNombre]     = useState('');
+  const [texto, setTexto]       = useState('');
+  const [producto, setProducto] = useState('');
   const [estrellas, setEstrellas] = useState(0);
   const [hoverStar, setHoverStar] = useState(0);
-  const [enviado, setEnviado]     = useState(false);
-  const [error, setError]         = useState('');
+  const [enviado, setEnviado]   = useState(false);
+  const [error, setError]       = useState('');
 
   const avatares = ['🐠','🐡','🐟','🦈','🐙','🐬','🦑','🐹','🐾'];
 
-  // Persist to localStorage whenever reviews change
   useEffect(() => {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(reviews)); } catch (_) {}
   }, [reviews]);
 
   const handleSubmit = () => {
-    if (!nombre.trim())  return setError('Por favor ingresa tu nombre.');
-    if (estrellas === 0) return setError('Por favor selecciona una calificación.');
+    if (!nombre.trim())           return setError('Por favor ingresa tu nombre.');
+    if (estrellas === 0)          return setError('Por favor selecciona una calificación.');
     if (texto.trim().length < 10) return setError('Escribe un comentario más detallado (mínimo 10 caracteres).');
     setError('');
     const nueva = {
@@ -845,174 +782,212 @@ const ReviewsSection = ({ dark }) => {
     setReviews(prev => [nueva, ...prev]);
     setNombre(''); setTexto(''); setProducto(''); setEstrellas(0);
     setEnviado(true);
+    setTab('ver');
     setTimeout(() => setEnviado(false), 4000);
   };
 
-  const promedioEstrellas = (reviews.reduce((s, r) => s + r.estrellas, 0) / reviews.length).toFixed(1);
+  const promedio = (reviews.reduce((s, r) => s + r.estrellas, 0) / reviews.length).toFixed(1);
 
   return (
-    <section style={{ marginTop: '72px', marginBottom: '80px' }}>
+    <>
+      {/* overlay */}
+      <div onClick={onClose} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.3)', zIndex:1500 }} />
 
-      {/* ── Header ── */}
-      <div style={{ display:'flex', alignItems:'center', gap:'10px', marginBottom:'32px' }}>
-        <span style={{ fontSize:'1.3rem' }}>💬</span>
-        <h2 style={{ fontFamily:'var(--font-display)', fontSize:'1.35rem', fontWeight:700, color:'var(--ink)' }}>
-          Reseñas de clientes
-        </h2>
-        <div style={{ flex:1, height:'1px', background:'var(--border)', marginLeft:'8px' }} />
-      </div>
+      {/* panel */}
+      <div className="panel" style={{ position:'fixed', top:0, right:0, width:'100%', maxWidth:'420px', height:'100%', background:'var(--surface)', zIndex:2000, display:'flex', flexDirection:'column' }}>
 
-      {/* ── Rating summary ── */}
-      <div style={{ display:'flex', alignItems:'center', gap:'20px', background:'var(--card-bg)', borderRadius:'20px', padding:'24px 28px', marginBottom:'32px', boxShadow:'var(--shadow-sm)' }}>
-        <div style={{ textAlign:'center', flexShrink:0 }}>
-          <p style={{ fontFamily:'var(--font-display)', fontSize:'3.2rem', fontWeight:700, color:'var(--ink)', lineHeight:1 }}>{promedioEstrellas}</p>
-          <div style={{ display:'flex', gap:'2px', justifyContent:'center', margin:'6px 0' }}>
-            {[1,2,3,4,5].map(s => (
-              <span key={s} style={{ fontSize:'1.1rem', color: s <= Math.round(promedioEstrellas) ? 'var(--gold)' : 'var(--ink-3)' }}>★</span>
+        {/* ── header ── */}
+        <div style={{ padding:'24px 28px 0', borderBottom:'1px solid var(--border)' }}>
+          <div style={{ display:'flex', alignItems:'center', marginBottom:'16px' }}>
+            <h2 style={{ fontFamily:'var(--font-display)', fontSize:'1.25rem', fontWeight:700, color:'var(--ink)', flex:1 }}>
+              Reseñas
+            </h2>
+            {/* promedio compacto */}
+            <div style={{ display:'flex', alignItems:'center', gap:'6px', marginRight:'16px' }}>
+              <span style={{ fontSize:'1rem', fontWeight:700, color:'var(--ink)' }}>{promedio}</span>
+              <span style={{ fontSize:'0.9rem', color:'var(--gold)' }}>★</span>
+              <span style={{ fontSize:'0.72rem', color:'var(--ink-3)' }}>({reviews.length})</span>
+            </div>
+            <button onClick={onClose} style={{ background:'none', border:'none', cursor:'pointer', fontSize:'1rem', color:'var(--ink-2)' }}>✕</button>
+          </div>
+
+          {/* ── tabs ── */}
+          <div style={{ display:'flex', gap:'4px', marginBottom:'-1px' }}>
+            {[{ key:'ver', label:`💬 Leer (${reviews.length})` }, { key:'escribir', label:'✏️ Escribir' }].map(t => (
+              <button
+                key={t.key}
+                onClick={() => setTab(t.key)}
+                style={{
+                  padding:'10px 18px', border:'none', cursor:'pointer',
+                  fontFamily:'var(--font-body)', fontSize:'0.8rem', fontWeight:600,
+                  background:'none',
+                  color: tab === t.key ? 'var(--accent)' : 'var(--ink-3)',
+                  borderBottom: tab === t.key ? '2px solid var(--accent)' : '2px solid transparent',
+                  transition:'color 0.2s, border-color 0.2s',
+                }}
+              >{t.label}</button>
             ))}
           </div>
-          <p style={{ fontSize:'0.72rem', color:'var(--ink-3)', fontWeight:600 }}>{reviews.length} reseñas</p>
         </div>
-        <div style={{ flex:1 }}>
-          {[5,4,3,2,1].map(s => {
-            const count = reviews.filter(r => r.estrellas === s).length;
-            const pct   = Math.round((count / reviews.length) * 100);
-            return (
-              <div key={s} style={{ display:'flex', alignItems:'center', gap:'8px', marginBottom:'5px' }}>
-                <span style={{ fontSize:'0.72rem', color:'var(--ink-3)', width:'8px', textAlign:'right' }}>{s}</span>
-                <span style={{ fontSize:'0.7rem', color:'var(--gold)' }}>★</span>
-                <div style={{ flex:1, height:'6px', background:'var(--bg)', borderRadius:'99px', overflow:'hidden' }}>
-                  <div style={{ width:`${pct}%`, height:'100%', background:'var(--gold)', borderRadius:'99px', transition:'width 0.6s ease' }} />
+
+        {/* ── body ── */}
+        <div style={{ flex:1, overflowY:'auto', padding:'20px 28px' }}>
+
+          {/* ── TAB: VER reseñas ── */}
+          {tab === 'ver' && (
+            <>
+              {/* rating bars */}
+              <div style={{ background:'var(--bg)', borderRadius:'16px', padding:'18px 20px', marginBottom:'20px', display:'flex', gap:'20px', alignItems:'center' }}>
+                <div style={{ textAlign:'center', flexShrink:0 }}>
+                  <p style={{ fontFamily:'var(--font-display)', fontSize:'2.6rem', fontWeight:700, color:'var(--ink)', lineHeight:1 }}>{promedio}</p>
+                  <div style={{ display:'flex', gap:'2px', justifyContent:'center', margin:'5px 0' }}>
+                    {[1,2,3,4,5].map(s => (
+                      <span key={s} style={{ fontSize:'0.9rem', color: s <= Math.round(promedio) ? 'var(--gold)' : 'var(--ink-3)' }}>★</span>
+                    ))}
+                  </div>
+                  <p style={{ fontSize:'0.65rem', color:'var(--ink-3)', fontWeight:600 }}>{reviews.length} reseñas</p>
                 </div>
-                <span style={{ fontSize:'0.68rem', color:'var(--ink-3)', width:'28px' }}>{count}</span>
+                <div style={{ flex:1 }}>
+                  {[5,4,3,2,1].map(s => {
+                    const count = reviews.filter(r => r.estrellas === s).length;
+                    const pct   = Math.round((count / reviews.length) * 100);
+                    return (
+                      <div key={s} style={{ display:'flex', alignItems:'center', gap:'6px', marginBottom:'4px' }}>
+                        <span style={{ fontSize:'0.68rem', color:'var(--ink-3)', width:'7px', textAlign:'right' }}>{s}</span>
+                        <span style={{ fontSize:'0.65rem', color:'var(--gold)' }}>★</span>
+                        <div style={{ flex:1, height:'5px', background:'var(--border)', borderRadius:'99px', overflow:'hidden' }}>
+                          <div style={{ width:`${pct}%`, height:'100%', background:'var(--gold)', borderRadius:'99px' }} />
+                        </div>
+                        <span style={{ fontSize:'0.62rem', color:'var(--ink-3)', width:'22px' }}>{count}</span>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-            );
-          })}
-        </div>
-      </div>
 
-      {/* ── FORM ── */}
-      <div style={{ background:'var(--card-bg)', borderRadius:'20px', padding:'28px', marginBottom:'36px', boxShadow:'var(--shadow-sm)', border:`1px solid var(--border)` }}>
-        <h3 style={{ fontSize:'1rem', fontWeight:600, color:'var(--ink)', marginBottom:'18px' }}>Deja tu reseña</h3>
+              {/* banner de reseña enviada */}
+              {enviado && (
+                <div style={{ background:'rgba(34,197,94,0.1)', border:'1px solid rgba(34,197,94,0.3)', borderRadius:'12px', padding:'12px 16px', marginBottom:'16px', fontSize:'0.82rem', color:'#16a34a', display:'flex', alignItems:'center', gap:'8px' }}>
+                  ✅ ¡Gracias! Tu reseña ya está publicada.
+                </div>
+              )}
 
-        {/* Star picker */}
-        <div style={{ marginBottom:'16px' }}>
-          <p style={{ fontSize:'0.72rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.7px', marginBottom:'8px' }}>Tu calificación *</p>
-          <div style={{ display:'flex', gap:'6px' }}>
-            {[1,2,3,4,5].map(s => (
-              <span
-                key={s}
-                className="star"
-                style={{ fontSize:'1.8rem', color:(hoverStar||estrellas) >= s ? 'var(--gold)' : 'var(--ink-3)', cursor:'pointer', lineHeight:1, transition:'color 0.15s, transform 0.15s' }}
-                onMouseEnter={() => setHoverStar(s)}
-                onMouseLeave={() => setHoverStar(0)}
-                onClick={() => setEstrellas(s)}
-              >★</span>
-            ))}
-            {estrellas > 0 && (
-              <span style={{ fontSize:'0.8rem', color:'var(--ink-3)', alignSelf:'center', marginLeft:'6px' }}>
-                {['','Malo 😕','Regular 😐','Bueno 🙂','Muy bueno 😊','¡Excelente! 🤩'][estrellas]}
-              </span>
-            )}
-          </div>
-        </div>
-
-        {/* Inputs */}
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px', marginBottom:'12px' }}>
-          <div>
-            <p style={{ fontSize:'0.72rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.7px', marginBottom:'6px' }}>Tu nombre *</p>
-            <input className="form-input" placeholder="Ej: María González" value={nombre} onChange={e => setNombre(e.target.value)} />
-          </div>
-          <div>
-            <p style={{ fontSize:'0.72rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.7px', marginBottom:'6px' }}>Producto (opcional)</p>
-            <input className="form-input" placeholder="Ej: Acuaprime 120ml" value={producto} onChange={e => setProducto(e.target.value)} />
-          </div>
-        </div>
-
-        <div style={{ marginBottom:'16px' }}>
-          <p style={{ fontSize:'0.72rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.7px', marginBottom:'6px' }}>Tu comentario *</p>
-          <textarea
-            className="form-input"
-            placeholder="Cuéntanos tu experiencia con el producto o la tienda..."
-            value={texto}
-            onChange={e => setTexto(e.target.value)}
-            rows={4}
-            style={{ resize:'vertical', minHeight:'100px', lineHeight:1.6 }}
-          />
-          <p style={{ fontSize:'0.68rem', color: texto.length < 10 && texto.length > 0 ? '#ef4444' : 'var(--ink-3)', marginTop:'4px', textAlign:'right' }}>
-            {texto.length} / mínimo 10 caracteres
-          </p>
-        </div>
-
-        {error && (
-          <div style={{ background:'rgba(239,68,68,0.1)', border:'1px solid rgba(239,68,68,0.3)', borderRadius:'10px', padding:'10px 14px', marginBottom:'14px', fontSize:'0.82rem', color:'#ef4444' }}>
-            {error}
-          </div>
-        )}
-
-        {enviado && (
-          <div style={{ background:'rgba(34,197,94,0.1)', border:'1px solid rgba(34,197,94,0.3)', borderRadius:'10px', padding:'10px 14px', marginBottom:'14px', fontSize:'0.82rem', color:'#16a34a', display:'flex', alignItems:'center', gap:'8px' }}>
-            ✅ ¡Gracias por tu reseña! Ya está publicada.
-          </div>
-        )}
-
-        <button className="pill-btn pill-btn--accent" onClick={handleSubmit} style={{ padding:'12px 28px', fontSize:'0.88rem' }}>
-          Publicar reseña
-        </button>
-      </div>
-
-      {/* ── REVIEW CARDS ── */}
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(300px, 1fr))', gap:'16px' }}>
-        {reviews.map((r, i) => (
-          <div
-            key={r.id}
-            className="fade-up"
-            style={{ background:'var(--card-bg)', borderRadius:'18px', padding:'22px 24px', boxShadow:'var(--shadow-sm)', border:`1px solid var(--border)`, animationDelay:`${i * 0.04}s` }}
-          >
-            {/* Header de la reseña */}
-            <div style={{ display:'flex', alignItems:'center', gap:'12px', marginBottom:'12px' }}>
-              <div style={{ width:'42px', height:'42px', borderRadius:'50%', background: dark ? 'rgba(255,255,255,0.08)' : '#f0f0ee', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'1.4rem', flexShrink:0 }}>
-                {r.avatar}
-              </div>
-              <div style={{ flex:1, minWidth:0 }}>
-                <p style={{ fontWeight:600, fontSize:'0.9rem', color:'var(--ink)', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{r.nombre}</p>
-                <p style={{ fontSize:'0.68rem', color:'var(--ink-3)', marginTop:'1px' }}>{r.fecha}</p>
-              </div>
-              {/* Stars */}
-              <div style={{ display:'flex', gap:'1px', flexShrink:0 }}>
-                {[1,2,3,4,5].map(s => (
-                  <span key={s} style={{ fontSize:'0.78rem', color: s <= r.estrellas ? 'var(--gold)' : 'var(--ink-3)' }}>★</span>
+              {/* cards */}
+              <div style={{ display:'flex', flexDirection:'column', gap:'14px' }}>
+                {reviews.map((r, i) => (
+                  <div
+                    key={r.id}
+                    className="fade-up"
+                    style={{ background:'var(--card-bg)', borderRadius:'16px', padding:'18px 20px', border:`1px solid var(--border)`, animationDelay:`${i * 0.04}s` }}
+                  >
+                    <div style={{ display:'flex', alignItems:'center', gap:'10px', marginBottom:'10px' }}>
+                      <div style={{ width:'38px', height:'38px', borderRadius:'50%', background: dark ? 'rgba(255,255,255,0.08)' : '#f0f0ee', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'1.25rem', flexShrink:0 }}>
+                        {r.avatar}
+                      </div>
+                      <div style={{ flex:1, minWidth:0 }}>
+                        <p style={{ fontWeight:600, fontSize:'0.85rem', color:'var(--ink)', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{r.nombre}</p>
+                        <p style={{ fontSize:'0.64rem', color:'var(--ink-3)', marginTop:'1px' }}>{r.fecha}</p>
+                      </div>
+                      <div style={{ display:'flex', gap:'1px', flexShrink:0 }}>
+                        {[1,2,3,4,5].map(s => (
+                          <span key={s} style={{ fontSize:'0.72rem', color: s <= r.estrellas ? 'var(--gold)' : 'var(--ink-3)' }}>★</span>
+                        ))}
+                      </div>
+                    </div>
+                    <p style={{ fontSize:'0.83rem', color:'var(--ink-2)', lineHeight:1.65, marginBottom:'10px' }}>"{r.texto}"</p>
+                    <div style={{ display:'inline-flex', alignItems:'center', gap:'4px', background: dark ? 'rgba(26,92,255,0.15)' : 'rgba(26,92,255,0.07)', borderRadius:'99px', padding:'3px 9px' }}>
+                      <span style={{ fontSize:'0.55rem' }}>🛒</span>
+                      <span style={{ fontSize:'0.64rem', fontWeight:600, color:'var(--accent)' }}>{r.producto}</span>
+                    </div>
+                  </div>
                 ))}
               </div>
-            </div>
+            </>
+          )}
 
-            {/* Texto */}
-            <p style={{ fontSize:'0.86rem', color:'var(--ink-2)', lineHeight:1.7, marginBottom:'12px' }}>
-              "{r.texto}"
-            </p>
+          {/* ── TAB: ESCRIBIR ── */}
+          {tab === 'escribir' && (
+            <div>
+              {/* estrellas */}
+              <div style={{ marginBottom:'20px' }}>
+                <p style={{ fontSize:'0.72rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.7px', marginBottom:'10px' }}>Tu calificación *</p>
+                <div style={{ display:'flex', gap:'8px', alignItems:'center' }}>
+                  {[1,2,3,4,5].map(s => (
+                    <span
+                      key={s}
+                      className="star"
+                      style={{ fontSize:'2rem', color:(hoverStar||estrellas) >= s ? 'var(--gold)' : 'var(--ink-3)', cursor:'pointer', lineHeight:1 }}
+                      onMouseEnter={() => setHoverStar(s)}
+                      onMouseLeave={() => setHoverStar(0)}
+                      onClick={() => setEstrellas(s)}
+                    >★</span>
+                  ))}
+                  {estrellas > 0 && (
+                    <span style={{ fontSize:'0.78rem', color:'var(--ink-3)', marginLeft:'4px' }}>
+                      {['','Malo 😕','Regular 😐','Bueno 🙂','Muy bueno 😊','¡Excelente! 🤩'][estrellas]}
+                    </span>
+                  )}
+                </div>
+              </div>
 
-            {/* Producto */}
-            <div style={{ display:'inline-flex', alignItems:'center', gap:'5px', background: dark ? 'rgba(26,92,255,0.15)' : 'rgba(26,92,255,0.07)', borderRadius:'99px', padding:'4px 10px' }}>
-              <span style={{ fontSize:'0.6rem' }}>🛒</span>
-              <span style={{ fontSize:'0.68rem', fontWeight:600, color:'var(--accent)' }}>{r.producto}</span>
+              {/* campos */}
+              <div style={{ display:'flex', flexDirection:'column', gap:'14px', marginBottom:'16px' }}>
+                <div>
+                  <p style={{ fontSize:'0.72rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.7px', marginBottom:'6px' }}>Tu nombre *</p>
+                  <input className="form-input" placeholder="Ej: María González" value={nombre} onChange={e => setNombre(e.target.value)} />
+                </div>
+                <div>
+                  <p style={{ fontSize:'0.72rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.7px', marginBottom:'6px' }}>Producto (opcional)</p>
+                  <input className="form-input" placeholder="Ej: Acuaprime 120ml" value={producto} onChange={e => setProducto(e.target.value)} />
+                </div>
+                <div>
+                  <p style={{ fontSize:'0.72rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.7px', marginBottom:'6px' }}>Tu comentario *</p>
+                  <textarea
+                    className="form-input"
+                    placeholder="Cuéntanos tu experiencia con el producto o la tienda..."
+                    value={texto}
+                    onChange={e => setTexto(e.target.value)}
+                    rows={5}
+                    style={{ resize:'vertical', minHeight:'110px', lineHeight:1.6 }}
+                  />
+                  <p style={{ fontSize:'0.65rem', color: texto.length < 10 && texto.length > 0 ? '#ef4444' : 'var(--ink-3)', marginTop:'4px', textAlign:'right' }}>
+                    {texto.length} / mínimo 10 caracteres
+                  </p>
+                </div>
+              </div>
+
+              {error && (
+                <div style={{ background:'rgba(239,68,68,0.1)', border:'1px solid rgba(239,68,68,0.3)', borderRadius:'10px', padding:'10px 14px', marginBottom:'14px', fontSize:'0.82rem', color:'#ef4444' }}>
+                  {error}
+                </div>
+              )}
+
+              <button className="pill-btn pill-btn--accent" onClick={handleSubmit} style={{ width:'100%', justifyContent:'center', padding:'14px', fontSize:'0.9rem' }}>
+                Publicar reseña
+              </button>
             </div>
-          </div>
-        ))}
+          )}
+        </div>
       </div>
-    </section>
+    </>
   );
 };
+
+/* ─────────────────────────────────────────────
+   APP ROOT
+───────────────────────────────────────────── */
 export default function App() {
   const [productos, setProductos]   = useState([]);
   const [carrito, setCarrito]       = useState([]);
   const [error, setError]           = useState(null);
   const [cartOpen, setCartOpen]     = useState(false);
+  const [reviewsOpen, setReviewsOpen] = useState(false);
   const [seleccionado, setSeleccionado] = useState(null);
   const [busqueda, setBusqueda]     = useState('');
   const [categoria, setCategoria]   = useState('Todos');
   const [cargando, setCargando]     = useState(true);
   const [dark, setDark]             = useState(false);
-  const [ratings, setRatings]       = useState({});   // { [productId]: 1-5 }
+  const [ratings, setRatings]       = useState({});
 
   useEffect(() => {
     axios.get(`${BACKEND}/api/productos`)
@@ -1021,7 +996,6 @@ export default function App() {
       .finally(() => setTimeout(() => setCargando(false), 1600));
   }, []);
 
-  /* helpers */
   const addItem = useCallback((p) =>
     setCarrito(prev => {
       const ex = prev.find(i => i.id === p.id);
@@ -1040,13 +1014,11 @@ export default function App() {
   const totalItems  = carrito.reduce((s,i) => s+i.cantidad, 0);
   const totalCompra = carrito.reduce((s,i) => s+Math.round(Number(i.precio))*i.cantidad, 0);
 
-  /* best sellers */
   const bestSellers = BEST_SELLER_NAMES
     .map(name => productos.find(p => p.nombre === name))
     .filter(Boolean)
     .slice(0, 5);
 
-  /* filter */
   const visibles = productos.filter(p => {
     const matchBusq = normaliza(p.nombre).includes(normaliza(busqueda));
     if (categoria === 'Todos') return matchBusq;
@@ -1079,13 +1051,10 @@ export default function App() {
         </div>
 
         <div style={{ display:'flex', alignItems:'center', gap:'16px' }}>
-          {/* Dark mode toggle */}
           <div style={{ display:'flex', alignItems:'center', gap:'8px' }}>
             <span style={{ fontSize:'0.75rem', color:'var(--ink-3)' }}>{dark ? '🌙' : '☀️'}</span>
             <button className="dark-toggle" onClick={() => setDark(d => !d)} aria-label="Modo oscuro" />
           </div>
-
-          {/* Cart */}
           <button onClick={() => setCartOpen(true)} style={{ position:'relative', background:'none', border:'none', cursor:'pointer', padding:'8px', borderRadius:'12px' }}>
             <span style={{ fontSize:'1.25rem' }}>🛒</span>
             {totalItems > 0 && (
@@ -1098,8 +1067,6 @@ export default function App() {
       </nav>
 
       <main style={{ maxWidth:'1200px', margin:'0 auto', padding:'40px 24px 120px' }}>
-
-        {/* ── AQUARIUM HERO ── */}
         <AquariumHero busqueda={busqueda} setBusqueda={setBusqueda} />
 
         {/* ── BEST SELLERS ── */}
@@ -1160,25 +1127,30 @@ export default function App() {
             </div>
           )}
         </section>
-
-        {/* ── REVIEWS ── */}
-        <ReviewsSection dark={dark} />
-
       </main>
 
       {/* ── BOTTOM NAV ── */}
       <div style={{
         position:'fixed', bottom:'16px', left:'50%', transform:'translateX(-50%)',
         background: dark ? 'rgba(26,26,30,0.95)' : 'rgba(255,255,255,0.92)',
-        backdropFilter:'blur(14px)', borderRadius:'99px', padding:'10px 28px',
-        display:'flex', gap:'32px', alignItems:'center',
+        backdropFilter:'blur(14px)', borderRadius:'99px', padding:'10px 32px',
+        display:'flex', gap:'36px', alignItems:'center',
         boxShadow:'0 4px 24px rgba(0,0,0,0.15)', zIndex:900,
         border:`1px solid var(--border)`
       }}>
+        {/* Tienda */}
         <button onClick={() => { setCategoria('Todos'); setBusqueda(''); }} style={{ background:'none', border:'none', cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', gap:'2px' }}>
           <span style={{ fontSize:'1.2rem' }}>🏪</span>
           <span style={{ fontSize:'0.58rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.6px', color:categoria==='Todos'?'var(--accent)':'var(--ink-3)' }}>Tienda</span>
         </button>
+
+        {/* Reseñas */}
+        <button onClick={() => setReviewsOpen(true)} style={{ background:'none', border:'none', cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', gap:'2px' }}>
+          <span style={{ fontSize:'1.2rem' }}>💬</span>
+          <span style={{ fontSize:'0.58rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.6px', color: reviewsOpen ? 'var(--accent)' : 'var(--ink-3)' }}>Reseñas</span>
+        </button>
+
+        {/* Carrito */}
         <button onClick={() => setCartOpen(true)} style={{ background:'none', border:'none', cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', gap:'2px', position:'relative' }}>
           <span style={{ fontSize:'1.2rem' }}>🛒</span>
           {totalItems > 0 && (
@@ -1190,12 +1162,15 @@ export default function App() {
         </button>
       </div>
 
-      {/* ── MODALS ── */}
+      {/* ── MODALS / PANELS ── */}
       {seleccionado && (
         <ProductModal p={seleccionado} onClose={() => setSeleccionado(null)} onAdd={addItem} ratings={ratings} onRate={handleRate} />
       )}
       {cartOpen && (
         <CartPanel carrito={carrito} onClose={() => setCartOpen(false)} onAdd={addItem} onRemove={removeOne} onChangeQty={setQty} totalCompra={totalCompra} totalItems={totalItems} />
+      )}
+      {reviewsOpen && (
+        <ReviewsPanel onClose={() => setReviewsOpen(false)} dark={dark} />
       )}
     </>
   );
