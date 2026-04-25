@@ -47,14 +47,13 @@ const GlobalStyles = ({ dark }) => (
     ::-webkit-scrollbar-thumb { background: var(--ink-3); border-radius: 99px; }
 
     /* ── Aquarium hero ── */
+    /* ⚠ margin-bottom eliminado: ahora el <main> se monta encima */
     .aquarium-hero {
       position: relative;
       width: 100%;
       height: 340px;
       background: linear-gradient(180deg, #0a3d6b 0%, #0d5fa0 40%, #1a8cb8 75%, #2db8c8 100%);
-      border-radius: 24px;
       overflow: hidden;
-      margin-bottom: 40px;
     }
 
     @keyframes caustics {
@@ -108,12 +107,12 @@ const GlobalStyles = ({ dark }) => (
       position: absolute; top: 0; left: 0; right: 0; height: 24px;
       background: linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 100%);
       animation: shimmer 3s ease-in-out infinite;
+      z-index: 6;
     }
 
     .tank-sand {
       position: absolute; bottom: 0; left: 0; right: 0; height: 36px;
       background: linear-gradient(180deg, #c9a84c 0%, #a87c2a 100%);
-      border-radius: 0 0 24px 24px;
     }
 
     .hero-text {
@@ -258,6 +257,9 @@ const GlobalStyles = ({ dark }) => (
     /* ── Transitions ── */
     * { transition-property: background-color, border-color, color; transition-duration: 0.25s; }
     .fish, .caustic-ray, .bubble, .seaweed { transition: none !important; }
+
+    /* ── Parallax layer: sin transición para que no lag ── */
+    .parallax-layer { transition: none !important; }
   `}</style>
 );
 
@@ -348,50 +350,112 @@ const PEBBLES = [
 ];
 
 /* ─────────────────────────────────────────────
-   AQUARIUM HERO
+   AQUARIUM HERO  ← con parallax por capas
 ───────────────────────────────────────────── */
-const AquariumHero = ({ busqueda, setBusqueda }) => (
-  <div className="aquarium-hero">
-    {RAYS.map((l, i) => (
-      <div key={i} className="caustic-ray" style={{ left:`${l}%`, animationDelay:`${i*0.6}s`, animationDuration:`${3.5+i*0.3}s` }} />
-    ))}
-    <div className="water-surface" />
-    {SEAWEEDS.map((s, i) => (
-      <div key={i} className="seaweed" style={{ position:'absolute', bottom:'36px', left:s.left, width:s.w, height:s.h, background:`linear-gradient(180deg,${s.color} 0%,#14532d 100%)`, borderRadius:'6px 6px 2px 2px', animationDelay:s.delay, animationDuration:s.dur, zIndex:3 }}/>
-    ))}
-    {PEBBLES.map((p, i) => (
-      <div key={i} style={{ position:'absolute', bottom:`${36+(i%2)*4}px`, left:p.left, width:p.size, height:p.size*0.65, background:p.color, borderRadius:'50%', opacity:0.85, zIndex:4 }}/>
-    ))}
-    <div className="tank-sand" />
-    {BUBBLE_DATA.map((b, i) => (
-      <div key={i} className="bubble" style={{ left:b.left, bottom:b.bottom, width:b.size, height:b.size, animationDelay:b.delay, animationDuration:b.dur, zIndex:5 }}/>
-    ))}
-    {FISH_DATA.map(f => (
-      <div key={f.id} className={`fish fish-${f.dir}`} style={{ top:f.top, zIndex:10, animationDuration:f.duration, animationDelay:f.delay }}>
-        {f.size > 36
-          ? <FishSVG color={f.color} accent={f.accent} size={f.size}/>
-          : <FishSmall color={f.color} size={f.size}/>
-        }
+const AquariumHero = ({ busqueda, setBusqueda, scrollY = 0 }) => {
+  // Clamp al rango visible del hero para que el parallax
+  // solo actúe mientras el acuario está en pantalla
+  const s = Math.max(0, Math.min(scrollY, 340));
+
+  return (
+    <div className="aquarium-hero">
+
+      {/* ── Capa 1: rayos de luz — se mueven muy lento ── */}
+      <div
+        className="parallax-layer"
+        style={{ position:'absolute', inset:0, transform:`translateY(${s * 0.08}px)`, willChange:'transform' }}
+      >
+        {RAYS.map((l, i) => (
+          <div key={i} className="caustic-ray"
+            style={{ left:`${l}%`, animationDelay:`${i*0.6}s`, animationDuration:`${3.5+i*0.3}s` }}
+          />
+        ))}
       </div>
-    ))}
-    <div className="hero-text" style={{ zIndex:20 }}>
-      <p style={{ fontSize:'0.72rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'1.8px', color:'rgba(255,255,255,0.7)', marginBottom:'8px' }}>
-        Tienda en línea
-      </p>
-      <h1 style={{ fontFamily:'var(--font-display)', fontSize:'clamp(1.8rem,4.5vw,2.8rem)', fontWeight:700, color:'#fff', lineHeight:1.15, marginBottom:'20px', textShadow:'0 2px 12px rgba(0,0,0,0.35)' }}>
-        Todo para tus<br/>peces y hámsters.
-      </h1>
-      <div style={{ position:'relative', maxWidth:'320px' }}>
-        <span style={{ position:'absolute', left:'14px', top:'50%', transform:'translateY(-50%)', fontSize:'0.9rem', opacity:0.55 }}>🔍</span>
-        <input
-          type="text" placeholder="Buscar productos…"
-          value={busqueda} onChange={e => setBusqueda(e.target.value)}
-          style={{ width:'100%', padding:'13px 18px 13px 40px', borderRadius:'99px', border:'none', background:'rgba(255,255,255,0.18)', backdropFilter:'blur(10px)', color:'#fff', fontFamily:'var(--font-body)', fontSize:'0.88rem', outline:'none' }}
-        />
+
+      {/* Reflejo del agua — siempre arriba del todo */}
+      <div className="water-surface" />
+
+      {/* ── Capa 2: fondo de algas, piedras y arena — casi fija ── */}
+      <div
+        className="parallax-layer"
+        style={{ position:'absolute', inset:0, transform:`translateY(${s * 0.02}px)`, willChange:'transform' }}
+      >
+        {SEAWEEDS.map((sw, i) => (
+          <div key={i} className="seaweed" style={{
+            position:'absolute', bottom:'36px', left:sw.left,
+            width:sw.w, height:sw.h,
+            background:`linear-gradient(180deg,${sw.color} 0%,#14532d 100%)`,
+            borderRadius:'6px 6px 2px 2px',
+            animationDelay:sw.delay, animationDuration:sw.dur, zIndex:3
+          }} />
+        ))}
+        {PEBBLES.map((p, i) => (
+          <div key={i} style={{
+            position:'absolute', bottom:`${36+(i%2)*4}px`, left:p.left,
+            width:p.size, height:p.size*0.65,
+            background:p.color, borderRadius:'50%', opacity:0.85, zIndex:4
+          }} />
+        ))}
+        <div className="tank-sand" />
+      </div>
+
+      {/* ── Capa 3: burbujas — velocidad media ── */}
+      <div
+        className="parallax-layer"
+        style={{ position:'absolute', inset:0, transform:`translateY(${s * 0.15}px)`, willChange:'transform' }}
+      >
+        {BUBBLE_DATA.map((b, i) => (
+          <div key={i} className="bubble" style={{
+            left:b.left, bottom:b.bottom, width:b.size, height:b.size,
+            animationDelay:b.delay, animationDuration:b.dur, zIndex:5
+          }} />
+        ))}
+      </div>
+
+      {/* ── Capa 4: peces — los más rápidos, dan sensación de profundidad ── */}
+      <div
+        className="parallax-layer"
+        style={{ position:'absolute', inset:0, transform:`translateY(${s * 0.28}px)`, willChange:'transform' }}
+      >
+        {FISH_DATA.map(f => (
+          <div key={f.id} className={`fish fish-${f.dir}`}
+            style={{ top:f.top, zIndex:10, animationDuration:f.duration, animationDelay:f.delay }}>
+            {f.size > 36
+              ? <FishSVG color={f.color} accent={f.accent} size={f.size}/>
+              : <FishSmall color={f.color} size={f.size}/>
+            }
+          </div>
+        ))}
+      </div>
+
+      {/* ── Texto del hero: sube más rápido y se desvanece ── */}
+      <div
+        className="parallax-layer hero-text"
+        style={{
+          zIndex: 20,
+          transform: `translateY(${s * -0.45}px)`,
+          opacity: Math.max(0, 1 - s / 180),
+          willChange: 'transform, opacity',
+        }}
+      >
+        <p style={{ fontSize:'0.72rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'1.8px', color:'rgba(255,255,255,0.7)', marginBottom:'8px' }}>
+          Tienda en línea
+        </p>
+        <h1 style={{ fontFamily:'var(--font-display)', fontSize:'clamp(1.8rem,4.5vw,2.8rem)', fontWeight:700, color:'#fff', lineHeight:1.15, marginBottom:'20px', textShadow:'0 2px 12px rgba(0,0,0,0.35)' }}>
+          Todo para tus<br/>peces y hámsters.
+        </h1>
+        <div style={{ position:'relative', maxWidth:'320px' }}>
+          <span style={{ position:'absolute', left:'14px', top:'50%', transform:'translateY(-50%)', fontSize:'0.9rem', opacity:0.55 }}>🔍</span>
+          <input
+            type="text" placeholder="Buscar productos…"
+            value={busqueda} onChange={e => setBusqueda(e.target.value)}
+            style={{ width:'100%', padding:'13px 18px 13px 40px', borderRadius:'99px', border:'none', background:'rgba(255,255,255,0.18)', backdropFilter:'blur(10px)', color:'#fff', fontFamily:'var(--font-body)', fontSize:'0.88rem', outline:'none' }}
+          />
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 /* ─────────────────────────────────────────────
    STAR RATING COMPONENT
@@ -456,7 +520,6 @@ const BEST_SELLER_NAMES = [
   'Clarify 20ml', 'Test Plus Ultra PH',
 ];
 
-/* Productos con variantes de color: nombre → array de { label, hex } */
 const PRODUCT_COLORS = {
   'Jaula para Hámster 257': [
     { label:'Azul',    hex:'#4a90d9' },
@@ -528,7 +591,6 @@ const ColorPicker = ({ colors, selected, onSelect }) => (
     )}
   </div>
 );
-
 
 const Stepper = ({ value, onAdd, onRemove, onChange }) => (
   <div style={{ display:'flex', alignItems:'center', gap:'8px' }}>
@@ -790,7 +852,7 @@ const REVIEWS_INICIALES = [
 ];
 
 /* ─────────────────────────────────────────────
-   REVIEWS PANEL  (slide-in, igual que el carrito)
+   REVIEWS PANEL
 ───────────────────────────────────────────── */
 const ReviewsPanel = ({ onClose, dark }) => {
   const STORAGE_KEY = 'ariza_reviews_v1';
@@ -808,14 +870,14 @@ const ReviewsPanel = ({ onClose, dark }) => {
     return REVIEWS_INICIALES;
   });
 
-  const [tab, setTab]           = useState('ver');   // 'ver' | 'escribir'
-  const [nombre, setNombre]     = useState('');
-  const [texto, setTexto]       = useState('');
-  const [producto, setProducto] = useState('');
+  const [tab, setTab]             = useState('ver');
+  const [nombre, setNombre]       = useState('');
+  const [texto, setTexto]         = useState('');
+  const [producto, setProducto]   = useState('');
   const [estrellas, setEstrellas] = useState(0);
   const [hoverStar, setHoverStar] = useState(0);
-  const [enviado, setEnviado]   = useState(false);
-  const [error, setError]       = useState('');
+  const [enviado, setEnviado]     = useState(false);
+  const [error, setError]         = useState('');
 
   const avatares = ['🐠','🐡','🐟','🦈','🐙','🐬','🦑','🐹','🐾'];
 
@@ -848,19 +910,11 @@ const ReviewsPanel = ({ onClose, dark }) => {
 
   return (
     <>
-      {/* overlay */}
       <div onClick={onClose} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.3)', zIndex:1500 }} />
-
-      {/* panel */}
       <div className="panel" style={{ position:'fixed', top:0, right:0, width:'100%', maxWidth:'420px', height:'100%', background:'var(--surface)', zIndex:2000, display:'flex', flexDirection:'column' }}>
-
-        {/* ── header ── */}
         <div style={{ padding:'24px 28px 0', borderBottom:'1px solid var(--border)' }}>
           <div style={{ display:'flex', alignItems:'center', marginBottom:'16px' }}>
-            <h2 style={{ fontFamily:'var(--font-display)', fontSize:'1.25rem', fontWeight:700, color:'var(--ink)', flex:1 }}>
-              Reseñas
-            </h2>
-            {/* promedio compacto */}
+            <h2 style={{ fontFamily:'var(--font-display)', fontSize:'1.25rem', fontWeight:700, color:'var(--ink)', flex:1 }}>Reseñas</h2>
             <div style={{ display:'flex', alignItems:'center', gap:'6px', marginRight:'16px' }}>
               <span style={{ fontSize:'1rem', fontWeight:700, color:'var(--ink)' }}>{promedio}</span>
               <span style={{ fontSize:'0.9rem', color:'var(--gold)' }}>★</span>
@@ -868,33 +922,16 @@ const ReviewsPanel = ({ onClose, dark }) => {
             </div>
             <button onClick={onClose} style={{ background:'none', border:'none', cursor:'pointer', fontSize:'1rem', color:'var(--ink-2)' }}>✕</button>
           </div>
-
-          {/* ── tabs ── */}
           <div style={{ display:'flex', gap:'4px', marginBottom:'-1px' }}>
             {[{ key:'ver', label:`💬 Leer (${reviews.length})` }, { key:'escribir', label:'✏️ Escribir' }].map(t => (
-              <button
-                key={t.key}
-                onClick={() => setTab(t.key)}
-                style={{
-                  padding:'10px 18px', border:'none', cursor:'pointer',
-                  fontFamily:'var(--font-body)', fontSize:'0.8rem', fontWeight:600,
-                  background:'none',
-                  color: tab === t.key ? 'var(--accent)' : 'var(--ink-3)',
-                  borderBottom: tab === t.key ? '2px solid var(--accent)' : '2px solid transparent',
-                  transition:'color 0.2s, border-color 0.2s',
-                }}
-              >{t.label}</button>
+              <button key={t.key} onClick={() => setTab(t.key)} style={{ padding:'10px 18px', border:'none', cursor:'pointer', fontFamily:'var(--font-body)', fontSize:'0.8rem', fontWeight:600, background:'none', color: tab === t.key ? 'var(--accent)' : 'var(--ink-3)', borderBottom: tab === t.key ? '2px solid var(--accent)' : '2px solid transparent', transition:'color 0.2s, border-color 0.2s' }}>{t.label}</button>
             ))}
           </div>
         </div>
 
-        {/* ── body ── */}
         <div style={{ flex:1, overflowY:'auto', padding:'20px 28px' }}>
-
-          {/* ── TAB: VER reseñas ── */}
           {tab === 'ver' && (
             <>
-              {/* rating bars */}
               <div style={{ background:'var(--bg)', borderRadius:'16px', padding:'18px 20px', marginBottom:'20px', display:'flex', gap:'20px', alignItems:'center' }}>
                 <div style={{ textAlign:'center', flexShrink:0 }}>
                   <p style={{ fontFamily:'var(--font-display)', fontSize:'2.6rem', fontWeight:700, color:'var(--ink)', lineHeight:1 }}>{promedio}</p>
@@ -923,21 +960,15 @@ const ReviewsPanel = ({ onClose, dark }) => {
                 </div>
               </div>
 
-              {/* banner de reseña enviada */}
               {enviado && (
                 <div style={{ background:'rgba(34,197,94,0.1)', border:'1px solid rgba(34,197,94,0.3)', borderRadius:'12px', padding:'12px 16px', marginBottom:'16px', fontSize:'0.82rem', color:'#16a34a', display:'flex', alignItems:'center', gap:'8px' }}>
                   ✅ ¡Gracias! Tu reseña ya está publicada.
                 </div>
               )}
 
-              {/* cards */}
               <div style={{ display:'flex', flexDirection:'column', gap:'14px' }}>
                 {reviews.map((r, i) => (
-                  <div
-                    key={r.id}
-                    className="fade-up"
-                    style={{ background:'var(--card-bg)', borderRadius:'16px', padding:'18px 20px', border:`1px solid var(--border)`, animationDelay:`${i * 0.04}s` }}
-                  >
+                  <div key={r.id} className="fade-up" style={{ background:'var(--card-bg)', borderRadius:'16px', padding:'18px 20px', border:`1px solid var(--border)`, animationDelay:`${i * 0.04}s` }}>
                     <div style={{ display:'flex', alignItems:'center', gap:'10px', marginBottom:'10px' }}>
                       <div style={{ width:'38px', height:'38px', borderRadius:'50%', background: dark ? 'rgba(255,255,255,0.08)' : '#f0f0ee', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'1.25rem', flexShrink:0 }}>
                         {r.avatar}
@@ -963,22 +994,14 @@ const ReviewsPanel = ({ onClose, dark }) => {
             </>
           )}
 
-          {/* ── TAB: ESCRIBIR ── */}
           {tab === 'escribir' && (
             <div>
-              {/* estrellas */}
               <div style={{ marginBottom:'20px' }}>
                 <p style={{ fontSize:'0.72rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.7px', marginBottom:'10px' }}>Tu calificación *</p>
                 <div style={{ display:'flex', gap:'8px', alignItems:'center' }}>
                   {[1,2,3,4,5].map(s => (
-                    <span
-                      key={s}
-                      className="star"
-                      style={{ fontSize:'2rem', color:(hoverStar||estrellas) >= s ? 'var(--gold)' : 'var(--ink-3)', cursor:'pointer', lineHeight:1 }}
-                      onMouseEnter={() => setHoverStar(s)}
-                      onMouseLeave={() => setHoverStar(0)}
-                      onClick={() => setEstrellas(s)}
-                    >★</span>
+                    <span key={s} className="star" style={{ fontSize:'2rem', color:(hoverStar||estrellas) >= s ? 'var(--gold)' : 'var(--ink-3)', cursor:'pointer', lineHeight:1 }}
+                      onMouseEnter={() => setHoverStar(s)} onMouseLeave={() => setHoverStar(0)} onClick={() => setEstrellas(s)}>★</span>
                   ))}
                   {estrellas > 0 && (
                     <span style={{ fontSize:'0.78rem', color:'var(--ink-3)', marginLeft:'4px' }}>
@@ -987,8 +1010,6 @@ const ReviewsPanel = ({ onClose, dark }) => {
                   )}
                 </div>
               </div>
-
-              {/* campos */}
               <div style={{ display:'flex', flexDirection:'column', gap:'14px', marginBottom:'16px' }}>
                 <div>
                   <p style={{ fontSize:'0.72rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.7px', marginBottom:'6px' }}>Tu nombre *</p>
@@ -1000,26 +1021,17 @@ const ReviewsPanel = ({ onClose, dark }) => {
                 </div>
                 <div>
                   <p style={{ fontSize:'0.72rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.7px', marginBottom:'6px' }}>Tu comentario *</p>
-                  <textarea
-                    className="form-input"
-                    placeholder="Cuéntanos tu experiencia con el producto o la tienda..."
-                    value={texto}
-                    onChange={e => setTexto(e.target.value)}
-                    rows={5}
-                    style={{ resize:'vertical', minHeight:'110px', lineHeight:1.6 }}
-                  />
+                  <textarea className="form-input" placeholder="Cuéntanos tu experiencia con el producto o la tienda..." value={texto} onChange={e => setTexto(e.target.value)} rows={5} style={{ resize:'vertical', minHeight:'110px', lineHeight:1.6 }} />
                   <p style={{ fontSize:'0.65rem', color: texto.length < 10 && texto.length > 0 ? '#ef4444' : 'var(--ink-3)', marginTop:'4px', textAlign:'right' }}>
                     {texto.length} / mínimo 10 caracteres
                   </p>
                 </div>
               </div>
-
               {error && (
                 <div style={{ background:'rgba(239,68,68,0.1)', border:'1px solid rgba(239,68,68,0.3)', borderRadius:'10px', padding:'10px 14px', marginBottom:'14px', fontSize:'0.82rem', color:'#ef4444' }}>
                   {error}
                 </div>
               )}
-
               <button className="pill-btn pill-btn--accent" onClick={handleSubmit} style={{ width:'100%', justifyContent:'center', padding:'14px', fontSize:'0.9rem' }}>
                 Publicar reseña
               </button>
@@ -1035,17 +1047,25 @@ const ReviewsPanel = ({ onClose, dark }) => {
    APP ROOT
 ───────────────────────────────────────────── */
 export default function App() {
-  const [productos, setProductos]   = useState([]);
-  const [carrito, setCarrito]       = useState([]);
-  const [error, setError]           = useState(null);
-  const [cartOpen, setCartOpen]     = useState(false);
+  const [productos, setProductos]     = useState([]);
+  const [carrito, setCarrito]         = useState([]);
+  const [error, setError]             = useState(null);
+  const [cartOpen, setCartOpen]       = useState(false);
   const [reviewsOpen, setReviewsOpen] = useState(false);
   const [seleccionado, setSeleccionado] = useState(null);
-  const [busqueda, setBusqueda]     = useState('');
-  const [categoria, setCategoria]   = useState('Todos');
-  const [cargando, setCargando]     = useState(true);
-  const [dark, setDark]             = useState(false);
-  const [ratings, setRatings]       = useState({});
+  const [busqueda, setBusqueda]       = useState('');
+  const [categoria, setCategoria]     = useState('Todos');
+  const [cargando, setCargando]       = useState(true);
+  const [dark, setDark]               = useState(false);
+  const [ratings, setRatings]         = useState({});
+
+  /* ── 🆕 Scroll para el parallax ── */
+  const [scrollY, setScrollY] = useState(0);
+  useEffect(() => {
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     axios.get(`${BACKEND}/api/productos`)
@@ -1107,7 +1127,6 @@ export default function App() {
             <p style={{ fontSize:'0.58rem', color:'var(--accent)', fontWeight:700, letterSpacing:'1.2px', textTransform:'uppercase', marginTop:'2px' }}>Fish Accessories</p>
           </div>
         </div>
-
         <div style={{ display:'flex', alignItems:'center', gap:'16px' }}>
           <div style={{ display:'flex', alignItems:'center', gap:'8px' }}>
             <span style={{ fontSize:'0.75rem', color:'var(--ink-3)' }}>{dark ? '🌙' : '☀️'}</span>
@@ -1124,68 +1143,106 @@ export default function App() {
         </div>
       </nav>
 
-      <main style={{ maxWidth:'1200px', margin:'0 auto', padding:'40px 24px 120px' }}>
-        <AquariumHero busqueda={busqueda} setBusqueda={setBusqueda} />
+      {/* ══════════════════════════════════════════
+          🆕 ESTRUCTURA CON PARALLAX STICKY
+          El acuario queda pegado bajo el navbar
+          y el <main> se desliza sobre él.
+      ══════════════════════════════════════════ */}
+      <div style={{ position:'relative' }}>
 
-        {/* ── BEST SELLERS ── */}
-        {bestSellers.length > 0 && (
-          <section style={{ marginBottom:'48px' }}>
-            <div style={{ display:'flex', alignItems:'center', gap:'10px', marginBottom:'20px' }}>
-              <span style={{ fontSize:'1.3rem' }}>🔥</span>
-              <h2 style={{ fontFamily:'var(--font-display)', fontSize:'1.35rem', fontWeight:700, color:'var(--ink)' }}>Más vendidos</h2>
-              <div style={{ flex:1, height:'1px', background:'var(--border)', marginLeft:'8px' }} />
-            </div>
-            <div className="best-scroll">
-              {bestSellers.map((p, i) => (
-                <BestCard key={p.id} p={p} onAdd={addItem} onOpen={setSeleccionado} ratings={ratings} onRate={handleRate} rank={i+1} />
-              ))}
-            </div>
-          </section>
-        )}
+        {/* ── Hero pegado: siempre visible detrás del contenido ── */}
+        <div style={{
+          position: 'sticky',
+          top: 64,           /* altura exacta del navbar */
+          zIndex: 0,
+          height: 340,
+          overflow: 'hidden',
+        }}>
+          <AquariumHero
+            busqueda={busqueda}
+            setBusqueda={setBusqueda}
+            scrollY={scrollY}
+          />
+        </div>
 
-        {/* ── CATEGORIES ── */}
-        <section style={{ marginBottom:'40px' }}>
-          <div style={{ display:'flex', gap:'8px', overflowX:'auto', paddingBottom:'6px', scrollbarWidth:'none' }}>
-            <button className={`cat-pill ${categoria==='Todos'?'cat-pill--on':'cat-pill--off'}`} onClick={() => { setCategoria('Todos'); setBusqueda(''); }}>
-              Todos
-            </button>
-            {COLECCIONES.map((c) => (
-              <button key={c.val} className={`cat-pill ${categoria===c.val?'cat-pill--on':'cat-pill--off'}`} onClick={() => setCategoria(c.val)}>
-                {c.icon} {c.label}
-              </button>
-            ))}
+        {/* ── Contenido principal: se monta sobre el acuario ── */}
+        <main style={{
+          position: 'relative',
+          zIndex: 1,
+          background: 'var(--bg)',
+          borderRadius: '28px 28px 0 0',
+          /* "tira" hacia arriba para solaparse con el hero */
+          marginTop: -32,
+          padding: '48px 24px 120px',
+          /* sombra hacia arriba para dar profundidad */
+          boxShadow: '0 -8px 40px rgba(0,0,0,0.13)',
+          /* centra el contenido igual que antes */
+          maxWidth: 'none',
+        }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+
+            {/* ── BEST SELLERS ── */}
+            {bestSellers.length > 0 && (
+              <section style={{ marginBottom:'48px' }}>
+                <div style={{ display:'flex', alignItems:'center', gap:'10px', marginBottom:'20px' }}>
+                  <span style={{ fontSize:'1.3rem' }}>🔥</span>
+                  <h2 style={{ fontFamily:'var(--font-display)', fontSize:'1.35rem', fontWeight:700, color:'var(--ink)' }}>Más vendidos</h2>
+                  <div style={{ flex:1, height:'1px', background:'var(--border)', marginLeft:'8px' }} />
+                </div>
+                <div className="best-scroll">
+                  {bestSellers.map((p, i) => (
+                    <BestCard key={p.id} p={p} onAdd={addItem} onOpen={setSeleccionado} ratings={ratings} onRate={handleRate} rank={i+1} />
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* ── CATEGORIES ── */}
+            <section style={{ marginBottom:'40px' }}>
+              <div style={{ display:'flex', gap:'8px', overflowX:'auto', paddingBottom:'6px', scrollbarWidth:'none' }}>
+                <button className={`cat-pill ${categoria==='Todos'?'cat-pill--on':'cat-pill--off'}`} onClick={() => { setCategoria('Todos'); setBusqueda(''); }}>
+                  Todos
+                </button>
+                {COLECCIONES.map((c) => (
+                  <button key={c.val} className={`cat-pill ${categoria===c.val?'cat-pill--on':'cat-pill--off'}`} onClick={() => setCategoria(c.val)}>
+                    {c.icon} {c.label}
+                  </button>
+                ))}
+              </div>
+            </section>
+
+            {/* ── PRODUCTS GRID ── */}
+            <section>
+              <div style={{ display:'flex', justifyContent:'space-between', alignItems:'baseline', marginBottom:'24px' }}>
+                <h2 style={{ fontSize:'1rem', fontWeight:600, color:'var(--ink)' }}>
+                  {categoria === 'Todos' ? 'Todos los productos' : categoria}
+                </h2>
+                <span style={{ fontSize:'0.8rem', color:'var(--ink-3)' }}>{visibles.length} resultado{visibles.length!==1&&'s'}</span>
+              </div>
+
+              {error && <p style={{ color:'#ef4444', textAlign:'center', padding:'40px' }}>{error}</p>}
+
+              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(230px, 1fr))', gap:'20px' }}>
+                {visibles.map(p => (
+                  <ProductCard
+                    key={p.id} p={p} onAdd={addItem} onOpen={setSeleccionado}
+                    ratings={ratings} onRate={handleRate}
+                    isBestSeller={BEST_SELLER_NAMES.includes(p.nombre)}
+                  />
+                ))}
+              </div>
+
+              {visibles.length === 0 && !error && (
+                <div style={{ textAlign:'center', padding:'80px 20px' }}>
+                  <p style={{ fontSize:'2rem', marginBottom:'12px' }}>🔍</p>
+                  <p style={{ color:'var(--ink-3)' }}>No se encontraron productos.</p>
+                </div>
+              )}
+            </section>
+
           </div>
-        </section>
-
-        {/* ── PRODUCTS GRID ── */}
-        <section>
-          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'baseline', marginBottom:'24px' }}>
-            <h2 style={{ fontSize:'1rem', fontWeight:600, color:'var(--ink)' }}>
-              {categoria === 'Todos' ? 'Todos los productos' : categoria}
-            </h2>
-            <span style={{ fontSize:'0.8rem', color:'var(--ink-3)' }}>{visibles.length} resultado{visibles.length!==1&&'s'}</span>
-          </div>
-
-          {error && <p style={{ color:'#ef4444', textAlign:'center', padding:'40px' }}>{error}</p>}
-
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(230px, 1fr))', gap:'20px' }}>
-            {visibles.map(p => (
-              <ProductCard
-                key={p.id} p={p} onAdd={addItem} onOpen={setSeleccionado}
-                ratings={ratings} onRate={handleRate}
-                isBestSeller={BEST_SELLER_NAMES.includes(p.nombre)}
-              />
-            ))}
-          </div>
-
-          {visibles.length === 0 && !error && (
-            <div style={{ textAlign:'center', padding:'80px 20px' }}>
-              <p style={{ fontSize:'2rem', marginBottom:'12px' }}>🔍</p>
-              <p style={{ color:'var(--ink-3)' }}>No se encontraron productos.</p>
-            </div>
-          )}
-        </section>
-      </main>
+        </main>
+      </div>
 
       {/* ── BOTTOM NAV ── */}
       <div style={{
@@ -1196,19 +1253,14 @@ export default function App() {
         boxShadow:'0 4px 24px rgba(0,0,0,0.15)', zIndex:900,
         border:`1px solid var(--border)`
       }}>
-        {/* Tienda */}
         <button onClick={() => { setCategoria('Todos'); setBusqueda(''); }} style={{ background:'none', border:'none', cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', gap:'2px' }}>
           <span style={{ fontSize:'1.2rem' }}>🏪</span>
           <span style={{ fontSize:'0.58rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.6px', color:categoria==='Todos'?'var(--accent)':'var(--ink-3)' }}>Tienda</span>
         </button>
-
-        {/* Reseñas */}
         <button onClick={() => setReviewsOpen(true)} style={{ background:'none', border:'none', cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', gap:'2px' }}>
           <span style={{ fontSize:'1.2rem' }}>💬</span>
           <span style={{ fontSize:'0.58rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.6px', color: reviewsOpen ? 'var(--accent)' : 'var(--ink-3)' }}>Reseñas</span>
         </button>
-
-        {/* Carrito */}
         <button onClick={() => setCartOpen(true)} style={{ background:'none', border:'none', cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', gap:'2px', position:'relative' }}>
           <span style={{ fontSize:'1.2rem' }}>🛒</span>
           {totalItems > 0 && (
