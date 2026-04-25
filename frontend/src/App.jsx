@@ -456,6 +456,28 @@ const BEST_SELLER_NAMES = [
   'Clarify 20ml', 'Test Plus Ultra PH',
 ];
 
+/* Productos con variantes de color: nombre → array de { label, hex } */
+const PRODUCT_COLORS = {
+  'Jaula para Hámster 257': [
+    { label:'Azul',    hex:'#4a90d9' },
+    { label:'Verde',   hex:'#4caf50' },
+    { label:'Rosado',  hex:'#f48fb1' },
+    { label:'Naranja', hex:'#ff9800' },
+  ],
+  'Jaula para Hámster S-11': [
+    { label:'Café',   hex:'#8d6e63' },
+    { label:'Rosado', hex:'#f48fb1' },
+    { label:'Verde',  hex:'#4caf50' },
+  ],
+  'Jaula para Hámster 268': [
+    { label:'Azul claro',  hex:'#81d4fa' },
+    { label:'Azul oscuro', hex:'#1565c0' },
+    { label:'Amarillo',    hex:'#fdd835' },
+    { label:'Rosado',      hex:'#f48fb1' },
+    { label:'Gris',        hex:'#90a4ae' },
+  ],
+};
+
 /* ─────────────────────────────────────────────
    HELPERS
 ───────────────────────────────────────────── */
@@ -470,8 +492,44 @@ const imgSrc = (url) =>
 const normaliza = (s) => (s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase();
 
 /* ─────────────────────────────────────────────
-   STEPPER
+   COLOR PICKER COMPONENT
 ───────────────────────────────────────────── */
+const ColorPicker = ({ colors, selected, onSelect }) => (
+  <div>
+    <p style={{ fontSize:'0.68rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.8px', marginBottom:'8px' }}>
+      Color: <span style={{ color:'var(--ink)', fontWeight:700 }}>{selected || 'Selecciona uno'}</span>
+    </p>
+    <div style={{ display:'flex', flexWrap:'wrap', gap:'8px' }}>
+      {colors.map(c => (
+        <button
+          key={c.label}
+          title={c.label}
+          onClick={() => onSelect(c.label)}
+          style={{
+            width:'32px', height:'32px', borderRadius:'50%',
+            background: c.hex,
+            border: selected === c.label ? '3px solid var(--ink)' : '3px solid transparent',
+            outline: selected === c.label ? '2px solid var(--accent)' : '2px solid transparent',
+            outlineOffset:'2px',
+            cursor:'pointer',
+            transition:'transform 0.15s, outline 0.15s, border 0.15s',
+            transform: selected === c.label ? 'scale(1.18)' : 'scale(1)',
+            boxShadow:'0 2px 6px rgba(0,0,0,0.18)',
+            flexShrink:0,
+          }}
+          aria-label={c.label}
+        />
+      ))}
+    </div>
+    {selected && (
+      <p style={{ fontSize:'0.7rem', color:'var(--ink-3)', marginTop:'6px' }}>
+        ✓ Seleccionado: <strong style={{ color:'var(--ink)' }}>{selected}</strong>
+      </p>
+    )}
+  </div>
+);
+
+
 const Stepper = ({ value, onAdd, onRemove, onChange }) => (
   <div style={{ display:'flex', alignItems:'center', gap:'8px' }}>
     <button className="icon-btn" onClick={onRemove} aria-label="Restar">−</button>
