@@ -212,6 +212,7 @@ const GlobalStyles = ({ dark }) => (
     }
     .form-input:focus { border-color: var(--accent); }
     .form-input::placeholder { color: var(--ink-3); }
+    textarea.form-input { font-family: var(--font-body); }
 
     /* ── Category pill ── */
     .cat-pill {
@@ -751,8 +752,236 @@ const CartPanel = ({ carrito, onClose, onAdd, onRemove, onChangeQty, totalCompra
 };
 
 /* ─────────────────────────────────────────────
-   APP
+   RESEÑAS INICIALES (pre-cargadas)
 ───────────────────────────────────────────── */
+const REVIEWS_INICIALES = [
+  {
+    id: 'r1', nombre: 'Valentina Ospina', avatar: '🐠', estrellas: 5,
+    fecha: 'hace 2 días',
+    texto: 'Llevo 3 años comprando en Distribuciones Ariza y nunca me han fallado. El Acuaprime es increíble, mis peces nunca han estado tan saludables. El envío fue súper rápido y el empaque llegó perfecto. ¡100% recomendado!',
+    producto: 'Acuaprime 120ml',
+  },
+  {
+    id: 'r2', nombre: 'Carlos Mendoza', avatar: '🐡', estrellas: 5,
+    fecha: 'hace 5 días',
+    texto: 'Compré el Cycle para iniciar mi primer acuario plantado y los resultados son sorprendentes. El agua cristalina desde la primera semana, sin pico de amoniaco. El asesoramiento que dan por WhatsApp también es excelente.',
+    producto: 'Cycle 120ml',
+  },
+  {
+    id: 'r3', nombre: 'Mariana Ríos', avatar: '🐹', estrellas: 5,
+    fecha: 'hace 1 semana',
+    texto: 'Los accesorios para mi hámster son de muy buena calidad, se nota que son productos pensados en el bienestar del animal. Mi Coco está feliz desde que llegó su nueva rueda. El precio es justo y la atención al cliente es de primera.',
+    producto: 'Accesorios para hamsters',
+  },
+  {
+    id: 'r4', nombre: 'Andrés Castaño', avatar: '🐟', estrellas: 5,
+    fecha: 'hace 2 semanas',
+    texto: 'El Alga Clear salvó mi acuario. Tenía una plaga de algas horrible por el sol de la ventana y en menos de 4 días desapareció completamente sin afectar a mis peces. Definitivamente el mejor producto para ese problema.',
+    producto: 'Alga Clear 20ml',
+  },
+  {
+    id: 'r5', nombre: 'Luisa Fernanda Torres', avatar: '🦈', estrellas: 5,
+    fecha: 'hace 3 semanas',
+    texto: 'Excelente tienda. Tienen todo lo que necesito en un solo lugar, desde tratamientos hasta comida especializada. Los productos son originales y de marcas confiables. Mi acuario marino lleva 2 años perfecto gracias a Ariza.',
+    producto: 'Clarify 60ml',
+  },
+  {
+    id: 'r6', nombre: 'Santiago Gómez', avatar: '🐠', estrellas: 5,
+    fecha: 'hace 1 mes',
+    texto: 'Pedí por WhatsApp y me respondieron en minutos. El proceso de compra fue muy fácil, el pago seguro y el producto llegó bien sellado y en perfecto estado. El Clarify hace exactamente lo que promete, agua como vidrio.',
+    producto: 'Clarify 20ml',
+  },
+];
+
+/* ─────────────────────────────────────────────
+   REVIEWS SECTION COMPONENT
+───────────────────────────────────────────── */
+const ReviewsSection = ({ dark }) => {
+  const [reviews, setReviews]     = useState(REVIEWS_INICIALES);
+  const [nombre, setNombre]       = useState('');
+  const [texto, setTexto]         = useState('');
+  const [producto, setProducto]   = useState('');
+  const [estrellas, setEstrellas] = useState(0);
+  const [hoverStar, setHoverStar] = useState(0);
+  const [enviado, setEnviado]     = useState(false);
+  const [error, setError]         = useState('');
+
+  const avatares = ['🐠','🐡','🐟','🦈','🐙','🐬','🦑','🐹','🐾'];
+
+  const handleSubmit = () => {
+    if (!nombre.trim())  return setError('Por favor ingresa tu nombre.');
+    if (estrellas === 0) return setError('Por favor selecciona una calificación.');
+    if (texto.trim().length < 10) return setError('Escribe un comentario más detallado (mínimo 10 caracteres).');
+    setError('');
+    const nueva = {
+      id: `r${Date.now()}`,
+      nombre: nombre.trim(),
+      avatar: avatares[Math.floor(Math.random() * avatares.length)],
+      estrellas,
+      fecha: 'justo ahora',
+      texto: texto.trim(),
+      producto: producto.trim() || 'Producto general',
+    };
+    setReviews(prev => [nueva, ...prev]);
+    setNombre(''); setTexto(''); setProducto(''); setEstrellas(0);
+    setEnviado(true);
+    setTimeout(() => setEnviado(false), 4000);
+  };
+
+  const promedioEstrellas = (reviews.reduce((s, r) => s + r.estrellas, 0) / reviews.length).toFixed(1);
+
+  return (
+    <section style={{ marginTop: '72px', marginBottom: '80px' }}>
+
+      {/* ── Header ── */}
+      <div style={{ display:'flex', alignItems:'center', gap:'10px', marginBottom:'32px' }}>
+        <span style={{ fontSize:'1.3rem' }}>💬</span>
+        <h2 style={{ fontFamily:'var(--font-display)', fontSize:'1.35rem', fontWeight:700, color:'var(--ink)' }}>
+          Reseñas de clientes
+        </h2>
+        <div style={{ flex:1, height:'1px', background:'var(--border)', marginLeft:'8px' }} />
+      </div>
+
+      {/* ── Rating summary ── */}
+      <div style={{ display:'flex', alignItems:'center', gap:'20px', background:'var(--card-bg)', borderRadius:'20px', padding:'24px 28px', marginBottom:'32px', boxShadow:'var(--shadow-sm)' }}>
+        <div style={{ textAlign:'center', flexShrink:0 }}>
+          <p style={{ fontFamily:'var(--font-display)', fontSize:'3.2rem', fontWeight:700, color:'var(--ink)', lineHeight:1 }}>{promedioEstrellas}</p>
+          <div style={{ display:'flex', gap:'2px', justifyContent:'center', margin:'6px 0' }}>
+            {[1,2,3,4,5].map(s => (
+              <span key={s} style={{ fontSize:'1.1rem', color: s <= Math.round(promedioEstrellas) ? 'var(--gold)' : 'var(--ink-3)' }}>★</span>
+            ))}
+          </div>
+          <p style={{ fontSize:'0.72rem', color:'var(--ink-3)', fontWeight:600 }}>{reviews.length} reseñas</p>
+        </div>
+        <div style={{ flex:1 }}>
+          {[5,4,3,2,1].map(s => {
+            const count = reviews.filter(r => r.estrellas === s).length;
+            const pct   = Math.round((count / reviews.length) * 100);
+            return (
+              <div key={s} style={{ display:'flex', alignItems:'center', gap:'8px', marginBottom:'5px' }}>
+                <span style={{ fontSize:'0.72rem', color:'var(--ink-3)', width:'8px', textAlign:'right' }}>{s}</span>
+                <span style={{ fontSize:'0.7rem', color:'var(--gold)' }}>★</span>
+                <div style={{ flex:1, height:'6px', background:'var(--bg)', borderRadius:'99px', overflow:'hidden' }}>
+                  <div style={{ width:`${pct}%`, height:'100%', background:'var(--gold)', borderRadius:'99px', transition:'width 0.6s ease' }} />
+                </div>
+                <span style={{ fontSize:'0.68rem', color:'var(--ink-3)', width:'28px' }}>{count}</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ── FORM ── */}
+      <div style={{ background:'var(--card-bg)', borderRadius:'20px', padding:'28px', marginBottom:'36px', boxShadow:'var(--shadow-sm)', border:`1px solid var(--border)` }}>
+        <h3 style={{ fontSize:'1rem', fontWeight:600, color:'var(--ink)', marginBottom:'18px' }}>Deja tu reseña</h3>
+
+        {/* Star picker */}
+        <div style={{ marginBottom:'16px' }}>
+          <p style={{ fontSize:'0.72rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.7px', marginBottom:'8px' }}>Tu calificación *</p>
+          <div style={{ display:'flex', gap:'6px' }}>
+            {[1,2,3,4,5].map(s => (
+              <span
+                key={s}
+                className="star"
+                style={{ fontSize:'1.8rem', color:(hoverStar||estrellas) >= s ? 'var(--gold)' : 'var(--ink-3)', cursor:'pointer', lineHeight:1, transition:'color 0.15s, transform 0.15s' }}
+                onMouseEnter={() => setHoverStar(s)}
+                onMouseLeave={() => setHoverStar(0)}
+                onClick={() => setEstrellas(s)}
+              >★</span>
+            ))}
+            {estrellas > 0 && (
+              <span style={{ fontSize:'0.8rem', color:'var(--ink-3)', alignSelf:'center', marginLeft:'6px' }}>
+                {['','Malo 😕','Regular 😐','Bueno 🙂','Muy bueno 😊','¡Excelente! 🤩'][estrellas]}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Inputs */}
+        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px', marginBottom:'12px' }}>
+          <div>
+            <p style={{ fontSize:'0.72rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.7px', marginBottom:'6px' }}>Tu nombre *</p>
+            <input className="form-input" placeholder="Ej: María González" value={nombre} onChange={e => setNombre(e.target.value)} />
+          </div>
+          <div>
+            <p style={{ fontSize:'0.72rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.7px', marginBottom:'6px' }}>Producto (opcional)</p>
+            <input className="form-input" placeholder="Ej: Acuaprime 120ml" value={producto} onChange={e => setProducto(e.target.value)} />
+          </div>
+        </div>
+
+        <div style={{ marginBottom:'16px' }}>
+          <p style={{ fontSize:'0.72rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.7px', marginBottom:'6px' }}>Tu comentario *</p>
+          <textarea
+            className="form-input"
+            placeholder="Cuéntanos tu experiencia con el producto o la tienda..."
+            value={texto}
+            onChange={e => setTexto(e.target.value)}
+            rows={4}
+            style={{ resize:'vertical', minHeight:'100px', lineHeight:1.6 }}
+          />
+          <p style={{ fontSize:'0.68rem', color: texto.length < 10 && texto.length > 0 ? '#ef4444' : 'var(--ink-3)', marginTop:'4px', textAlign:'right' }}>
+            {texto.length} / mínimo 10 caracteres
+          </p>
+        </div>
+
+        {error && (
+          <div style={{ background:'rgba(239,68,68,0.1)', border:'1px solid rgba(239,68,68,0.3)', borderRadius:'10px', padding:'10px 14px', marginBottom:'14px', fontSize:'0.82rem', color:'#ef4444' }}>
+            {error}
+          </div>
+        )}
+
+        {enviado && (
+          <div style={{ background:'rgba(34,197,94,0.1)', border:'1px solid rgba(34,197,94,0.3)', borderRadius:'10px', padding:'10px 14px', marginBottom:'14px', fontSize:'0.82rem', color:'#16a34a', display:'flex', alignItems:'center', gap:'8px' }}>
+            ✅ ¡Gracias por tu reseña! Ya está publicada.
+          </div>
+        )}
+
+        <button className="pill-btn pill-btn--accent" onClick={handleSubmit} style={{ padding:'12px 28px', fontSize:'0.88rem' }}>
+          Publicar reseña
+        </button>
+      </div>
+
+      {/* ── REVIEW CARDS ── */}
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(300px, 1fr))', gap:'16px' }}>
+        {reviews.map((r, i) => (
+          <div
+            key={r.id}
+            className="fade-up"
+            style={{ background:'var(--card-bg)', borderRadius:'18px', padding:'22px 24px', boxShadow:'var(--shadow-sm)', border:`1px solid var(--border)`, animationDelay:`${i * 0.04}s` }}
+          >
+            {/* Header de la reseña */}
+            <div style={{ display:'flex', alignItems:'center', gap:'12px', marginBottom:'12px' }}>
+              <div style={{ width:'42px', height:'42px', borderRadius:'50%', background: dark ? 'rgba(255,255,255,0.08)' : '#f0f0ee', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'1.4rem', flexShrink:0 }}>
+                {r.avatar}
+              </div>
+              <div style={{ flex:1, minWidth:0 }}>
+                <p style={{ fontWeight:600, fontSize:'0.9rem', color:'var(--ink)', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{r.nombre}</p>
+                <p style={{ fontSize:'0.68rem', color:'var(--ink-3)', marginTop:'1px' }}>{r.fecha}</p>
+              </div>
+              {/* Stars */}
+              <div style={{ display:'flex', gap:'1px', flexShrink:0 }}>
+                {[1,2,3,4,5].map(s => (
+                  <span key={s} style={{ fontSize:'0.78rem', color: s <= r.estrellas ? 'var(--gold)' : 'var(--ink-3)' }}>★</span>
+                ))}
+              </div>
+            </div>
+
+            {/* Texto */}
+            <p style={{ fontSize:'0.86rem', color:'var(--ink-2)', lineHeight:1.7, marginBottom:'12px' }}>
+              "{r.texto}"
+            </p>
+
+            {/* Producto */}
+            <div style={{ display:'inline-flex', alignItems:'center', gap:'5px', background: dark ? 'rgba(26,92,255,0.15)' : 'rgba(26,92,255,0.07)', borderRadius:'99px', padding:'4px 10px' }}>
+              <span style={{ fontSize:'0.6rem' }}>🛒</span>
+              <span style={{ fontSize:'0.68rem', fontWeight:600, color:'var(--accent)' }}>{r.producto}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+};
 export default function App() {
   const [productos, setProductos]   = useState([]);
   const [carrito, setCarrito]       = useState([]);
@@ -911,6 +1140,10 @@ export default function App() {
             </div>
           )}
         </section>
+
+        {/* ── REVIEWS ── */}
+        <ReviewsSection dark={dark} />
+
       </main>
 
       {/* ── BOTTOM NAV ── */}
