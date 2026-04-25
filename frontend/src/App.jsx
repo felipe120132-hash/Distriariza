@@ -39,6 +39,99 @@ const GlobalStyles = () => (
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: var(--ink-3); border-radius: 99px; }
 
+    /* ── Aquarium hero ── */
+    .aquarium-hero {
+      position: relative;
+      width: 100%;
+      height: 340px;
+      background: linear-gradient(180deg, #0a3d6b 0%, #0d5fa0 40%, #1a8cb8 75%, #2db8c8 100%);
+      border-radius: 24px;
+      overflow: hidden;
+      margin-bottom: 40px;
+    }
+
+    /* caustics light effect on water surface */
+    @keyframes caustics {
+      0%,100% { opacity: 0.18; transform: scaleX(1) translateX(0); }
+      50%      { opacity: 0.28; transform: scaleX(1.06) translateX(12px); }
+    }
+    .caustic-ray {
+      position: absolute;
+      top: 0;
+      width: 3px;
+      height: 100%;
+      background: linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0) 60%);
+      transform-origin: top center;
+      animation: caustics 4s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    /* bubbles */
+    @keyframes bubble {
+      0%   { transform: translateY(0) translateX(0) scale(1); opacity: 0.7; }
+      50%  { transform: translateY(-60px) translateX(6px) scale(1.1); opacity: 0.5; }
+      100% { transform: translateY(-120px) translateX(-4px) scale(0.8); opacity: 0; }
+    }
+    .bubble {
+      position: absolute;
+      border-radius: 50%;
+      border: 1.5px solid rgba(255,255,255,0.55);
+      background: rgba(255,255,255,0.1);
+      animation: bubble linear infinite;
+      pointer-events: none;
+    }
+
+    /* seaweed */
+    @keyframes sway {
+      0%,100% { transform-origin: bottom center; transform: rotate(-8deg) scaleY(1); }
+      50%      { transform-origin: bottom center; transform: rotate(8deg) scaleY(1.03); }
+    }
+    .seaweed { animation: sway ease-in-out infinite; }
+
+    /* fish swim left→right */
+    @keyframes swimRight {
+      0%   { transform: translateX(-120px); }
+      100% { transform: translateX(calc(100vw + 120px)); }
+    }
+    /* fish swim right→left (flipped) */
+    @keyframes swimLeft {
+      0%   { transform: translateX(calc(100vw + 120px)) scaleX(-1); }
+      100% { transform: translateX(-120px) scaleX(-1); }
+    }
+    .fish {
+      position: absolute;
+      pointer-events: none;
+      will-change: transform;
+    }
+    .fish-r { animation: swimRight linear infinite; }
+    .fish-l { animation: swimLeft  linear infinite; }
+
+    /* subtle shimmer overlay at top (water surface) */
+    @keyframes shimmer {
+      0%,100% { opacity: 0.12; }
+      50%      { opacity: 0.22; }
+    }
+    .water-surface {
+      position: absolute; top: 0; left: 0; right: 0; height: 24px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 100%);
+      animation: shimmer 3s ease-in-out infinite;
+    }
+
+    /* sandy bottom */
+    .tank-sand {
+      position: absolute; bottom: 0; left: 0; right: 0; height: 36px;
+      background: linear-gradient(180deg, #c9a84c 0%, #a87c2a 100%);
+      border-radius: 0 0 24px 24px;
+    }
+
+    /* hero text overlay */
+    .hero-text {
+      position: absolute;
+      bottom: 52px;
+      left: 36px;
+      z-index: 20;
+    }
+
     /* ── Loader ── */
     @keyframes spin { to { transform: rotate(360deg); } }
     .loader-ring {
@@ -136,6 +229,165 @@ const Loader = () => (
       </p>
     </div>
     <div className="loader-ring" />
+  </div>
+);
+
+/* ─────────────────────────────────────────────
+   AQUARIUM HERO
+───────────────────────────────────────────── */
+
+/* SVG fish shapes */
+const FishSVG = ({ color = '#f97316', size = 40, accent = '#fbbf24' }) => (
+  <svg width={size} height={size * 0.55} viewBox="0 0 80 44" fill="none">
+    {/* tail */}
+    <path d="M64 22 L80 6 L80 38 Z" fill={accent} opacity="0.9"/>
+    {/* body */}
+    <ellipse cx="38" cy="22" rx="28" ry="16" fill={color}/>
+    {/* belly highlight */}
+    <ellipse cx="34" cy="25" rx="18" ry="9" fill="rgba(255,255,255,0.18)"/>
+    {/* fin top */}
+    <path d="M30 6 Q38 0 46 8 L38 10 Z" fill={accent}/>
+    {/* eye */}
+    <circle cx="18" cy="19" r="4" fill="white"/>
+    <circle cx="17" cy="19" r="2" fill="#1a1a2e"/>
+    <circle cx="16.2" cy="18.2" r="0.7" fill="white"/>
+    {/* stripes */}
+    <path d="M36 8 Q34 22 36 36" stroke="rgba(0,0,0,0.12)" strokeWidth="1.5" fill="none"/>
+    <path d="M28 10 Q26 22 28 34" stroke="rgba(0,0,0,0.10)" strokeWidth="1.2" fill="none"/>
+  </svg>
+);
+
+const FishSmall = ({ color = '#06b6d4', size = 28 }) => (
+  <svg width={size} height={size * 0.55} viewBox="0 0 60 33" fill="none">
+    <path d="M48 16.5 L60 4 L60 29 Z" fill={color} opacity="0.7"/>
+    <ellipse cx="28" cy="16" rx="22" ry="13" fill={color}/>
+    <ellipse cx="24" cy="19" rx="14" ry="7" fill="rgba(255,255,255,0.2)"/>
+    <circle cx="13" cy="14" r="3.5" fill="white"/>
+    <circle cx="12" cy="14" r="1.8" fill="#1a1a2e"/>
+  </svg>
+);
+
+const FISH_DATA = [
+  { id:1, color:'#f97316', accent:'#fbbf24', size:48, top:'22%',  dir:'r', duration:'18s', delay:'0s'   },
+  { id:2, color:'#ec4899', accent:'#f9a8d4', size:38, top:'45%',  dir:'l', duration:'22s', delay:'4s'   },
+  { id:3, color:'#06b6d4', accent:'#67e8f9', size:54, top:'30%',  dir:'r', duration:'26s', delay:'8s'   },
+  { id:4, color:'#a855f7', accent:'#d8b4fe', size:34, top:'58%',  dir:'l', duration:'19s', delay:'2s'   },
+  { id:5, color:'#22c55e', accent:'#86efac', size:42, top:'15%',  dir:'l', duration:'30s', delay:'12s'  },
+  { id:6, color:'#f59e0b', accent:'#fde68a', size:30, top:'68%',  dir:'r', duration:'16s', delay:'6s'   },
+  { id:7, color:'#38bdf8', accent:'#bae6fd', size:26, top:'38%',  dir:'r', duration:'24s', delay:'15s'  },
+  { id:8, color:'#fb923c', accent:'#fed7aa', size:44, top:'52%',  dir:'l', duration:'20s', delay:'9s'   },
+];
+
+const BUBBLE_DATA = [
+  { left:'12%', bottom:'40px', size:6,  delay:'0s',  dur:'6s'  },
+  { left:'28%', bottom:'40px', size:9,  delay:'2s',  dur:'8s'  },
+  { left:'45%', bottom:'40px', size:5,  delay:'1s',  dur:'7s'  },
+  { left:'62%', bottom:'40px', size:8,  delay:'3s',  dur:'9s'  },
+  { left:'78%', bottom:'40px', size:6,  delay:'0.5s',dur:'6.5s'},
+  { left:'90%', bottom:'40px', size:10, delay:'4s',  dur:'10s' },
+];
+
+const RAYS = [8, 18, 30, 42, 55, 66, 78, 88];
+
+const SEAWEEDS = [
+  { left:'6%',  h:80, w:14, color:'#16a34a', delay:'0s',   dur:'3.5s' },
+  { left:'14%', h:60, w:10, color:'#15803d', delay:'0.5s', dur:'4s'   },
+  { left:'72%', h:90, w:15, color:'#166534', delay:'1s',   dur:'3.8s' },
+  { left:'82%', h:55, w:10, color:'#16a34a', delay:'0.3s', dur:'4.2s' },
+  { left:'91%', h:70, w:12, color:'#15803d', delay:'0.8s', dur:'3.6s' },
+];
+
+const PEBBLES = [
+  { left:'5%',  size:12, color:'#92400e' }, { left:'18%', size:8,  color:'#78350f' },
+  { left:'35%', size:14, color:'#92400e' }, { left:'52%', size:9,  color:'#a16207' },
+  { left:'65%', size:11, color:'#78350f' }, { left:'80%', size:13, color:'#92400e' },
+  { left:'94%', size:7,  color:'#a16207' },
+];
+
+const AquariumHero = ({ busqueda, setBusqueda }) => (
+  <div className="aquarium-hero">
+    {/* light rays */}
+    {RAYS.map((l, i) => (
+      <div key={i} className="caustic-ray" style={{ left: `${l}%`, animationDelay: `${i * 0.6}s`, animationDuration: `${3.5 + i * 0.3}s` }} />
+    ))}
+
+    {/* water surface shimmer */}
+    <div className="water-surface" />
+
+    {/* seaweed */}
+    {SEAWEEDS.map((s, i) => (
+      <div key={i} className="seaweed" style={{
+        position:'absolute', bottom:'36px', left: s.left, width: s.w, height: s.h,
+        background: `linear-gradient(180deg, ${s.color} 0%, #14532d 100%)`,
+        borderRadius: '6px 6px 2px 2px',
+        animationDelay: s.delay, animationDuration: s.dur, zIndex: 3
+      }}/>
+    ))}
+
+    {/* pebbles */}
+    {PEBBLES.map((p, i) => (
+      <div key={i} style={{
+        position:'absolute', bottom:`${36 + (i % 2) * 4}px`, left: p.left,
+        width: p.size, height: p.size * 0.65,
+        background: p.color, borderRadius: '50%', opacity: 0.85, zIndex: 4
+      }}/>
+    ))}
+
+    {/* sand */}
+    <div className="tank-sand" />
+
+    {/* bubbles */}
+    {BUBBLE_DATA.map((b, i) => (
+      <div key={i} className="bubble" style={{
+        left: b.left, bottom: b.bottom,
+        width: b.size, height: b.size,
+        animationDelay: b.delay, animationDuration: b.dur, zIndex: 5
+      }}/>
+    ))}
+
+    {/* fish */}
+    {FISH_DATA.map(f => (
+      <div key={f.id} className={`fish fish-${f.dir}`} style={{
+        top: f.top, zIndex: 10,
+        animationDuration: f.duration,
+        animationDelay: f.delay,
+        /* start them at random positions */
+        ...(f.dir === 'r' ? {} : {})
+      }}>
+        {f.size > 36
+          ? <FishSVG color={f.color} accent={f.accent} size={f.size}/>
+          : <FishSmall color={f.color} size={f.size}/>
+        }
+      </div>
+    ))}
+
+    {/* hero text */}
+    <div className="hero-text" style={{ zIndex: 20 }}>
+      <p style={{ fontSize:'0.72rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'1.8px', color:'rgba(255,255,255,0.7)', marginBottom:'8px' }}>
+        Tienda en línea
+      </p>
+      <h1 style={{ fontFamily:'var(--font-display)', fontSize:'clamp(1.8rem,4.5vw,2.8rem)', fontWeight:700, color:'#fff', lineHeight:1.15, marginBottom:'20px', textShadow:'0 2px 12px rgba(0,0,0,0.35)' }}>
+        Todo para tus<br/>peces y hámsters.
+      </h1>
+      {/* search inside hero */}
+      <div style={{ position:'relative', maxWidth:'320px' }}>
+        <span style={{ position:'absolute', left:'14px', top:'50%', transform:'translateY(-50%)', fontSize:'0.9rem', opacity:0.55 }}>🔍</span>
+        <input
+          type="text"
+          placeholder="Buscar productos..."
+          value={busqueda}
+          onChange={e => setBusqueda(e.target.value)}
+          style={{
+            width:'100%', padding:'13px 18px 13px 40px',
+            borderRadius:'99px', border:'none',
+            background:'rgba(255,255,255,0.18)',
+            backdropFilter:'blur(10px)',
+            color:'#fff', fontFamily:'var(--font-body)', fontSize:'0.88rem',
+            outline:'none',
+          }}
+        />
+      </div>
+    </div>
   </div>
 );
 
@@ -522,28 +774,8 @@ export default function App() {
 
       <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 24px 120px' }}>
 
-        {/* ── HERO ── */}
-        <section style={{ marginBottom: '48px' }}>
-          <p style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--accent)', marginBottom: '10px' }}>
-            Tienda en línea
-          </p>
-          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem, 5vw, 3rem)', fontWeight: 700, color: 'var(--ink)', lineHeight: 1.15, marginBottom: '28px' }}>
-            Todo para tus<br />peces y hámsters.
-          </h1>
-
-          {/* search */}
-          <div style={{ position: 'relative', maxWidth: '360px' }}>
-            <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', fontSize: '0.9rem', opacity: 0.4 }}>🔍</span>
-            <input
-              type="text"
-              placeholder="Buscar productos..."
-              value={busqueda}
-              onChange={e => setBusqueda(e.target.value)}
-              className="form-input"
-              style={{ paddingLeft: '38px', borderRadius: '99px' }}
-            />
-          </div>
-        </section>
+        {/* ── AQUARIUM HERO ── */}
+        <AquariumHero busqueda={busqueda} setBusqueda={setBusqueda} />
 
         {/* ── CATEGORIES ── */}
         <section style={{ marginBottom: '40px' }}>
