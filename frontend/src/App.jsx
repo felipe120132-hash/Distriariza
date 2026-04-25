@@ -89,17 +89,17 @@ const GlobalStyles = ({ dark }) => (
     .seaweed { animation: sway ease-in-out infinite; }
 
     /*
-      FIX: Los peces SVG tienen el ojo en la izquierda → miran hacia la IZQUIERDA por defecto.
-      swimRight: el pez va de izq a der → necesita mirar a la derecha → scaleX(-1) para voltear
-      swimLeft:  el pez va de der a izq → mira izquierda naturalmente → sin flip (scaleX(1))
+      Los peces SVG tienen nariz en la DERECHA y cola en la IZQUIERDA → miran a la DERECHA.
+      swimRight: va izq→der, pez ya mira derecha → sin flip, scaleX(1) ✓
+      swimLeft:  va der→izq, hay que voltear → scaleX(-1) para que mire izquierda ✓
     */
     @keyframes swimRight {
-      0%   { transform: translateX(-160px) scaleX(-1); }
-      100% { transform: translateX(calc(100vw + 160px)) scaleX(-1); }
+      0%   { transform: translateX(-160px) scaleX(1); }
+      100% { transform: translateX(calc(100vw + 160px)) scaleX(1); }
     }
     @keyframes swimLeft {
-      0%   { transform: translateX(calc(100vw + 160px)) scaleX(1); }
-      100% { transform: translateX(-160px) scaleX(1); }
+      0%   { transform: translateX(calc(100vw + 160px)) scaleX(-1); }
+      100% { transform: translateX(-160px) scaleX(-1); }
     }
     .fish { position: absolute; pointer-events: none; will-change: transform; }
     .fish-r { animation: swimRight linear infinite; }
@@ -291,27 +291,52 @@ const Loader = () => (
    swimRight usa scaleX(-1) para voltearlos → miran a la derecha
    swimLeft  no voltea   → miran izquierda  (dirección correcta)
 ───────────────────────────────────────────── */
+/*
+  Pez mirando claramente a la DERECHA:
+  - Cola de abanico en la IZQUIERDA (x=0..18)
+  - Cuerpo ovalado en el centro
+  - Nariz puntiaguda en la DERECHA (x=76)
+  - Ojo cerca del extremo derecho (x=62)
+
+  swimRight = scaleX(1)  → mira derecha, va a la derecha ✓
+  swimLeft  = scaleX(-1) → flip, mira izquierda, va a la izquierda ✓
+*/
 const FishSVG = ({ color = '#f97316', size = 40, accent = '#fbbf24' }) => (
-  <svg width={size} height={size * 0.55} viewBox="0 0 80 44" fill="none">
-    <path d="M16 22 L0 6 L0 38 Z" fill={accent} opacity="0.9"/>
-    <ellipse cx="42" cy="22" rx="28" ry="16" fill={color}/>
-    <ellipse cx="46" cy="25" rx="18" ry="9" fill="rgba(255,255,255,0.18)"/>
-    <path d="M50 6 Q42 0 34 8 L42 10 Z" fill={accent}/>
-    <circle cx="62" cy="19" r="4" fill="white"/>
-    <circle cx="63" cy="19" r="2" fill="#1a1a2e"/>
-    <circle cx="63.8" cy="18.2" r="0.7" fill="white"/>
-    <path d="M44 8 Q46 22 44 36" stroke="rgba(0,0,0,0.12)" strokeWidth="1.5" fill="none"/>
-    <path d="M52 10 Q54 22 52 34" stroke="rgba(0,0,0,0.10)" strokeWidth="1.2" fill="none"/>
+  <svg width={size} height={size * 0.55} viewBox="0 0 80 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+    {/* Cola de abanico — IZQUIERDA */}
+    <path d="M18 22 L0 4  L4 22  L0 40 Z" fill={accent} opacity="0.95"/>
+    {/* Aleta dorsal — arriba */}
+    <path d="M36 8 Q44 0 52 7 L50 14 Q44 10 36 14 Z" fill={accent} opacity="0.85"/>
+    {/* Cuerpo principal */}
+    <ellipse cx="44" cy="22" rx="28" ry="16" fill={color}/>
+    {/* Brillo */}
+    <ellipse cx="46" cy="17" rx="14" ry="7" fill="rgba(255,255,255,0.22)" transform="rotate(-10 46 17)"/>
+    {/* Nariz puntiaguda — DERECHA */}
+    <path d="M70 22 L58 14 L58 30 Z" fill={color}/>
+    <path d="M76 22 L62 13 L62 31 Z" fill={accent} opacity="0.7"/>
+    {/* Ojo — lado derecho del cuerpo */}
+    <circle cx="60" cy="18" r="4.5" fill="white"/>
+    <circle cx="61" cy="18" r="2.5" fill="#1a1a2e"/>
+    <circle cx="61.8" cy="17" r="0.9" fill="white"/>
+    {/* Escamas */}
+    <path d="M38 10 Q36 22 38 34" stroke="rgba(0,0,0,0.09)" strokeWidth="1.4" fill="none"/>
+    <path d="M28 13 Q26 22 28 31" stroke="rgba(0,0,0,0.07)" strokeWidth="1.2" fill="none"/>
   </svg>
 );
 
 const FishSmall = ({ color = '#06b6d4', size = 28 }) => (
-  <svg width={size} height={size * 0.55} viewBox="0 0 60 33" fill="none">
-    <path d="M12 16.5 L0 4 L0 29 Z" fill={color} opacity="0.7"/>
-    <ellipse cx="32" cy="16" rx="22" ry="13" fill={color}/>
-    <ellipse cx="36" cy="19" rx="14" ry="7" fill="rgba(255,255,255,0.2)"/>
-    <circle cx="47" cy="14" r="3.5" fill="white"/>
-    <circle cx="48" cy="14" r="1.8" fill="#1a1a2e"/>
+  <svg width={size} height={size * 0.55} viewBox="0 0 64 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+    {/* Cola — IZQUIERDA */}
+    <path d="M14 18 L0 4  L3 18  L0 32 Z" fill={color} opacity="0.8"/>
+    {/* Cuerpo */}
+    <ellipse cx="36" cy="18" rx="22" ry="13" fill={color}/>
+    <ellipse cx="37" cy="13" rx="11" ry="6" fill="rgba(255,255,255,0.22)" transform="rotate(-8 37 13)"/>
+    {/* Nariz — DERECHA */}
+    <path d="M60 18 L50 11 L50 25 Z" fill={color} opacity="0.8"/>
+    {/* Ojo — lado derecho */}
+    <circle cx="49" cy="14" r="3.8" fill="white"/>
+    <circle cx="50" cy="14" r="2" fill="#1a1a2e"/>
+    <circle cx="50.7" cy="13.2" r="0.7" fill="white"/>
   </svg>
 );
 
