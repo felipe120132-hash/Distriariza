@@ -88,20 +88,20 @@ const GlobalStyles = () => (
     }
     .seaweed { animation: sway ease-in-out infinite; }
 
-    /* fish swim left→right */
+    /* fish swim left→right: starts off-screen left, ends off-screen right */
     @keyframes swimRight {
-      0%   { transform: translateX(-120px); }
-      100% { transform: translateX(calc(100vw + 120px)); }
+      0%   { left: -120px; }
+      100% { left: calc(100% + 120px); }
     }
-    /* fish swim right→left (flipped) */
+    /* fish swim right→left: starts off-screen right, ends off-screen left */
     @keyframes swimLeft {
-      0%   { transform: translateX(calc(100vw + 120px)) scaleX(-1); }
-      100% { transform: translateX(-120px) scaleX(-1); }
+      0%   { right: -120px; }
+      100% { right: calc(100% + 120px); }
     }
     .fish {
       position: absolute;
       pointer-events: none;
-      will-change: transform;
+      will-change: left, right;
     }
     .fish-r { animation: swimRight linear infinite; }
     .fish-l { animation: swimLeft  linear infinite; }
@@ -161,11 +161,36 @@ const GlobalStyles = () => (
     .panel { animation: slideIn 0.32s cubic-bezier(0.22,1,0.36,1) both; }
 
     /* ── Modal ── */
+    @keyframes overlayIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
     @keyframes modalIn {
-      from { opacity: 0; transform: translate(-50%,-48%) scale(0.96); }
+      from { opacity: 0; transform: translate(-50%,-46%) scale(0.93); }
       to   { opacity: 1; transform: translate(-50%,-50%) scale(1); }
     }
-    .modal { animation: modalIn 0.3s cubic-bezier(0.22,1,0.36,1) both; }
+    @keyframes modalOut {
+      from { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+      to   { opacity: 0; transform: translate(-50%,-54%) scale(0.95); }
+    }
+    .modal { animation: modalIn 0.38s cubic-bezier(0.34,1.56,0.64,1) both; }
+    .modal-overlay { animation: overlayIn 0.25s ease both; }
+
+    /* image zoom on modal open */
+    .modal-img {
+      transition: transform 0.5s cubic-bezier(0.22,1,0.36,1);
+    }
+    .modal-img:hover { transform: scale(1.06); }
+
+    /* staggered content reveal inside modal */
+    @keyframes revealUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .modal-content-1 { animation: revealUp 0.35s 0.15s ease both; }
+    .modal-content-2 { animation: revealUp 0.35s 0.22s ease both; }
+    .modal-content-3 { animation: revealUp 0.35s 0.30s ease both; }
+    .modal-content-4 { animation: revealUp 0.35s 0.38s ease both; }
 
     /* ── Pill button ── */
     .pill-btn {
@@ -236,29 +261,29 @@ const Loader = () => (
    AQUARIUM HERO
 ───────────────────────────────────────────── */
 
-/* SVG fish shapes */
-const FishSVG = ({ color = '#f97316', size = 40, accent = '#fbbf24' }) => (
-  <svg width={size} height={size * 0.55} viewBox="0 0 80 44" fill="none">
-    {/* tail */}
+/* SVG fish shapes — all face RIGHT by default */
+const FishSVG = ({ color = '#f97316', size = 40, accent = '#fbbf24', flip = false }) => (
+  <svg
+    width={size} height={size * 0.55} viewBox="0 0 80 44" fill="none"
+    style={flip ? { transform: 'scaleX(-1)' } : {}}
+  >
     <path d="M64 22 L80 6 L80 38 Z" fill={accent} opacity="0.9"/>
-    {/* body */}
     <ellipse cx="38" cy="22" rx="28" ry="16" fill={color}/>
-    {/* belly highlight */}
     <ellipse cx="34" cy="25" rx="18" ry="9" fill="rgba(255,255,255,0.18)"/>
-    {/* fin top */}
     <path d="M30 6 Q38 0 46 8 L38 10 Z" fill={accent}/>
-    {/* eye */}
     <circle cx="18" cy="19" r="4" fill="white"/>
     <circle cx="17" cy="19" r="2" fill="#1a1a2e"/>
     <circle cx="16.2" cy="18.2" r="0.7" fill="white"/>
-    {/* stripes */}
     <path d="M36 8 Q34 22 36 36" stroke="rgba(0,0,0,0.12)" strokeWidth="1.5" fill="none"/>
     <path d="M28 10 Q26 22 28 34" stroke="rgba(0,0,0,0.10)" strokeWidth="1.2" fill="none"/>
   </svg>
 );
 
-const FishSmall = ({ color = '#06b6d4', size = 28 }) => (
-  <svg width={size} height={size * 0.55} viewBox="0 0 60 33" fill="none">
+const FishSmall = ({ color = '#06b6d4', size = 28, flip = false }) => (
+  <svg
+    width={size} height={size * 0.55} viewBox="0 0 60 33" fill="none"
+    style={flip ? { transform: 'scaleX(-1)' } : {}}
+  >
     <path d="M48 16.5 L60 4 L60 29 Z" fill={color} opacity="0.7"/>
     <ellipse cx="28" cy="16" rx="22" ry="13" fill={color}/>
     <ellipse cx="24" cy="19" rx="14" ry="7" fill="rgba(255,255,255,0.2)"/>
@@ -351,12 +376,10 @@ const AquariumHero = ({ busqueda, setBusqueda }) => (
         top: f.top, zIndex: 10,
         animationDuration: f.duration,
         animationDelay: f.delay,
-        /* start them at random positions */
-        ...(f.dir === 'r' ? {} : {})
       }}>
         {f.size > 36
-          ? <FishSVG color={f.color} accent={f.accent} size={f.size}/>
-          : <FishSmall color={f.color} size={f.size}/>
+          ? <FishSVG color={f.color} accent={f.accent} size={f.size} flip={f.dir === 'l'}/>
+          : <FishSmall color={f.color} size={f.size} flip={f.dir === 'l'}/>
         }
       </div>
     ))}
@@ -460,10 +483,19 @@ const ProductCard = ({ p, onAdd, onOpen }) => (
     {/* image */}
     <div
       onClick={() => onOpen(p)}
-      style={{ background: 'var(--bg)', height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: '20px' }}
+      style={{
+        background: 'var(--bg)', height: '200px',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        cursor: 'pointer', padding: '20px', overflow: 'hidden',
+        borderRadius: '20px 20px 0 0',
+        transition: 'background 0.2s'
+      }}
+      onMouseOver={e => e.currentTarget.style.background = '#eceae5'}
+      onMouseOut={e => e.currentTarget.style.background = 'var(--bg)'}
     >
-      <img src={imgSrc(p.imagen_url)} alt={p.nombre} style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain', transition: 'transform 0.3s' }}
-        onMouseOver={e => e.currentTarget.style.transform = 'scale(1.05)'}
+      <img src={imgSrc(p.imagen_url)} alt={p.nombre}
+        style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain', transition: 'transform 0.35s cubic-bezier(0.22,1,0.36,1)' }}
+        onMouseOver={e => e.currentTarget.style.transform = 'scale(1.08)'}
         onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
       />
     </div>
@@ -499,61 +531,112 @@ const ProductModal = ({ p, onClose, onAdd }) => {
   const desc = DESCRIPCIONES[p.nombre];
   return (
     <>
+      {/* overlay */}
       <div
+        className="modal-overlay"
         onClick={onClose}
-        style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(6px)', zIndex: 3000 }}
+        style={{
+          position: 'fixed', inset: 0,
+          background: 'rgba(10,10,10,0.55)',
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
+          zIndex: 3000
+        }}
       />
+
+      {/* panel */}
       <div
         className="modal"
-        style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: '90%', maxWidth: '460px', maxHeight: '88vh', overflowY: 'auto', background: 'var(--surface)', zIndex: 3001, borderRadius: '24px', padding: '28px' }}
+        style={{
+          position: 'fixed', top: '50%', left: '50%',
+          transform: 'translate(-50%,-50%)',
+          width: '90%', maxWidth: '480px', maxHeight: '90vh',
+          overflowY: 'auto',
+          background: 'var(--surface)',
+          zIndex: 3001,
+          borderRadius: '28px',
+          boxShadow: '0 32px 80px rgba(0,0,0,0.22)',
+        }}
       >
-        {/* close */}
+        {/* close button */}
         <button
           onClick={onClose}
-          style={{ position: 'absolute', top: '18px', right: '18px', background: '#f0f0ee', border: 'none', borderRadius: '50%', width: '32px', height: '32px', cursor: 'pointer', fontSize: '0.85rem', color: 'var(--ink-2)' }}
+          style={{
+            position: 'absolute', top: '16px', right: '16px',
+            background: 'rgba(0,0,0,0.06)', border: 'none',
+            borderRadius: '50%', width: '34px', height: '34px',
+            cursor: 'pointer', fontSize: '0.85rem', color: 'var(--ink-2)',
+            zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center',
+            transition: 'background 0.2s'
+          }}
+          onMouseOver={e => e.currentTarget.style.background = 'rgba(0,0,0,0.12)'}
+          onMouseOut={e => e.currentTarget.style.background = 'rgba(0,0,0,0.06)'}
         >✕</button>
 
-        {/* image */}
-        <div style={{ background: 'var(--bg)', borderRadius: '18px', padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '22px', minHeight: '200px' }}>
-          <img src={imgSrc(p.imagen_url)} alt={p.nombre} style={{ maxHeight: '190px', maxWidth: '100%', objectFit: 'contain' }} />
+        {/* image block */}
+        <div style={{
+          background: 'var(--bg)', borderRadius: '28px 28px 0 0',
+          padding: '36px 28px 28px',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          minHeight: '220px', overflow: 'hidden'
+        }}>
+          <img
+            className="modal-img"
+            src={imgSrc(p.imagen_url)}
+            alt={p.nombre}
+            style={{ maxHeight: '200px', maxWidth: '100%', objectFit: 'contain', display: 'block' }}
+          />
         </div>
 
-        {/* category */}
-        <p style={{ fontSize: '0.7rem', color: 'var(--ink-3)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '6px' }}>
-          {p.categoria_nombre}
-        </p>
+        {/* content */}
+        <div style={{ padding: '24px 28px 28px' }}>
 
-        {/* name */}
-        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', fontWeight: 700, color: 'var(--ink)', marginBottom: '14px', lineHeight: 1.25 }}>
-          {p.nombre}
-        </h2>
+          <p className="modal-content-1" style={{
+            fontSize: '0.68rem', color: 'var(--ink-3)', fontWeight: 600,
+            textTransform: 'uppercase', letterSpacing: '0.9px', marginBottom: '6px'
+          }}>
+            {p.categoria_nombre}
+          </p>
 
-        {/* description */}
-        {desc ? (
-          <div style={{ color: 'var(--ink-2)', fontSize: '0.9rem', lineHeight: 1.7, marginBottom: '24px' }}>
-            <p style={{ color: 'var(--ink)', fontWeight: 500, marginBottom: '8px' }}>{desc.resumen}</p>
-            <p style={{ marginBottom: '10px' }}>{desc.cuerpo}</p>
-            <p style={{ fontSize: '0.82rem', color: 'var(--ink-3)', borderTop: '1px solid #f0f0ee', paddingTop: '10px' }}>
-              <strong style={{ color: 'var(--ink-2)' }}>Uso:</strong> {desc.uso}
-            </p>
+          <h2 className="modal-content-2" style={{
+            fontFamily: 'var(--font-display)', fontSize: '1.6rem',
+            fontWeight: 700, color: 'var(--ink)', marginBottom: '16px', lineHeight: 1.2
+          }}>
+            {p.nombre}
+          </h2>
+
+          <div className="modal-content-3" style={{ color: 'var(--ink-2)', fontSize: '0.9rem', lineHeight: 1.75, marginBottom: '28px' }}>
+            {desc ? (
+              <>
+                <p style={{ color: 'var(--ink)', fontWeight: 500, marginBottom: '10px' }}>{desc.resumen}</p>
+                <p style={{ marginBottom: '14px' }}>{desc.cuerpo}</p>
+                <div style={{ background: 'var(--bg)', borderRadius: '12px', padding: '12px 16px', fontSize: '0.82rem' }}>
+                  <span style={{ color: 'var(--ink-2)', fontWeight: 600 }}>Modo de uso: </span>
+                  <span style={{ color: 'var(--ink-2)' }}>{desc.uso}</span>
+                </div>
+              </>
+            ) : (
+              <p>{p.descripcion || 'Calidad garantizada para tu mascota.'}</p>
+            )}
           </div>
-        ) : (
-          <p style={{ color: 'var(--ink-2)', fontSize: '0.9rem', marginBottom: '24px' }}>{p.descripcion || 'Calidad garantizada para tu mascota.'}</p>
-        )}
 
-        {/* footer */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #f0f0ee', paddingTop: '20px' }}>
-          <div>
-            <p style={{ fontSize: '0.7rem', color: 'var(--ink-3)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '2px' }}>Precio</p>
-            <span style={{ fontSize: '1.5rem', fontWeight: 600, color: 'var(--ink)' }}>{moneda(p.precio)}</span>
+          {/* footer */}
+          <div className="modal-content-4" style={{
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            borderTop: '1px solid #f0f0ee', paddingTop: '20px'
+          }}>
+            <div>
+              <p style={{ fontSize: '0.68rem', color: 'var(--ink-3)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '3px' }}>Precio</p>
+              <span style={{ fontSize: '1.6rem', fontWeight: 600, color: 'var(--ink)', letterSpacing: '-0.5px' }}>{moneda(p.precio)}</span>
+            </div>
+            <button
+              className="pill-btn pill-btn--accent"
+              onClick={() => { onAdd(p); onClose(); }}
+              style={{ padding: '14px 28px', fontSize: '0.9rem' }}
+            >
+              Añadir al carrito
+            </button>
           </div>
-          <button
-            className="pill-btn pill-btn--accent"
-            onClick={() => { onAdd(p); onClose(); }}
-            style={{ padding: '13px 24px', fontSize: '0.88rem' }}
-          >
-            Añadir al carrito
-          </button>
         </div>
       </div>
     </>
