@@ -758,7 +758,7 @@ const REVIEWS_INICIALES = [
   {
     id: 'r1', nombre: 'Valentina Ospina', avatar: '🐠', estrellas: 5,
     fecha: 'hace 2 días',
-    texto: 'Llevo tiempo comprando en Distribuciones Ariza y nunca me han fallado. El Acuaprime es increíble, mis peces nunca han estado tan saludables. El envío fue súper rápido y el empaque llegó perfecto. ¡100% recomendado!',
+    texto: 'Llevo 3 años comprando en Distribuciones Ariza y nunca me han fallado. El Acuaprime es increíble, mis peces nunca han estado tan saludables. El envío fue súper rápido y el empaque llegó perfecto. ¡100% recomendado!',
     producto: 'Acuaprime 120ml',
   },
   {
@@ -797,7 +797,22 @@ const REVIEWS_INICIALES = [
    REVIEWS SECTION COMPONENT
 ───────────────────────────────────────────── */
 const ReviewsSection = ({ dark }) => {
-  const [reviews, setReviews]     = useState(REVIEWS_INICIALES);
+  const STORAGE_KEY = 'ariza_reviews_v1';
+
+  const [reviews, setReviews] = useState(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        // Merge: user reviews first, then any initial ones not already present
+        const userIds = new Set(parsed.map(r => r.id));
+        const missing = REVIEWS_INICIALES.filter(r => !userIds.has(r.id));
+        return [...parsed, ...missing];
+      }
+    } catch (_) {}
+    return REVIEWS_INICIALES;
+  });
+
   const [nombre, setNombre]       = useState('');
   const [texto, setTexto]         = useState('');
   const [producto, setProducto]   = useState('');
@@ -807,6 +822,11 @@ const ReviewsSection = ({ dark }) => {
   const [error, setError]         = useState('');
 
   const avatares = ['🐠','🐡','🐟','🦈','🐙','🐬','🦑','🐹','🐾'];
+
+  // Persist to localStorage whenever reviews change
+  useEffect(() => {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(reviews)); } catch (_) {}
+  }, [reviews]);
 
   const handleSubmit = () => {
     if (!nombre.trim())  return setError('Por favor ingresa tu nombre.');
