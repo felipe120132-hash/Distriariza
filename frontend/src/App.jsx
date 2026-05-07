@@ -85,18 +85,6 @@ const GlobalStyles = ({ dark }) => (
     }
     .seaweed { animation: sway ease-in-out infinite; }
 
-    @keyframes swimRight {
-      0%   { transform: translateX(-160px) scaleX(1); }
-      100% { transform: translateX(calc(100vw + 160px)) scaleX(1); }
-    }
-    @keyframes swimLeft {
-      0%   { transform: translateX(calc(100vw + 160px)) scaleX(-1); }
-      100% { transform: translateX(-160px) scaleX(-1); }
-    }
-    .fish { position: absolute; pointer-events: none; will-change: transform; }
-    .fish-r { animation: swimRight linear infinite; }
-    .fish-l { animation: swimLeft  linear infinite; }
-
     @keyframes shimmer {
       0%,100% { opacity: 0.12; }
       50%      { opacity: 0.22; }
@@ -240,7 +228,7 @@ const GlobalStyles = ({ dark }) => (
     .best-scroll::-webkit-scrollbar { display: none; }
 
     * { transition-property: background-color, border-color, color; transition-duration: 0.25s; }
-    .fish, .caustic-ray, .bubble, .seaweed { transition: none !important; }
+    .caustic-ray, .bubble, .seaweed { transition: none !important; }
     .parallax-layer { transition: none !important; }
   `}</style>
 );
@@ -265,48 +253,6 @@ const Loader = () => (
     <div className="loader-ring" />
   </div>
 );
-
-/* ─────────────────────────────────────────────
-   FISH SVGs
-───────────────────────────────────────────── */
-const FishSVG = ({ color = '#f97316', size = 40, accent = '#fbbf24' }) => (
-  <svg width={size} height={size * 0.55} viewBox="0 0 80 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M18 22 L0 4  L4 22  L0 40 Z" fill={accent} opacity="0.95"/>
-    <path d="M36 8 Q44 0 52 7 L50 14 Q44 10 36 14 Z" fill={accent} opacity="0.85"/>
-    <ellipse cx="44" cy="22" rx="28" ry="16" fill={color}/>
-    <ellipse cx="46" cy="17" rx="14" ry="7" fill="rgba(255,255,255,0.22)" transform="rotate(-10 46 17)"/>
-    <path d="M70 22 L58 14 L58 30 Z" fill={color}/>
-    <path d="M76 22 L62 13 L62 31 Z" fill={accent} opacity="0.7"/>
-    <circle cx="60" cy="18" r="4.5" fill="white"/>
-    <circle cx="61" cy="18" r="2.5" fill="#1a1a2e"/>
-    <circle cx="61.8" cy="17" r="0.9" fill="white"/>
-    <path d="M38 10 Q36 22 38 34" stroke="rgba(0,0,0,0.09)" strokeWidth="1.4" fill="none"/>
-    <path d="M28 13 Q26 22 28 31" stroke="rgba(0,0,0,0.07)" strokeWidth="1.2" fill="none"/>
-  </svg>
-);
-
-const FishSmall = ({ color = '#06b6d4', size = 28 }) => (
-  <svg width={size} height={size * 0.55} viewBox="0 0 64 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M14 18 L0 4  L3 18  L0 32 Z" fill={color} opacity="0.8"/>
-    <ellipse cx="36" cy="18" rx="22" ry="13" fill={color}/>
-    <ellipse cx="37" cy="13" rx="11" ry="6" fill="rgba(255,255,255,0.22)" transform="rotate(-8 37 13)"/>
-    <path d="M60 18 L50 11 L50 25 Z" fill={color} opacity="0.8"/>
-    <circle cx="49" cy="14" r="3.8" fill="white"/>
-    <circle cx="50" cy="14" r="2" fill="#1a1a2e"/>
-    <circle cx="50.7" cy="13.2" r="0.7" fill="white"/>
-  </svg>
-);
-
-const FISH_DATA = [
-  { id:1, color:'#f97316', accent:'#fbbf24', size:48, top:'22%', dir:'r', duration:'18s', delay:'0s'  },
-  { id:2, color:'#ec4899', accent:'#f9a8d4', size:38, top:'45%', dir:'l', duration:'22s', delay:'4s'  },
-  { id:3, color:'#06b6d4', accent:'#67e8f9', size:54, top:'30%', dir:'r', duration:'26s', delay:'8s'  },
-  { id:4, color:'#a855f7', accent:'#d8b4fe', size:34, top:'58%', dir:'l', duration:'19s', delay:'2s'  },
-  { id:5, color:'#22c55e', accent:'#86efac', size:42, top:'15%', dir:'l', duration:'30s', delay:'12s' },
-  { id:6, color:'#f59e0b', accent:'#fde68a', size:30, top:'68%', dir:'r', duration:'16s', delay:'6s'  },
-  { id:7, color:'#38bdf8', accent:'#bae6fd', size:26, top:'38%', dir:'r', duration:'24s', delay:'15s' },
-  { id:8, color:'#fb923c', accent:'#fed7aa', size:44, top:'52%', dir:'l', duration:'20s', delay:'9s'  },
-];
 
 const BUBBLE_DATA = [
   { left:'12%', bottom:'40px', size:6,  delay:'0s',   dur:'6s'   },
@@ -337,7 +283,7 @@ const PEBBLES = [
 const VIDEO_ID = "V9v7jGqTx7E";
 
 /* ─────────────────────────────────────────────
-   AQUARIUM HERO — con video de fondo
+   AQUARIUM HERO
 ───────────────────────────────────────────── */
 const AquariumHero = ({ busqueda, setBusqueda, scrollY = 0 }) => {
   const s = Math.max(0, Math.min(scrollY, 340));
@@ -364,11 +310,6 @@ const AquariumHero = ({ busqueda, setBusqueda, scrollY = 0 }) => {
           allow="autoplay; encrypted-media"
           title="Distribuciones Ariza"
         />
-        {/* Overlay azulado — mantiene la paleta acuática sobre el video */}
-        <div style={{
-          position: 'absolute', inset: 0,
-          background: 'linear-gradient(180deg, rgba(10,61,107,0.55) 0%, rgba(13,95,160,0.45) 40%, rgba(26,140,184,0.35) 75%, rgba(45,184,200,0.4) 100%)',
-        }} />
       </div>
 
       {/* ── RAYOS DE LUZ ── */}
@@ -396,15 +337,6 @@ const AquariumHero = ({ busqueda, setBusqueda, scrollY = 0 }) => {
       <div className="parallax-layer" style={{ position:'absolute', inset:0, transform:`translateY(${s * 0.15}px)`, willChange:'transform', zIndex:4 }}>
         {BUBBLE_DATA.map((b, i) => (
           <div key={i} className="bubble" style={{ left:b.left, bottom:b.bottom, width:b.size, height:b.size, animationDelay:b.delay, animationDuration:b.dur }} />
-        ))}
-      </div>
-
-      {/* ── PECES ── */}
-      <div className="parallax-layer" style={{ position:'absolute', inset:0, transform:`translateY(${s * 0.28}px)`, willChange:'transform', zIndex:5 }}>
-        {FISH_DATA.map(f => (
-          <div key={f.id} className={`fish fish-${f.dir}`} style={{ top:f.top, animationDuration:f.duration, animationDelay:f.delay }}>
-            {f.size > 36 ? <FishSVG color={f.color} accent={f.accent} size={f.size}/> : <FishSmall color={f.color} size={f.size}/>}
-          </div>
         ))}
       </div>
 
