@@ -332,39 +332,83 @@ const PEBBLES = [
 ];
 
 /* ─────────────────────────────────────────────
-   AQUARIUM HERO
+   VIDEO ID
+───────────────────────────────────────────── */
+const VIDEO_ID = "V9v7jGqTx7E";
+
+/* ─────────────────────────────────────────────
+   AQUARIUM HERO — con video de fondo
 ───────────────────────────────────────────── */
 const AquariumHero = ({ busqueda, setBusqueda, scrollY = 0 }) => {
   const s = Math.max(0, Math.min(scrollY, 340));
   return (
     <div className="aquarium-hero">
-      <div className="parallax-layer" style={{ position:'absolute', inset:0, transform:`translateY(${s * 0.08}px)`, willChange:'transform' }}>
+
+      {/* ── VIDEO DE FONDO ── */}
+      <div style={{
+        position: 'absolute', inset: 0, zIndex: 0,
+        overflow: 'hidden', pointerEvents: 'none',
+      }}>
+        <iframe
+          src={`https://www.youtube.com/embed/${VIDEO_ID}?autoplay=1&mute=1&loop=1&playlist=${VIDEO_ID}&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&playsinline=1`}
+          style={{
+            position: 'absolute',
+            top: '50%', left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: '177.78vh',
+            minWidth: '100%',
+            height: '56.25vw',
+            minHeight: '100%',
+            border: 'none',
+          }}
+          allow="autoplay; encrypted-media"
+          title="Distribuciones Ariza"
+        />
+        {/* Overlay azulado — mantiene la paleta acuática sobre el video */}
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: 'linear-gradient(180deg, rgba(10,61,107,0.55) 0%, rgba(13,95,160,0.45) 40%, rgba(26,140,184,0.35) 75%, rgba(45,184,200,0.4) 100%)',
+        }} />
+      </div>
+
+      {/* ── RAYOS DE LUZ ── */}
+      <div className="parallax-layer" style={{ position:'absolute', inset:0, transform:`translateY(${s * 0.08}px)`, willChange:'transform', zIndex:1 }}>
         {RAYS.map((l, i) => (
           <div key={i} className="caustic-ray" style={{ left:`${l}%`, animationDelay:`${i*0.6}s`, animationDuration:`${3.5+i*0.3}s` }} />
         ))}
       </div>
-      <div className="water-surface" />
-      <div className="parallax-layer" style={{ position:'absolute', inset:0, transform:`translateY(${s * 0.02}px)`, willChange:'transform' }}>
+
+      {/* ── SUPERFICIE DEL AGUA ── */}
+      <div className="water-surface" style={{ zIndex:2 }} />
+
+      {/* ── ALGAS, PIEDRAS Y ARENA ── */}
+      <div className="parallax-layer" style={{ position:'absolute', inset:0, transform:`translateY(${s * 0.02}px)`, willChange:'transform', zIndex:3 }}>
         {SEAWEEDS.map((sw, i) => (
-          <div key={i} className="seaweed" style={{ position:'absolute', bottom:'36px', left:sw.left, width:sw.w, height:sw.h, background:`linear-gradient(180deg,${sw.color} 0%,#14532d 100%)`, borderRadius:'6px 6px 2px 2px', animationDelay:sw.delay, animationDuration:sw.dur, zIndex:3 }} />
+          <div key={i} className="seaweed" style={{ position:'absolute', bottom:'36px', left:sw.left, width:sw.w, height:sw.h, background:`linear-gradient(180deg,${sw.color} 0%,#14532d 100%)`, borderRadius:'6px 6px 2px 2px', animationDelay:sw.delay, animationDuration:sw.dur }} />
         ))}
         {PEBBLES.map((p, i) => (
-          <div key={i} style={{ position:'absolute', bottom:`${36+(i%2)*4}px`, left:p.left, width:p.size, height:p.size*0.65, background:p.color, borderRadius:'50%', opacity:0.85, zIndex:4 }} />
+          <div key={i} style={{ position:'absolute', bottom:`${36+(i%2)*4}px`, left:p.left, width:p.size, height:p.size*0.65, background:p.color, borderRadius:'50%', opacity:0.85 }} />
         ))}
         <div className="tank-sand" />
       </div>
-      <div className="parallax-layer" style={{ position:'absolute', inset:0, transform:`translateY(${s * 0.15}px)`, willChange:'transform' }}>
+
+      {/* ── BURBUJAS ── */}
+      <div className="parallax-layer" style={{ position:'absolute', inset:0, transform:`translateY(${s * 0.15}px)`, willChange:'transform', zIndex:4 }}>
         {BUBBLE_DATA.map((b, i) => (
-          <div key={i} className="bubble" style={{ left:b.left, bottom:b.bottom, width:b.size, height:b.size, animationDelay:b.delay, animationDuration:b.dur, zIndex:5 }} />
+          <div key={i} className="bubble" style={{ left:b.left, bottom:b.bottom, width:b.size, height:b.size, animationDelay:b.delay, animationDuration:b.dur }} />
         ))}
       </div>
-      <div className="parallax-layer" style={{ position:'absolute', inset:0, transform:`translateY(${s * 0.28}px)`, willChange:'transform' }}>
+
+      {/* ── PECES ── */}
+      <div className="parallax-layer" style={{ position:'absolute', inset:0, transform:`translateY(${s * 0.28}px)`, willChange:'transform', zIndex:5 }}>
         {FISH_DATA.map(f => (
-          <div key={f.id} className={`fish fish-${f.dir}`} style={{ top:f.top, zIndex:10, animationDuration:f.duration, animationDelay:f.delay }}>
+          <div key={f.id} className={`fish fish-${f.dir}`} style={{ top:f.top, animationDuration:f.duration, animationDelay:f.delay }}>
             {f.size > 36 ? <FishSVG color={f.color} accent={f.accent} size={f.size}/> : <FishSmall color={f.color} size={f.size}/>}
           </div>
         ))}
       </div>
+
+      {/* ── TEXTO Y BUSCADOR ── */}
       <div className="parallax-layer hero-text" style={{ zIndex:20, transform:`translateY(${s * -0.45}px)`, opacity:Math.max(0, 1 - s / 180), willChange:'transform, opacity' }}>
         <p style={{ fontSize:'0.72rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'1.8px', color:'rgba(255,255,255,0.7)', marginBottom:'8px' }}>Tienda en línea</p>
         <h1 style={{ fontFamily:'var(--font-display)', fontSize:'clamp(1.8rem,4.5vw,2.8rem)', fontWeight:700, color:'#fff', lineHeight:1.15, marginBottom:'20px', textShadow:'0 2px 12px rgba(0,0,0,0.35)' }}>
@@ -377,6 +421,7 @@ const AquariumHero = ({ busqueda, setBusqueda, scrollY = 0 }) => {
           />
         </div>
       </div>
+
     </div>
   );
 };
@@ -665,7 +710,7 @@ const CartPanel = ({ carrito, onClose, onAdd, onRemove, onChangeQty, totalCompra
 };
 
 /* ─────────────────────────────────────────────
-   REVIEWS INICIALES (fijas, siempre visibles)
+   REVIEWS INICIALES
 ───────────────────────────────────────────── */
 const REVIEWS_INICIALES = [
   { id:'r1', nombre:'Valentina Ospina', avatar:'🐠', estrellas:5, fecha:'hace 2 días',    texto:'Llevo 3 años comprando en Distribuciones Ariza y nunca me han fallado. El Acuaprime es increíble, mis peces nunca han estado tan saludables. El envío fue súper rápido y el empaque llegó perfecto. ¡100% recomendado!', producto:'Acuaprime 120ml' },
@@ -677,12 +722,10 @@ const REVIEWS_INICIALES = [
 ];
 
 /* ─────────────────────────────────────────────
-   REVIEWS PANEL ← MODIFICADO: usa backend
+   REVIEWS PANEL
 ───────────────────────────────────────────── */
 const ReviewsPanel = ({ onClose, dark }) => {
   const avatares = ['🐠','🐡','🐟','🦈','🐙','🐬','🦑','🐹','🐾'];
-
-  // ── Estado ──────────────────────────────────
   const [reviews, setReviews]     = useState(REVIEWS_INICIALES);
   const [cargando, setCargando]   = useState(true);
   const [tab, setTab]             = useState('ver');
@@ -694,12 +737,10 @@ const ReviewsPanel = ({ onClose, dark }) => {
   const [enviado, setEnviado]     = useState(false);
   const [error, setError]         = useState('');
 
-  // ── Cargar del backend al abrir ─────────────
   useEffect(() => {
     setCargando(true);
     axios.get(`${BACKEND}/api/resenas`)
       .then(r => {
-        // Las del backend primero, luego las iniciales que no estén duplicadas
         const backendIds = new Set(r.data.map(rev => String(rev.id)));
         const sinDup = REVIEWS_INICIALES.filter(rev => !backendIds.has(String(rev.id)));
         const backendFormateadas = r.data.map(rev => ({
@@ -713,20 +754,15 @@ const ReviewsPanel = ({ onClose, dark }) => {
         }));
         setReviews([...backendFormateadas, ...sinDup]);
       })
-      .catch(() => {
-        // Si falla la red, mostramos solo las iniciales
-        setReviews(REVIEWS_INICIALES);
-      })
+      .catch(() => { setReviews(REVIEWS_INICIALES); })
       .finally(() => setCargando(false));
   }, []);
 
-  // ── Publicar reseña ─────────────────────────
   const handleSubmit = async () => {
     if (!nombre.trim())           return setError('Por favor ingresa tu nombre.');
     if (estrellas === 0)          return setError('Por favor selecciona una calificación.');
     if (texto.trim().length < 10) return setError('Escribe un comentario más detallado (mínimo 10 caracteres).');
     setError('');
-
     try {
       const res = await axios.post(`${BACKEND}/api/resenas`, {
         producto_id:     1,
@@ -762,8 +798,6 @@ const ReviewsPanel = ({ onClose, dark }) => {
     <>
       <div onClick={onClose} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.3)', zIndex:1500 }} />
       <div className="panel" style={{ position:'fixed', top:0, right:0, width:'100%', maxWidth:'420px', height:'100%', background:'var(--surface)', zIndex:2000, display:'flex', flexDirection:'column' }}>
-
-        {/* ── Header ── */}
         <div style={{ padding:'24px 28px 0', borderBottom:'1px solid var(--border)' }}>
           <div style={{ display:'flex', alignItems:'center', marginBottom:'16px' }}>
             <h2 style={{ fontFamily:'var(--font-display)', fontSize:'1.25rem', fontWeight:700, color:'var(--ink)', flex:1 }}>Reseñas</h2>
@@ -782,14 +816,9 @@ const ReviewsPanel = ({ onClose, dark }) => {
             ))}
           </div>
         </div>
-
-        {/* ── Contenido ── */}
         <div style={{ flex:1, overflowY:'auto', padding:'20px 28px' }}>
-
-          {/* ══ TAB: VER ══ */}
           {tab === 'ver' && (
             <>
-              {/* Resumen de calificaciones */}
               <div style={{ background:'var(--bg)', borderRadius:'16px', padding:'18px 20px', marginBottom:'20px', display:'flex', gap:'20px', alignItems:'center' }}>
                 <div style={{ textAlign:'center', flexShrink:0 }}>
                   <p style={{ fontFamily:'var(--font-display)', fontSize:'2.6rem', fontWeight:700, color:'var(--ink)', lineHeight:1 }}>{promedio}</p>
@@ -817,15 +846,11 @@ const ReviewsPanel = ({ onClose, dark }) => {
                   })}
                 </div>
               </div>
-
-              {/* Confirmación de publicación */}
               {enviado && (
                 <div style={{ background:'rgba(34,197,94,0.1)', border:'1px solid rgba(34,197,94,0.3)', borderRadius:'12px', padding:'12px 16px', marginBottom:'16px', fontSize:'0.82rem', color:'#16a34a', display:'flex', alignItems:'center', gap:'8px' }}>
                   ✅ ¡Gracias! Tu reseña ya está publicada y visible para todos.
                 </div>
               )}
-
-              {/* Lista de reseñas / loader */}
               {cargando ? (
                 <div style={{ display:'flex', justifyContent:'center', padding:'40px 0' }}>
                   <div className="loader-ring" />
@@ -859,8 +884,6 @@ const ReviewsPanel = ({ onClose, dark }) => {
               )}
             </>
           )}
-
-          {/* ══ TAB: ESCRIBIR ══ */}
           {tab === 'escribir' && (
             <div>
               <div style={{ marginBottom:'20px' }}>
@@ -1008,7 +1031,6 @@ export default function App() {
         <main style={{ position:'relative', zIndex:1, background:'var(--bg)', borderRadius:'28px 28px 0 0', marginTop:-32, padding:'48px 24px 120px', boxShadow:'0 -8px 40px rgba(0,0,0,0.13)', maxWidth:'none' }}>
           <div style={{ maxWidth:1200, margin:'0 auto' }}>
 
-            {/* Best sellers */}
             {bestSellers.length > 0 && (
               <section style={{ marginBottom:'48px' }}>
                 <div style={{ display:'flex', alignItems:'center', gap:'10px', marginBottom:'20px' }}>
@@ -1024,7 +1046,6 @@ export default function App() {
               </section>
             )}
 
-            {/* Categorías */}
             <section style={{ marginBottom:'40px' }}>
               <div style={{ display:'flex', gap:'8px', overflowX:'auto', paddingBottom:'6px', scrollbarWidth:'none' }}>
                 <button className={`cat-pill ${categoria==='Todos'?'cat-pill--on':'cat-pill--off'}`} onClick={() => { setCategoria('Todos'); setBusqueda(''); }}>Todos</button>
@@ -1036,7 +1057,6 @@ export default function App() {
               </div>
             </section>
 
-            {/* Grilla de productos */}
             <section>
               <div style={{ display:'flex', justifyContent:'space-between', alignItems:'baseline', marginBottom:'24px' }}>
                 <h2 style={{ fontSize:'1rem', fontWeight:600, color:'var(--ink)' }}>{categoria === 'Todos' ? 'Todos los productos' : categoria}</h2>
