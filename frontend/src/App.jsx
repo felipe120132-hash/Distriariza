@@ -295,8 +295,11 @@ const AquariumHero = ({ busqueda, setBusqueda, scrollY = 0 }) => {
         position: 'absolute', inset: 0, zIndex: 0,
         overflow: 'hidden', pointerEvents: 'none',
       }}>
-        <iframe
-          src={`https://www.youtube.com/embed/${VIDEO_ID}?autoplay=1&mute=1&loop=1&playlist=${VIDEO_ID}&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&playsinline=1`}
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
           style={{
             position: 'absolute',
             top: '50%', left: '50%',
@@ -305,11 +308,11 @@ const AquariumHero = ({ busqueda, setBusqueda, scrollY = 0 }) => {
             minWidth: '100%',
             height: '56.25vw',
             minHeight: '100%',
-            border: 'none',
+            objectFit: 'cover',
           }}
-          allow="autoplay; encrypted-media"
-          title="Distribuciones Ariza"
-        />
+        >
+          <source src="/hero.mp4" type="video/mp4" />
+        </video>
       </div>
 
       {/* ── RAYOS DE LUZ ── */}
