@@ -467,7 +467,9 @@ const BestCard = ({ p, onAdd, onOpen, ratings, onRate, rank }) => (
       <StarRating productId={p.id} ratings={ratings} onRate={onRate} size="0.85rem" />
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginTop:'10px' }}>
         <span style={{ fontSize:'0.95rem', fontWeight:600, color:'var(--ink)' }}>{moneda(p.precio)}</span>
-        <button className="pill-btn pill-btn--accent" onClick={() => onAdd(p)} style={{ padding:'6px 12px', fontSize:'0.72rem' }}>+ Añadir</button>
+        <button className="pill-btn pill-btn--accent" onClick={() => onAdd(p)} disabled={p.stock <= 0} style={{ padding:'6px 12px', fontSize:'0.72rem', opacity: p.stock <= 0 ? 0.5 : 1 }}>
+          {p.stock > 0 ? '+ Añadir' : 'Agotado'}
+        </button>
       </div>
     </div>
   </div>
@@ -495,14 +497,19 @@ const ProductCard = ({ p, onAdd, onOpen, ratings, onRate, isBestSeller }) => (
       />
     </div>
     <div style={{ padding:'16px 18px 18px' }}>
-      <p style={{ fontSize:'0.68rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.8px', marginBottom:'4px' }}>{p.categoria_nombre}</p>
+      <p style={{ fontSize:'0.68rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.8px', marginBottom:'4px', display:'flex', justifyContent:'space-between' }}>
+        <span>{p.categoria_nombre}</span>
+        <span style={{ color: p.stock > 0 ? '#16a34a' : '#ef4444' }}>{p.stock > 0 ? `Stock: ${p.stock}` : 'Agotado'}</span>
+      </p>
       <h4 onClick={() => onOpen(p)} style={{ fontSize:'0.95rem', fontWeight:500, color:'var(--ink)', cursor:'pointer', marginBottom:'8px', lineHeight:1.3 }}>{p.nombre}</h4>
       <div style={{ marginBottom:'12px' }}>
         <StarRating productId={p.id} ratings={ratings} onRate={onRate} size="0.9rem" />
       </div>
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
         <span style={{ fontSize:'1.1rem', fontWeight:600, color:'var(--ink)' }}>{moneda(p.precio)}</span>
-        <button className="pill-btn pill-btn--accent" onClick={() => onAdd(p)} style={{ padding:'8px 16px', fontSize:'0.78rem' }}>+ Añadir</button>
+        <button className="pill-btn pill-btn--accent" onClick={() => onAdd(p)} disabled={p.stock <= 0} style={{ padding:'8px 16px', fontSize:'0.78rem', opacity: p.stock <= 0 ? 0.5 : 1 }}>
+          {p.stock > 0 ? '+ Añadir' : 'Agotado'}
+        </button>
       </div>
     </div>
   </div>
@@ -529,7 +536,10 @@ const ProductModal = ({ p, onClose, onAdd, ratings, onRate }) => {
           <img className="modal-img" src={imgSrc(p.imagen_url)} alt={p.nombre} style={{ maxHeight:'200px', maxWidth:'100%', objectFit:'contain', display:'block' }} />
         </div>
         <div style={{ padding:'24px 28px 28px' }}>
-          <p className="modal-content-1" style={{ fontSize:'0.68rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.9px', marginBottom:'6px' }}>{p.categoria_nombre}</p>
+          <p className="modal-content-1" style={{ fontSize:'0.68rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.9px', marginBottom:'6px', display:'flex', justifyContent:'space-between' }}>
+            <span>{p.categoria_nombre}</span>
+            <span style={{ color: p.stock > 0 ? '#16a34a' : '#ef4444' }}>{p.stock > 0 ? `${p.stock} Disponibles` : 'Agotado'}</span>
+          </p>
           <h2 className="modal-content-2" style={{ fontFamily:'var(--font-display)', fontSize:'1.6rem', fontWeight:700, color:'var(--ink)', marginBottom:'10px', lineHeight:1.2 }}>{p.nombre}</h2>
           <div className="modal-content-2" style={{ marginBottom:'18px' }}>
             <p style={{ fontSize:'0.7rem', color:'var(--ink-3)', fontWeight:600, marginBottom:'6px' }}>TU VALORACIÓN</p>
@@ -554,7 +564,9 @@ const ProductModal = ({ p, onClose, onAdd, ratings, onRate }) => {
               <p style={{ fontSize:'0.68rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.6px', marginBottom:'3px' }}>Precio</p>
               <span style={{ fontSize:'1.6rem', fontWeight:600, color:'var(--ink)', letterSpacing:'-0.5px' }}>{moneda(p.precio)}</span>
             </div>
-            <button className="pill-btn pill-btn--accent" onClick={() => { onAdd(p); onClose(); }} style={{ padding:'14px 28px', fontSize:'0.9rem' }}>Añadir al carrito</button>
+            <button className="pill-btn pill-btn--accent" onClick={() => { onAdd(p); onClose(); }} disabled={p.stock <= 0} style={{ padding:'14px 28px', fontSize:'0.9rem', opacity: p.stock <= 0 ? 0.5 : 1 }}>
+              {p.stock > 0 ? 'Añadir al carrito' : 'Agotado'}
+            </button>
           </div>
         </div>
       </div>
@@ -886,6 +898,7 @@ const AdminPanel = ({ onClose, productos, onRefresh }) => {
   const [nombre, setNombre] = useState('');
   const [desc, setDesc] = useState('');
   const [precio, setPrecio] = useState('');
+  const [stock, setStock] = useState('0');
   const [cat, setCat] = useState('1');
   const [imagen, setImagen] = useState(null);
   const [error, setError] = useState('');
@@ -906,6 +919,7 @@ const AdminPanel = ({ onClose, productos, onRefresh }) => {
     setNombre(p.nombre);
     setDesc(p.descripcion);
     setPrecio(p.precio);
+    setStock(p.stock !== undefined ? p.stock : 0);
     setCat(p.categoria_id);
     setImagen(null);
     setModo('editar');
@@ -916,6 +930,7 @@ const AdminPanel = ({ onClose, productos, onRefresh }) => {
     setNombre('');
     setDesc('');
     setPrecio('');
+    setStock('0');
     setCat('1');
     setImagen(null);
     setModo('nuevo');
@@ -930,6 +945,7 @@ const AdminPanel = ({ onClose, productos, onRefresh }) => {
     formData.append('nombre', nombre);
     formData.append('descripcion', desc);
     formData.append('precio', precio.toString().replace(',', '.'));
+    formData.append('stock', stock);
     formData.append('categoria_id', cat);
     if (imagen) formData.append('imagen', imagen);
 
@@ -1003,7 +1019,7 @@ const AdminPanel = ({ onClose, productos, onRefresh }) => {
                         <img src={imgSrc(p.imagen_url)} style={{ width:'40px', height:'40px', objectFit:'cover', borderRadius:'8px' }} />
                         <div>
                           <p style={{ fontWeight:600, fontSize:'0.85rem', color:'var(--ink)', maxWidth:'200px', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{p.nombre}</p>
-                          <p style={{ fontSize:'0.75rem', color:'var(--ink-2)' }}>{moneda(p.precio)}</p>
+                          <p style={{ fontSize:'0.75rem', color:'var(--ink-2)' }}>{moneda(p.precio)} • Stock: <span style={{ color: p.stock > 0 ? '#16a34a' : '#ef4444', fontWeight: 'bold' }}>{p.stock}</span></p>
                         </div>
                       </div>
                       <div style={{ display:'flex', gap:'8px' }}>
@@ -1023,7 +1039,10 @@ const AdminPanel = ({ onClose, productos, onRefresh }) => {
                 
                 <input required className="form-input" placeholder="Nombre" value={nombre} onChange={e=>setNombre(e.target.value)} />
                 <textarea className="form-input" placeholder="Descripción" value={desc} onChange={e=>setDesc(e.target.value)} rows={3} />
-                <input required type="number" className="form-input" placeholder="Precio" value={precio} onChange={e=>setPrecio(e.target.value)} />
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <input required type="number" className="form-input" placeholder="Precio" value={precio} onChange={e=>setPrecio(e.target.value)} style={{ flex: 1 }} />
+                  <input required type="number" className="form-input" placeholder="Stock" value={stock} onChange={e=>setStock(e.target.value)} style={{ flex: 1 }} />
+                </div>
                 
                 <select className="form-input" value={cat} onChange={e=>setCat(e.target.value)}>
                   <option value="1">Líquidos Vitales</option>
@@ -1088,12 +1107,20 @@ export default function App() {
 
   const addItem = useCallback((p) =>
     setCarrito(prev => {
+      if (p.stock <= 0) return prev;
       const ex = prev.find(i => i.id === p.id);
+      if (ex && ex.cantidad >= p.stock) return prev;
       return ex ? prev.map(i => i.id===p.id ? {...i, cantidad:i.cantidad+1} : i) : [...prev, {...p, cantidad:1}];
     }), []);
 
   const removeOne  = (id) => setCarrito(prev => prev.map(i => i.id===id ? {...i, cantidad:i.cantidad-1} : i).filter(i => i.cantidad>0));
-  const setQty     = (id, v) => setCarrito(prev => prev.map(i => i.id===id ? {...i, cantidad:v} : i).filter(i => i.cantidad>0));
+  const setQty     = (id, v) => setCarrito(prev => prev.map(i => {
+    if (i.id === id) {
+      const prod = productos.find(p => p.id === id);
+      return {...i, cantidad: prod ? Math.min(v, prod.stock) : v};
+    }
+    return i;
+  }).filter(i => i.cantidad>0));
   const handleRate = (productId, stars) => setRatings(prev => ({...prev, [productId]: stars}));
 
   const totalItems  = carrito.reduce((s,i) => s+i.cantidad, 0);
