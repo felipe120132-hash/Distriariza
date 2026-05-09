@@ -928,7 +928,7 @@ const AdminPanel = ({ onClose, productos, onRefresh }) => {
     const formData = new FormData();
     formData.append('nombre', nombre);
     formData.append('descripcion', desc);
-    formData.append('precio', precio);
+    formData.append('precio', precio.toString().replace(',', '.'));
     formData.append('categoria_id', cat);
     if (imagen) formData.append('imagen', imagen);
 
