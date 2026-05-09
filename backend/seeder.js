@@ -106,7 +106,7 @@ const seedDatabase = async () => {
             { nombre: 'Caballo de Mar Fluorescente', desc: 'Figura fluorescente adherible mediante chupa para acuario.',             precio: 8000,  cat: catAcc.insertId, img: 'caballo-mar.jpeg' },
             { nombre: 'Aspiradora',                 desc: 'Aspiradora manual para limpieza del sustrato del acuario.',               precio: 11000, cat: catAcc.insertId, img: 'aspiradora.jpeg' },
             { nombre: 'Manguera Siliconada (100m)', desc: 'Manguera siliconada con longitud de 100 metros.',                         precio: 42000, cat: catAcc.insertId, img: 'manguera-siliconada.jpeg' },
-            { nombre: 'Acuarios Importados',       desc: 'Acuarios importados de vidrio de alta calidad.',                                precio: 100000, cat: catAcc.insertId, img: 'acuarios_importados.jpeg' },
+            { nombre: 'Acuarios Importados',       desc: 'Acuarios importados de vidrio de alta calidad.',                           precio: 100000, cat: catAcc.insertId, img: 'acuarios_importados.jpeg' },
 
             // ── JAULAS PARA HÁMSTER ───────────────────────────────────────────
             { nombre: 'Jaula para Hámster 257',     desc: 'Jaula para hámster 27x20.5x25.5 cm. Colores: azul, verde, rosado, naranja.', precio: 32000, cat: catJaulas.insertId, img: 'jaula-257.jpeg' },
