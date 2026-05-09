@@ -105,4 +105,26 @@ const deleteProducto = async (req, res) => {
     }
 };
 
-module.exports = { getProductos, createProducto, updateProducto, deleteProducto };
+const descontarStock = async (req, res) => {
+    try {
+        const { items } = req.body; // [{ id, cantidad }]
+        if (!Array.isArray(items) || items.length === 0)
+            return res.status(400).json({ error: 'No se enviaron productos' });
+
+        await Promise.all(
+            items.map(({ id, cantidad }) =>
+                db.query(
+                    'UPDATE productos SET stock = GREATEST(stock - ?, 0) WHERE id = ?',
+                    [cantidad, id]
+                )
+            )
+        );
+
+        res.json({ message: 'Stock actualizado' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error al actualizar el stock' });
+    }
+};
+
+module.exports = { getProductos, createProducto, updateProducto, deleteProducto, descontarStock };

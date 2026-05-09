@@ -8,6 +8,7 @@ router.get('/', productoController.getProductos);
 router.post('/', upload.single('imagen'), productoController.createProducto);
 router.put('/:id', upload.single('imagen'), productoController.updateProducto);
 router.delete('/:id', productoController.deleteProducto);
+router.post('/descontar-stock', productoController.descontarStock);
 
 // Asegúrate de que esta línea esté al final del archivo:
 module.exports = router;

@@ -581,7 +581,16 @@ const CartPanel = ({ carrito, onClose, onAdd, onRemove, onChangeQty, totalCompra
   const [paso, setPaso] = useState('lista');
   const [datos, setDatos] = useState({ nombre:'', direccion:'', ciudad:'', telefono:'' });
 
-  const enviarWhatsApp = () => {
+  const enviarWhatsApp = async () => {
+    // Descontar stock en la base de datos
+    try {
+      await axios.post(`${BACKEND}/api/productos/descontar-stock`, {
+        items: carrito.map(p => ({ id: p.id, cantidad: p.cantidad }))
+      });
+    } catch (e) {
+      console.error('Error al descontar stock:', e);
+    }
+
     const lista = carrito.map(p => `• ${p.nombre} (x${p.cantidad})`).join('\n');
     const msg = `*NUEVO PEDIDO - DISTRIBUCIONES ARIZA*\n\n*Cliente:* ${datos.nombre}\n*Dirección:* ${datos.direccion}\n*Ciudad:* ${datos.ciudad}\n*Teléfono:* ${datos.telefono}\n\n*Productos:*\n${lista}\n\n*Total: ${moneda(totalCompra)}*`;
     window.open(`https://wa.me/573219627376?text=${encodeURIComponent(msg)}`, '_blank');
