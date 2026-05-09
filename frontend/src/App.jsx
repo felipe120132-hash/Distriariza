@@ -899,6 +899,7 @@ const AdminPanel = ({ onClose, productos, onRefresh }) => {
   const [desc, setDesc] = useState('');
   const [precio, setPrecio] = useState('');
   const [stock, setStock] = useState('0');
+  const [orden, setOrden] = useState('999');
   const [cat, setCat] = useState('1');
   const [imagen, setImagen] = useState(null);
   const [error, setError] = useState('');
@@ -920,6 +921,7 @@ const AdminPanel = ({ onClose, productos, onRefresh }) => {
     setDesc(p.descripcion);
     setPrecio(p.precio);
     setStock(p.stock !== undefined ? p.stock : 0);
+    setOrden(p.orden !== undefined ? p.orden : 999);
     setCat(p.categoria_id);
     setImagen(null);
     setModo('editar');
@@ -931,6 +933,7 @@ const AdminPanel = ({ onClose, productos, onRefresh }) => {
     setDesc('');
     setPrecio('');
     setStock('0');
+    setOrden('999');
     setCat('1');
     setImagen(null);
     setModo('nuevo');
@@ -946,6 +949,7 @@ const AdminPanel = ({ onClose, productos, onRefresh }) => {
     formData.append('descripcion', desc);
     formData.append('precio', precio.toString().replace(',', '.'));
     formData.append('stock', stock);
+    formData.append('orden', orden);
     formData.append('categoria_id', cat);
     if (imagen) formData.append('imagen', imagen);
 
@@ -1019,7 +1023,7 @@ const AdminPanel = ({ onClose, productos, onRefresh }) => {
                         <img src={imgSrc(p.imagen_url)} style={{ width:'40px', height:'40px', objectFit:'cover', borderRadius:'8px' }} />
                         <div>
                           <p style={{ fontWeight:600, fontSize:'0.85rem', color:'var(--ink)', maxWidth:'200px', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{p.nombre}</p>
-                          <p style={{ fontSize:'0.75rem', color:'var(--ink-2)' }}>{moneda(p.precio)} • Stock: <span style={{ color: p.stock > 0 ? '#16a34a' : '#ef4444', fontWeight: 'bold' }}>{p.stock}</span></p>
+                          <p style={{ fontSize:'0.75rem', color:'var(--ink-2)' }}>{moneda(p.precio)} • Stock: <span style={{ color: p.stock > 0 ? '#16a34a' : '#ef4444', fontWeight: 'bold' }}>{p.stock}</span> • Posición: <strong>{p.orden}</strong></p>
                         </div>
                       </div>
                       <div style={{ display:'flex', gap:'8px' }}>
@@ -1057,17 +1061,23 @@ const AdminPanel = ({ onClose, productos, onRefresh }) => {
                     <input required type="number" className="form-input" placeholder="Stock" value={stock} onChange={e=>setStock(e.target.value)} />
                   </div>
                 </div>
-                
-                <div>
-                  <label style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--ink-2)', marginBottom: '6px', display: 'block' }}>Categoría</label>
-                  <select className="form-input" value={cat} onChange={e=>setCat(e.target.value)}>
-                    <option value="1">Líquidos Vitales</option>
-                    <option value="2">Alimentos</option>
-                    <option value="3">Equipos</option>
-                    <option value="4">Accesorios</option>
-                    <option value="5">Plantas</option>
-                    <option value="6">Jaulas para Hámster</option>
-                  </select>
+
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--ink-2)', marginBottom: '6px', display: 'block' }}>Posición (1 = Primero, 999 = Final)</label>
+                    <input required type="number" className="form-input" placeholder="Posición" value={orden} onChange={e=>setOrden(e.target.value)} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--ink-2)', marginBottom: '6px', display: 'block' }}>Categoría</label>
+                    <select className="form-input" value={cat} onChange={e=>setCat(e.target.value)}>
+                      <option value="1">Líquidos Vitales</option>
+                      <option value="2">Alimentos</option>
+                      <option value="3">Equipos</option>
+                      <option value="4">Accesorios</option>
+                      <option value="5">Plantas</option>
+                      <option value="6">Jaulas para Hámster</option>
+                    </select>
+                  </div>
                 </div>
 
                 <div style={{ background:'var(--bg)', padding:'16px', borderRadius:'12px', border:'1px dashed var(--border)' }}>

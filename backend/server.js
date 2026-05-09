@@ -170,8 +170,8 @@ app.get('/api/load-catalog', async (req, res) => {
             { nombre: 'Jaula para Hámster 45',  desc: 'Jaula para hámster grande.',                                                   precio: 43000,  cat: jaulasId,  img: 'jaula_45.jpeg' },
         ];
 
-        const valores = productos.map(p => [p.nombre, p.desc, p.precio, p.cat, p.img, 1000]);
-        await db.query('INSERT INTO productos (nombre, descripcion, precio, categoria_id, imagen_url, stock) VALUES ?', [valores]);
+        const valores = productos.map(p => [p.nombre, p.desc, p.precio, p.cat, p.img, 1000, 999]);
+        await db.query('INSERT INTO productos (nombre, descripcion, precio, categoria_id, imagen_url, stock, orden) VALUES ?', [valores]);
 
         res.send(`<h1>✅ ¡Catálogo cargado!</h1><p>${productos.length} productos insertados.</p>`);
     } catch (error) {
