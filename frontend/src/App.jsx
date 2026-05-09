@@ -6,7 +6,7 @@ import axios from 'axios';
 ───────────────────────────────────────────── */
 const GlobalStyles = ({ dark }) => (
   <style>{`
-    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@500;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Outfit:wght@500;700;800;900&display=swap');
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -24,7 +24,7 @@ const GlobalStyles = ({ dark }) => (
       --gold:    #f59e0b;
       --radius:  16px;
       --font-body: 'DM Sans', sans-serif;
-      --font-display: 'Playfair Display', serif;
+      --font-display: 'Outfit', sans-serif;
       --shadow-sm: ${dark ? '0 1px 3px rgba(0,0,0,0.4)' : '0 1px 3px rgba(0,0,0,0.06)'};
       --shadow-md: ${dark ? '0 4px 20px rgba(0,0,0,0.5)' : '0 4px 20px rgba(0,0,0,0.08)'};
       --shadow-lg: ${dark ? '0 12px 40px rgba(0,0,0,0.6)' : '0 12px 40px rgba(0,0,0,0.12)'};
@@ -49,7 +49,7 @@ const GlobalStyles = ({ dark }) => (
     .aquarium-hero {
       position: relative;
       width: 100%;
-      height: 340px;
+      height: 440px;
       background: linear-gradient(180deg, #0a3d6b 0%, #0d5fa0 40%, #1a8cb8 75%, #2db8c8 100%);
       overflow: hidden;
     }
@@ -286,7 +286,7 @@ const VIDEO_ID = "V9v7jGqTx7E";
    AQUARIUM HERO
 ───────────────────────────────────────────── */
 const AquariumHero = ({ busqueda, setBusqueda, scrollY = 0 }) => {
-  const s = Math.max(0, Math.min(scrollY, 340));
+  const s = Math.max(0, Math.min(scrollY, 440));
   return (
     <div className="aquarium-hero">
 
@@ -346,7 +346,7 @@ const AquariumHero = ({ busqueda, setBusqueda, scrollY = 0 }) => {
       {/* ── TEXTO Y BUSCADOR ── */}
       <div className="parallax-layer hero-text" style={{ zIndex:20, transform:`translateY(${s * -0.45}px)`, opacity:Math.max(0, 1 - s / 180), willChange:'transform, opacity' }}>
         <p style={{ fontSize:'0.72rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'1.8px', color:'rgba(255,255,255,0.7)', marginBottom:'8px' }}>Tienda en línea</p>
-        <h1 style={{ fontFamily:'var(--font-display)', fontSize:'clamp(1.8rem,4.5vw,2.8rem)', fontWeight:700, color:'#fff', lineHeight:1.15, marginBottom:'20px', textShadow:'0 2px 12px rgba(0,0,0,0.35)' }}>
+        <h1 style={{ fontFamily:'var(--font-display)', fontSize:'clamp(2.2rem,5vw,3.5rem)', fontWeight:700, color:'#fff', lineHeight:1.15, marginBottom:'20px', textShadow:'0 4px 16px rgba(0,0,0,0.4)' }}>
           Todo para tus<br/>peces y hámsters.
         </h1>
         <div style={{ position:'relative', maxWidth:'320px' }}>
@@ -959,11 +959,11 @@ export default function App() {
 
       {/* ── HERO + MAIN ── */}
       <div style={{ position:'relative' }}>
-        <div style={{ position:'sticky', top:64, zIndex:0, height:340, overflow:'hidden' }}>
+        <div style={{ position:'sticky', top:64, zIndex:0, height:440, overflow:'hidden' }}>
           <AquariumHero busqueda={busqueda} setBusqueda={setBusqueda} scrollY={scrollY} />
         </div>
 
-        <main style={{ position:'relative', zIndex:1, background:'var(--bg)', borderRadius:'28px 28px 0 0', marginTop:-32, padding:'48px 24px 120px', boxShadow:'0 -8px 40px rgba(0,0,0,0.13)', maxWidth:'none' }}>
+        <main style={{ position:'relative', zIndex:1, background:'var(--bg)', borderRadius:'32px 32px 0 0', marginTop:-16, padding:'56px 24px 120px', boxShadow:'0 -16px 48px rgba(0,0,0,0.18)', maxWidth:'none' }}>
           <div style={{ maxWidth:1200, margin:'0 auto' }}>
 
             {bestSellers.length > 0 && (
