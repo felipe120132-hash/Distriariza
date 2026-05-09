@@ -161,15 +161,17 @@ app.get('/api/load-catalog', async (req, res) => {
             { nombre: 'Caballo de Mar Fluorescente', desc: 'Figura fluorescente adherible mediante chupa para acuario.',              precio: 8000,   cat: accId,     img: 'caballo-mar.jpeg' },
             { nombre: 'Aspiradora',                 desc: 'Aspiradora manual para limpieza del sustrato del acuario.',                precio: 11000,  cat: accId,     img: 'aspiradora.jpeg' },
             { nombre: 'Manguera Siliconada (100m)', desc: 'Manguera siliconada con longitud de 100 metros.',                          precio: 42000,  cat: accId,     img: 'manguera-siliconada.jpeg' },
+            { nombre: 'Acuarios Importados',       desc: 'Acuarios importados de vidrio de alta calidad.',                                precio: 100000,  cat: accId,     img: 'acuarios_importados.jpeg' },
 
             // ── JAULAS PARA HÁMSTER ───────────────────────────────────────────
             { nombre: 'Jaula para Hámster 257', desc: 'Jaula para hámster 27x20.5x25.5 cm. Colores: azul, verde, rosado, naranja.',   precio: 32000,  cat: jaulasId,  img: 'jaula-257.jpeg' },
             { nombre: 'Jaula para Hámster S-11', desc: 'Jaula para hámster 31x24x30 cm. Colores: café, rosado, verde.',              precio: 35000,  cat: jaulasId,  img: 'jaula-s11.jpeg' },
             { nombre: 'Jaula para Hámster 268', desc: 'Jaula para hámster 45x30x15 cm. Colores: azul claro, azul oscuro, amarillo, rosado, gris.', precio: 35000, cat: jaulasId, img: 'jaula-268.jpeg' },
+            { nombre: 'Jaula para Hámster 45',  desc: 'Jaula para hámster grande.',                                                   precio: 43000,  cat: jaulasId,  img: 'jaula_45.jpeg' },
         ];
 
-        const valores = productos.map(p => [p.nombre, p.desc, p.precio, p.cat, p.img]);
-        await db.query('INSERT INTO productos (nombre, descripcion, precio, categoria_id, imagen_url) VALUES ?', [valores]);
+        const valores = productos.map(p => [p.nombre, p.desc, p.precio, p.cat, p.img, 1000]);
+        await db.query('INSERT INTO productos (nombre, descripcion, precio, categoria_id, imagen_url, stock) VALUES ?', [valores]);
 
         res.send(`<h1>✅ ¡Catálogo cargado!</h1><p>${productos.length} productos insertados.</p>`);
     } catch (error) {

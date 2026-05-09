@@ -106,16 +106,18 @@ const seedDatabase = async () => {
             { nombre: 'Caballo de Mar Fluorescente', desc: 'Figura fluorescente adherible mediante chupa para acuario.',             precio: 8000,  cat: catAcc.insertId, img: 'caballo-mar.jpeg' },
             { nombre: 'Aspiradora',                 desc: 'Aspiradora manual para limpieza del sustrato del acuario.',               precio: 11000, cat: catAcc.insertId, img: 'aspiradora.jpeg' },
             { nombre: 'Manguera Siliconada (100m)', desc: 'Manguera siliconada con longitud de 100 metros.',                         precio: 42000, cat: catAcc.insertId, img: 'manguera-siliconada.jpeg' },
+            { nombre: 'Acuarios Importados',       desc: 'Acuarios importados de vidrio de alta calidad.',                                precio: 100000, cat: catAcc.insertId, img: 'acuarios_importados.jpeg' },
 
             // ── JAULAS PARA HÁMSTER ───────────────────────────────────────────
             { nombre: 'Jaula para Hámster 257',     desc: 'Jaula para hámster 27x20.5x25.5 cm. Colores: azul, verde, rosado, naranja.', precio: 32000, cat: catJaulas.insertId, img: 'jaula-257.jpeg' },
             { nombre: 'Jaula para Hámster S-11',    desc: 'Jaula para hámster 31x24x30 cm. Colores: café, rosado, verde.',          precio: 35000, cat: catJaulas.insertId, img: 'jaula-s11.jpeg' },
             { nombre: 'Jaula para Hámster 268',     desc: 'Jaula para hámster 45x30x15 cm. Colores: azul claro, azul oscuro, amarillo, rosado, gris.', precio: 35000, cat: catJaulas.insertId, img: 'jaula-268.jpeg' },
+            { nombre: 'Jaula para Hámster 45',      desc: 'Jaula para hámster grande.',                                              precio: 43000, cat: catJaulas.insertId, img: 'jaula-45.jpeg' },
         ];
 
         // Inserción masiva
-        const valores = productos.map(p => [p.nombre, p.desc, p.precio, p.cat, p.img]);
-        await db.query('INSERT INTO productos (nombre, descripcion, precio, categoria_id, imagen_url) VALUES ?', [valores]);
+        const valores = productos.map(p => [p.nombre, p.desc, p.precio, p.cat, p.img, 1000]);
+        await db.query('INSERT INTO productos (nombre, descripcion, precio, categoria_id, imagen_url, stock) VALUES ?', [valores]);
 
         console.log(`--- ¡Base de datos sembrada con éxito! ${productos.length} productos insertados. ---`);
         process.exit();
