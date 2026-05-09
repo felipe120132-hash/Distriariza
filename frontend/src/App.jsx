@@ -1083,7 +1083,7 @@ export default function App() {
       <GlobalStyles dark={dark}/>
 
       {/* ── NAVBAR ── */}
-      <nav style={{ position:'sticky', top:0, zIndex:1000, background: dark ? 'rgba(17,17,21,0.9)' : 'rgba(245,244,241,0.88)', backdropFilter:'blur(16px)', borderBottom:`1px solid var(--border)`, display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 28px', height:'64px' }}>
+      <nav style={{ position:'sticky', top:0, zIndex:1000, background: dark ? '#111115' : '#ffffff', borderBottom:`1px solid var(--border)`, display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 28px', height:'64px' }}>
         <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
           <img src="/Logo.jpeg" alt="Logo" style={{ height:'38px', width:'38px', borderRadius:'10px', objectFit:'cover' }} onError={e => e.target.src='https://via.placeholder.com/38?text=A'} />
           <div>
@@ -1169,7 +1169,7 @@ export default function App() {
       </div>
 
       {/* ── BOTTOM NAV ── */}
-      <div style={{ position:'fixed', bottom:'16px', left:'50%', transform:'translateX(-50%)', background: dark ? 'rgba(26,26,30,0.95)' : 'rgba(255,255,255,0.92)', backdropFilter:'blur(14px)', borderRadius:'99px', padding:'10px 32px', display:'flex', gap:'36px', alignItems:'center', boxShadow:'0 4px 24px rgba(0,0,0,0.15)', zIndex:900, border:`1px solid var(--border)` }}>
+      <div style={{ position:'fixed', bottom:'16px', left:'50%', transform:'translateX(-50%)', background: dark ? '#1a1a1e' : '#ffffff', borderRadius:'99px', padding:'10px 32px', display:'flex', gap:'36px', alignItems:'center', boxShadow:'0 4px 24px rgba(0,0,0,0.15)', zIndex:900, border:`1px solid var(--border)` }}>
         <button onClick={() => { setCategoria('Todos'); setBusqueda(''); }} style={{ background:'none', border:'none', cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', gap:'2px' }}>
           <span style={{ fontSize:'1.2rem' }}>🏪</span>
           <span style={{ fontSize:'0.58rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.6px', color:categoria==='Todos'?'var(--accent)':'var(--ink-3)' }}>Tienda</span>
