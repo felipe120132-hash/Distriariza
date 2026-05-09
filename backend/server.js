@@ -19,7 +19,7 @@ app.use(cors({
         'http://localhost:3000'
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type']
+    allowedHeaders: ['Content-Type', 'x-admin-password']
 }));
 app.use(express.json());
 app.use(morgan('dev'));
