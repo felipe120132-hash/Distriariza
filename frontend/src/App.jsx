@@ -54,53 +54,6 @@ const GlobalStyles = ({ dark }) => (
       overflow: hidden;
     }
 
-    @keyframes caustics {
-      0%,100% { opacity: 0.18; transform: scaleX(1) translateX(0); }
-      50%      { opacity: 0.28; transform: scaleX(1.06) translateX(12px); }
-    }
-    .caustic-ray {
-      position: absolute; top: 0; width: 3px; height: 100%;
-      background: linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0) 60%);
-      transform-origin: top center;
-      animation: caustics 4s ease-in-out infinite;
-      pointer-events: none;
-    }
-
-    @keyframes bubble {
-      0%   { transform: translateY(0) translateX(0) scale(1); opacity: 0.7; }
-      50%  { transform: translateY(-60px) translateX(6px) scale(1.1); opacity: 0.5; }
-      100% { transform: translateY(-120px) translateX(-4px) scale(0.8); opacity: 0; }
-    }
-    .bubble {
-      position: absolute; border-radius: 50%;
-      border: 1.5px solid rgba(255,255,255,0.55);
-      background: rgba(255,255,255,0.1);
-      animation: bubble linear infinite;
-      pointer-events: none;
-    }
-
-    @keyframes sway {
-      0%,100% { transform-origin: bottom center; transform: rotate(-8deg) scaleY(1); }
-      50%      { transform-origin: bottom center; transform: rotate(8deg) scaleY(1.03); }
-    }
-    .seaweed { animation: sway ease-in-out infinite; }
-
-    @keyframes shimmer {
-      0%,100% { opacity: 0.12; }
-      50%      { opacity: 0.22; }
-    }
-    .water-surface {
-      position: absolute; top: 0; left: 0; right: 0; height: 24px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 100%);
-      animation: shimmer 3s ease-in-out infinite;
-      z-index: 6;
-    }
-
-    .tank-sand {
-      position: absolute; bottom: 0; left: 0; right: 0; height: 36px;
-      background: linear-gradient(180deg, #c9a84c 0%, #a87c2a 100%);
-    }
-
     .hero-text {
       position: absolute; bottom: 52px; left: 36px; z-index: 20;
     }
@@ -254,29 +207,6 @@ const Loader = () => (
   </div>
 );
 
-const BUBBLE_DATA = [
-  { left:'12%', bottom:'40px', size:6,  delay:'0s',   dur:'6s'   },
-  { left:'28%', bottom:'40px', size:9,  delay:'2s',   dur:'8s'   },
-  { left:'45%', bottom:'40px', size:5,  delay:'1s',   dur:'7s'   },
-  { left:'62%', bottom:'40px', size:8,  delay:'3s',   dur:'9s'   },
-  { left:'78%', bottom:'40px', size:6,  delay:'0.5s', dur:'6.5s' },
-  { left:'90%', bottom:'40px', size:10, delay:'4s',   dur:'10s'  },
-];
-const RAYS = [8, 18, 30, 42, 55, 66, 78, 88];
-const SEAWEEDS = [
-  { left:'6%',  h:80, w:14, color:'#16a34a', delay:'0s',   dur:'3.5s' },
-  { left:'14%', h:60, w:10, color:'#15803d', delay:'0.5s', dur:'4s'   },
-  { left:'72%', h:90, w:15, color:'#166534', delay:'1s',   dur:'3.8s' },
-  { left:'82%', h:55, w:10, color:'#16a34a', delay:'0.3s', dur:'4.2s' },
-  { left:'91%', h:70, w:12, color:'#15803d', delay:'0.8s', dur:'3.6s' },
-];
-const PEBBLES = [
-  { left:'5%',  size:12, color:'#92400e' }, { left:'18%', size:8,  color:'#78350f' },
-  { left:'35%', size:14, color:'#92400e' }, { left:'52%', size:9,  color:'#a16207' },
-  { left:'65%', size:11, color:'#78350f' }, { left:'80%', size:13, color:'#92400e' },
-  { left:'94%', size:7,  color:'#a16207' },
-];
-
 /* ─────────────────────────────────────────────
    VIDEO ID
 ───────────────────────────────────────────── */
@@ -315,34 +245,6 @@ const AquariumHero = ({ busqueda, setBusqueda, scrollY = 0 }) => {
         </video>
       </div>
 
-      {/* ── RAYOS DE LUZ ── */}
-      <div className="parallax-layer" style={{ position:'absolute', inset:0, transform:`translateY(${s * 0.08}px)`, willChange:'transform', zIndex:1 }}>
-        {RAYS.map((l, i) => (
-          <div key={i} className="caustic-ray" style={{ left:`${l}%`, animationDelay:`${i*0.6}s`, animationDuration:`${3.5+i*0.3}s` }} />
-        ))}
-      </div>
-
-      {/* ── SUPERFICIE DEL AGUA ── */}
-      <div className="water-surface" style={{ zIndex:2 }} />
-
-      {/* ── ALGAS, PIEDRAS Y ARENA ── */}
-      <div className="parallax-layer" style={{ position:'absolute', inset:0, transform:`translateY(${s * 0.02}px)`, willChange:'transform', zIndex:3 }}>
-        {SEAWEEDS.map((sw, i) => (
-          <div key={i} className="seaweed" style={{ position:'absolute', bottom:'36px', left:sw.left, width:sw.w, height:sw.h, background:`linear-gradient(180deg,${sw.color} 0%,#14532d 100%)`, borderRadius:'6px 6px 2px 2px', animationDelay:sw.delay, animationDuration:sw.dur }} />
-        ))}
-        {PEBBLES.map((p, i) => (
-          <div key={i} style={{ position:'absolute', bottom:`${36+(i%2)*4}px`, left:p.left, width:p.size, height:p.size*0.65, background:p.color, borderRadius:'50%', opacity:0.85 }} />
-        ))}
-        <div className="tank-sand" />
-      </div>
-
-      {/* ── BURBUJAS ── */}
-      <div className="parallax-layer" style={{ position:'absolute', inset:0, transform:`translateY(${s * 0.15}px)`, willChange:'transform', zIndex:4 }}>
-        {BUBBLE_DATA.map((b, i) => (
-          <div key={i} className="bubble" style={{ left:b.left, bottom:b.bottom, width:b.size, height:b.size, animationDelay:b.delay, animationDuration:b.dur }} />
-        ))}
-      </div>
-
       {/* ── TEXTO Y BUSCADOR ── */}
       <div className="parallax-layer hero-text" style={{ zIndex:20, transform:`translateY(${s * -0.45}px)`, opacity:Math.max(0, 1 - s / 180), willChange:'transform, opacity' }}>
         <p style={{ fontSize:'0.72rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'1.8px', color:'rgba(255,255,255,0.7)', marginBottom:'8px' }}>Tienda en línea</p>
@@ -350,9 +252,21 @@ const AquariumHero = ({ busqueda, setBusqueda, scrollY = 0 }) => {
           Todo para tus<br/>peces y hámsters.
         </h1>
         <div style={{ position:'relative', maxWidth:'320px' }}>
-          <span style={{ position:'absolute', left:'14px', top:'50%', transform:'translateY(-50%)', fontSize:'0.9rem', opacity:0.55 }}>🔍</span>
+          <span style={{ position:'absolute', left:'14px', top:'50%', transform:'translateY(-50%)', fontSize:'0.9rem', opacity:0.7 }}>🔍</span>
           <input type="text" placeholder="Buscar productos…" value={busqueda} onChange={e => setBusqueda(e.target.value)}
-            style={{ width:'100%', padding:'13px 18px 13px 40px', borderRadius:'99px', border:'none', background:'rgba(255,255,255,0.18)', backdropFilter:'blur(10px)', color:'#fff', fontFamily:'var(--font-body)', fontSize:'0.88rem', outline:'none' }}
+            style={{ 
+              width:'100%', 
+              padding:'13px 18px 13px 40px', 
+              borderRadius:'99px', 
+              border:'1.5px solid rgba(255,255,255,0.2)', 
+              background:'rgba(10, 80, 160, 0.4)', 
+              backdropFilter:'blur(12px)', 
+              color:'#fff', 
+              fontFamily:'var(--font-body)', 
+              fontSize:'0.88rem', 
+              outline:'none',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.2)'
+            }}
           />
         </div>
       </div>
