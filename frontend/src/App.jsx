@@ -252,20 +252,19 @@ const AquariumHero = ({ busqueda, setBusqueda, scrollY = 0 }) => {
           Todo para tus<br/>peces y hámsters.
         </h1>
         <div style={{ position:'relative', maxWidth:'320px' }}>
-          <span style={{ position:'absolute', left:'14px', top:'50%', transform:'translateY(-50%)', fontSize:'0.9rem', opacity:0.7 }}>🔍</span>
+          <span style={{ position:'absolute', left:'14px', top:'50%', transform:'translateY(-50%)', fontSize:'0.9rem', opacity:0.6, color:'#444' }}>🔍</span>
           <input type="text" placeholder="Buscar productos…" value={busqueda} onChange={e => setBusqueda(e.target.value)}
             style={{ 
               width:'100%', 
               padding:'13px 18px 13px 40px', 
               borderRadius:'99px', 
-              border:'1.5px solid rgba(255,255,255,0.2)', 
-              background:'rgba(10, 80, 160, 0.4)', 
-              backdropFilter:'blur(12px)', 
-              color:'#fff', 
+              border:'none', 
+              background:'#ffffff', 
+              color:'#333', 
               fontFamily:'var(--font-body)', 
               fontSize:'0.88rem', 
               outline:'none',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.2)'
+              boxShadow: '0 8px 32px rgba(0,0,0,0.15)'
             }}
           />
         </div>
