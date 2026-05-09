@@ -116,8 +116,8 @@ const seedDatabase = async () => {
         ];
 
         // Inserción masiva
-        const valores = productos.map(p => [p.nombre, p.desc, p.precio, p.cat, p.img, 1000, 999]);
-        await db.query('INSERT INTO productos (nombre, descripcion, precio, categoria_id, imagen_url, stock, orden) VALUES ?', [valores]);
+        const valores = productos.map(p => [p.nombre, p.desc, p.precio, p.cat, p.img, 1000]);
+        await db.query('INSERT INTO productos (nombre, descripcion, precio, categoria_id, imagen_url, stock) VALUES ?', [valores]);
 
         console.log(`--- ¡Base de datos sembrada con éxito! ${productos.length} productos insertados. ---`);
         process.exit();

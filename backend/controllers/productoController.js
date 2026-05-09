@@ -25,8 +25,6 @@ const getProductos = async (req, res) => {
             params.push(searchTerm, searchTerm);
         }
 
-        query += ' ORDER BY p.orden ASC, p.id DESC';
-
         const [rows] = await db.query(query, params);
 
         // --- INSERCIÓN DE RUTA DINÁMICA DE IMÁGENES ---
@@ -50,12 +48,12 @@ const createProducto = async (req, res) => {
         const password = req.headers['x-admin-password'];
         if (password !== '80153017') return res.status(401).json({ error: 'No autorizado' });
 
-        const { nombre, descripcion, precio, categoria_id, stock, orden } = req.body;
+        const { nombre, descripcion, precio, categoria_id, stock } = req.body;
         const imagen_url = req.file ? req.file.filename : null;
 
         const [result] = await db.query(
-            'INSERT INTO productos (nombre, descripcion, precio, categoria_id, imagen_url, activo, stock, orden) VALUES (?, ?, ?, ?, ?, 1, ?, ?)',
-            [nombre, descripcion || '', precio, categoria_id, imagen_url, stock || 0, orden !== undefined ? orden : 999]
+            'INSERT INTO productos (nombre, descripcion, precio, categoria_id, imagen_url, activo, stock) VALUES (?, ?, ?, ?, ?, 1, ?)',
+            [nombre, descripcion || '', precio, categoria_id, imagen_url, stock || 0]
         );
 
         res.status(201).json({ id: result.insertId, message: 'Producto creado exitosamente' });
@@ -71,10 +69,10 @@ const updateProducto = async (req, res) => {
         if (password !== '80153017') return res.status(401).json({ error: 'No autorizado' });
 
         const { id } = req.params;
-        const { nombre, descripcion, precio, categoria_id, stock, orden } = req.body;
+        const { nombre, descripcion, precio, categoria_id, stock } = req.body;
         
-        let query = 'UPDATE productos SET nombre = ?, descripcion = ?, precio = ?, categoria_id = ?, stock = ?, orden = ?';
-        let params = [nombre, descripcion, precio, categoria_id, stock || 0, orden !== undefined ? orden : 999];
+        let query = 'UPDATE productos SET nombre = ?, descripcion = ?, precio = ?, categoria_id = ?, stock = ?';
+        let params = [nombre, descripcion, precio, categoria_id, stock || 0];
 
         if (req.file) {
             query += ', imagen_url = ?';
