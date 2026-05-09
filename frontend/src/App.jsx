@@ -881,6 +881,7 @@ const AdminPanel = ({ onClose, productos, onRefresh }) => {
   const [pass, setPass] = useState('');
   const [modo, setModo] = useState('lista'); 
   const [selected, setSelected] = useState(null);
+  const [successMsg, setSuccessMsg] = useState('');
   
   const [nombre, setNombre] = useState('');
   const [desc, setDesc] = useState('');
@@ -935,15 +936,18 @@ const AdminPanel = ({ onClose, productos, onRefresh }) => {
     try {
       if (modo === 'nuevo') {
         await axios.post(`${BACKEND}/api/productos`, formData, {
-          headers: { 'x-admin-password': pass, 'Content-Type': 'multipart/form-data' }
+          headers: { 'x-admin-password': pass }
         });
+        setSuccessMsg('¡Producto creado con éxito!');
       } else {
         await axios.put(`${BACKEND}/api/productos/${selected.id}`, formData, {
-          headers: { 'x-admin-password': pass, 'Content-Type': 'multipart/form-data' }
+          headers: { 'x-admin-password': pass }
         });
+        setSuccessMsg('¡Producto actualizado con éxito!');
       }
       onRefresh();
       setModo('lista');
+      setTimeout(() => setSuccessMsg(''), 4000);
     } catch (err) {
       setError('Error al guardar el producto');
     } finally {
@@ -987,6 +991,11 @@ const AdminPanel = ({ onClose, productos, onRefresh }) => {
                   <h3 style={{ color:'var(--ink)', fontFamily:'var(--font-display)' }}>Productos ({productos.length})</h3>
                   <button onClick={handleNew} className="pill-btn pill-btn--green">+ Nuevo</button>
                 </div>
+                {successMsg && (
+                  <div style={{ background:'rgba(34,197,94,0.1)', border:'1px solid rgba(34,197,94,0.3)', borderRadius:'12px', padding:'12px 16px', marginBottom:'16px', fontSize:'0.85rem', color:'#16a34a', fontWeight:600 }}>
+                    ✅ {successMsg}
+                  </div>
+                )}
                 <div style={{ display:'flex', flexDirection:'column', gap:'12px' }}>
                   {productos.map(p => (
                     <div key={p.id} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'12px', background: 'var(--card-bg)', borderRadius:'12px', border:'1px solid var(--border)' }}>
