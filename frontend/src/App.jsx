@@ -322,12 +322,11 @@ const DESCRIPCIONES = {
    CONSTANTES
 ───────────────────────────────────────────── */
 const COLECCIONES = [
-  { label:'Líquidos',   val:'Líquidos vitales',             icon:'💧' },
-  { label:'Comida',     val:'Alimentos',                    icon:'🫙' },
-  { label:'Vacaciones', val:'Productos para tus vacaciones', icon:'🏖️' },
-  { label:'Accesorios', val:'Accesorios',                   icon:'🎨' },
-  { label:'Equipos',    val:'Equipos',                      icon:'⚙️' },
-  { label:'Hámsters',   val:'Accesorios para hamsters',     icon:'🐹' },
+  { label:'Líquidos',   val:'Líquidos vitales',         icon:'💧' },
+  { label:'Comida',     val:'Alimentos',                icon:'🫙' },
+  { label:'Accesorios', val:'Accesorios',               icon:'🎨' },
+  { label:'Equipos',    val:'Equipos',                  icon:'⚙️' },
+  { label:'Hámsters',   val:'Jaulas para Hámster',      icon:'🐹' },
 ];
 
 const BEST_SELLER_NAMES = [
