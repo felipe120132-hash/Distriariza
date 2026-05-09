@@ -1037,21 +1037,38 @@ const AdminPanel = ({ onClose, productos, onRefresh }) => {
                   <button type="button" onClick={() => setModo('lista')} className="pill-btn pill-btn--ghost">Volver</button>
                 </div>
                 
-                <input required className="form-input" placeholder="Nombre" value={nombre} onChange={e=>setNombre(e.target.value)} />
-                <textarea className="form-input" placeholder="Descripción" value={desc} onChange={e=>setDesc(e.target.value)} rows={3} />
-                <div style={{ display: 'flex', gap: '10px' }}>
-                  <input required type="number" className="form-input" placeholder="Precio" value={precio} onChange={e=>setPrecio(e.target.value)} style={{ flex: 1 }} />
-                  <input required type="number" className="form-input" placeholder="Stock" value={stock} onChange={e=>setStock(e.target.value)} style={{ flex: 1 }} />
+                <div>
+                  <label style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--ink-2)', marginBottom: '6px', display: 'block' }}>Nombre del producto</label>
+                  <input required className="form-input" placeholder="Nombre" value={nombre} onChange={e=>setNombre(e.target.value)} />
                 </div>
                 
-                <select className="form-input" value={cat} onChange={e=>setCat(e.target.value)}>
-                  <option value="1">Líquidos Vitales</option>
-                  <option value="2">Alimentos</option>
-                  <option value="3">Equipos</option>
-                  <option value="4">Accesorios</option>
-                  <option value="5">Plantas</option>
-                  <option value="6">Jaulas para Hámster</option>
-                </select>
+                <div>
+                  <label style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--ink-2)', marginBottom: '6px', display: 'block' }}>Descripción / Detalles</label>
+                  <textarea className="form-input" placeholder="Descripción" value={desc} onChange={e=>setDesc(e.target.value)} rows={3} />
+                </div>
+
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--ink-2)', marginBottom: '6px', display: 'block' }}>Precio (COP)</label>
+                    <input required type="number" className="form-input" placeholder="Precio" value={precio} onChange={e=>setPrecio(e.target.value)} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--ink-2)', marginBottom: '6px', display: 'block' }}>Cantidad (Stock)</label>
+                    <input required type="number" className="form-input" placeholder="Stock" value={stock} onChange={e=>setStock(e.target.value)} />
+                  </div>
+                </div>
+                
+                <div>
+                  <label style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--ink-2)', marginBottom: '6px', display: 'block' }}>Categoría</label>
+                  <select className="form-input" value={cat} onChange={e=>setCat(e.target.value)}>
+                    <option value="1">Líquidos Vitales</option>
+                    <option value="2">Alimentos</option>
+                    <option value="3">Equipos</option>
+                    <option value="4">Accesorios</option>
+                    <option value="5">Plantas</option>
+                    <option value="6">Jaulas para Hámster</option>
+                  </select>
+                </div>
 
                 <div style={{ background:'var(--bg)', padding:'16px', borderRadius:'12px', border:'1px dashed var(--border)' }}>
                   <p style={{ fontSize:'0.8rem', color:'var(--ink-2)', marginBottom:'8px', fontWeight:600 }}>{modo === 'editar' ? 'Cambiar imagen (opcional)' : 'Subir imagen'}</p>
