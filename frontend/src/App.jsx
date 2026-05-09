@@ -874,6 +874,175 @@ const ReviewsPanel = ({ onClose, dark }) => {
 };
 
 /* ─────────────────────────────────────────────
+   ADMIN PANEL
+───────────────────────────────────────────── */
+const AdminPanel = ({ onClose, productos, onRefresh }) => {
+  const [auth, setAuth] = useState(false);
+  const [pass, setPass] = useState('');
+  const [modo, setModo] = useState('lista'); 
+  const [selected, setSelected] = useState(null);
+  
+  const [nombre, setNombre] = useState('');
+  const [desc, setDesc] = useState('');
+  const [precio, setPrecio] = useState('');
+  const [cat, setCat] = useState('1');
+  const [imagen, setImagen] = useState(null);
+  const [error, setError] = useState('');
+  const [cargando, setCargando] = useState(false);
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    if (pass === '80153017') {
+      setAuth(true);
+      setError('');
+    } else {
+      setError('Contraseña incorrecta');
+    }
+  };
+
+  const handleEdit = (p) => {
+    setSelected(p);
+    setNombre(p.nombre);
+    setDesc(p.descripcion);
+    setPrecio(p.precio);
+    setCat(p.categoria_id);
+    setImagen(null);
+    setModo('editar');
+  };
+
+  const handleNew = () => {
+    setSelected(null);
+    setNombre('');
+    setDesc('');
+    setPrecio('');
+    setCat('1');
+    setImagen(null);
+    setModo('nuevo');
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setCargando(true);
+    setError('');
+    
+    const formData = new FormData();
+    formData.append('nombre', nombre);
+    formData.append('descripcion', desc);
+    formData.append('precio', precio);
+    formData.append('categoria_id', cat);
+    if (imagen) formData.append('imagen', imagen);
+
+    try {
+      if (modo === 'nuevo') {
+        await axios.post(`${BACKEND}/api/productos`, formData, {
+          headers: { 'x-admin-password': pass, 'Content-Type': 'multipart/form-data' }
+        });
+      } else {
+        await axios.put(`${BACKEND}/api/productos/${selected.id}`, formData, {
+          headers: { 'x-admin-password': pass, 'Content-Type': 'multipart/form-data' }
+        });
+      }
+      onRefresh();
+      setModo('lista');
+    } catch (err) {
+      setError('Error al guardar el producto');
+    } finally {
+      setCargando(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('¿Seguro que quieres ocultar/eliminar este producto?')) return;
+    try {
+      await axios.delete(`${BACKEND}/api/productos/${id}`, {
+        headers: { 'x-admin-password': pass }
+      });
+      onRefresh();
+    } catch (err) {
+      alert('Error al eliminar');
+    }
+  };
+
+  return (
+    <>
+      <div onClick={onClose} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.5)', zIndex:4000 }} />
+      <div className="panel" style={{ position:'fixed', top:0, right:0, width:'100%', maxWidth:'600px', height:'100%', background:'var(--surface)', zIndex:4001, display:'flex', flexDirection:'column', overflowY:'auto' }}>
+        <div style={{ padding:'24px 28px', borderBottom:'1px solid var(--border)', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+          <h2 style={{ fontFamily:'var(--font-display)', fontSize:'1.4rem', fontWeight:700, color:'var(--ink)' }}>Panel Admin</h2>
+          <button onClick={onClose} style={{ background:'none', border:'none', fontSize:'1.2rem', cursor:'pointer', color:'var(--ink)' }}>✕</button>
+        </div>
+
+        <div style={{ padding:'24px 28px', flex:1 }}>
+          {!auth ? (
+            <form onSubmit={handleLogin} style={{ display:'flex', flexDirection:'column', gap:'16px', maxWidth:'300px', margin:'40px auto' }}>
+              <h3 style={{ textAlign:'center', color:'var(--ink)', fontFamily:'var(--font-display)' }}>Contraseña de acceso</h3>
+              <input type="password" value={pass} onChange={e=>setPass(e.target.value)} className="form-input" placeholder="Escribe aquí..." />
+              {error && <p style={{ color:'#ef4444', fontSize:'0.8rem', textAlign:'center' }}>{error}</p>}
+              <button type="submit" className="pill-btn pill-btn--accent" style={{ justifyContent:'center', padding:'12px' }}>Ingresar</button>
+            </form>
+          ) : (
+            modo === 'lista' ? (
+              <div>
+                <div style={{ display:'flex', justifyContent:'space-between', marginBottom:'20px', alignItems:'center' }}>
+                  <h3 style={{ color:'var(--ink)', fontFamily:'var(--font-display)' }}>Productos ({productos.length})</h3>
+                  <button onClick={handleNew} className="pill-btn pill-btn--green">+ Nuevo</button>
+                </div>
+                <div style={{ display:'flex', flexDirection:'column', gap:'12px' }}>
+                  {productos.map(p => (
+                    <div key={p.id} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'12px', background: 'var(--card-bg)', borderRadius:'12px', border:'1px solid var(--border)' }}>
+                      <div style={{ display:'flex', alignItems:'center', gap:'12px' }}>
+                        <img src={imgSrc(p.imagen_url)} style={{ width:'40px', height:'40px', objectFit:'cover', borderRadius:'8px' }} />
+                        <div>
+                          <p style={{ fontWeight:600, fontSize:'0.85rem', color:'var(--ink)', maxWidth:'200px', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{p.nombre}</p>
+                          <p style={{ fontSize:'0.75rem', color:'var(--ink-2)' }}>{moneda(p.precio)}</p>
+                        </div>
+                      </div>
+                      <div style={{ display:'flex', gap:'8px' }}>
+                        <button onClick={() => handleEdit(p)} className="pill-btn pill-btn--ghost" style={{ padding:'6px 12px', fontSize:'0.7rem' }}>Editar</button>
+                        <button onClick={() => handleDelete(p.id)} className="pill-btn" style={{ background:'#ef4444', color:'white', padding:'6px 12px', fontSize:'0.7rem' }}>Borrar</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} style={{ display:'flex', flexDirection:'column', gap:'16px' }}>
+                <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'10px' }}>
+                  <h3 style={{ color:'var(--ink)', fontFamily:'var(--font-display)' }}>{modo === 'nuevo' ? 'Nuevo Producto' : 'Editar Producto'}</h3>
+                  <button type="button" onClick={() => setModo('lista')} className="pill-btn pill-btn--ghost">Volver</button>
+                </div>
+                
+                <input required className="form-input" placeholder="Nombre" value={nombre} onChange={e=>setNombre(e.target.value)} />
+                <textarea className="form-input" placeholder="Descripción" value={desc} onChange={e=>setDesc(e.target.value)} rows={3} />
+                <input required type="number" className="form-input" placeholder="Precio" value={precio} onChange={e=>setPrecio(e.target.value)} />
+                
+                <select className="form-input" value={cat} onChange={e=>setCat(e.target.value)}>
+                  <option value="1">Líquidos Vitales</option>
+                  <option value="2">Alimentos</option>
+                  <option value="3">Equipos</option>
+                  <option value="4">Accesorios</option>
+                  <option value="5">Plantas</option>
+                  <option value="6">Jaulas para Hámster</option>
+                </select>
+
+                <div style={{ background:'var(--bg)', padding:'16px', borderRadius:'12px', border:'1px dashed var(--border)' }}>
+                  <p style={{ fontSize:'0.8rem', color:'var(--ink-2)', marginBottom:'8px', fontWeight:600 }}>{modo === 'editar' ? 'Cambiar imagen (opcional)' : 'Subir imagen'}</p>
+                  <input type="file" accept="image/*" onChange={e => setImagen(e.target.files[0])} style={{ color:'var(--ink)', fontSize:'0.8rem' }} />
+                </div>
+
+                <button type="submit" disabled={cargando} className="pill-btn pill-btn--accent" style={{ justifyContent:'center', padding:'14px', marginTop:'10px', fontSize:'0.9rem' }}>
+                  {cargando ? 'Guardando...' : 'Guardar Producto'}
+                </button>
+              </form>
+            )
+          )}
+        </div>
+      </div>
+    </>
+  );
+};
+
+/* ─────────────────────────────────────────────
    APP ROOT
 ───────────────────────────────────────────── */
 export default function App() {
@@ -882,6 +1051,7 @@ export default function App() {
   const [error, setError]               = useState(null);
   const [cartOpen, setCartOpen]         = useState(false);
   const [reviewsOpen, setReviewsOpen]   = useState(false);
+  const [adminOpen, setAdminOpen]       = useState(false);
   const [seleccionado, setSeleccionado] = useState(null);
   const [busqueda, setBusqueda]         = useState('');
   const [categoria, setCategoria]       = useState('Todos');
@@ -896,11 +1066,15 @@ export default function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => {
+  const fetchProductos = () => {
     axios.get(`${BACKEND}/api/productos`)
       .then(r => setProductos(r.data))
       .catch(() => setError('No se pudieron cargar los productos.'))
       .finally(() => setTimeout(() => setCargando(false), 1600));
+  };
+
+  useEffect(() => {
+    fetchProductos();
   }, []);
 
   const addItem = useCallback((p) =>
@@ -946,6 +1120,9 @@ export default function App() {
             <span style={{ fontSize:'0.75rem', color:'var(--ink-3)' }}>{dark ? '🌙' : '☀️'}</span>
             <button className="dark-toggle" onClick={() => setDark(d => !d)} aria-label="Modo oscuro" />
           </div>
+          <button onClick={() => setAdminOpen(true)} style={{ background:'none', border:'none', cursor:'pointer', fontSize:'1.1rem', color:'var(--ink-2)', opacity:0.6 }} title="Panel Admin">
+            🔒
+          </button>
           <button onClick={() => setCartOpen(true)} style={{ position:'relative', background:'none', border:'none', cursor:'pointer', padding:'8px', borderRadius:'12px' }}>
             <span style={{ fontSize:'1.25rem' }}>🛒</span>
             {totalItems > 0 && (
@@ -1045,6 +1222,9 @@ export default function App() {
       )}
       {reviewsOpen && (
         <ReviewsPanel onClose={() => setReviewsOpen(false)} dark={dark} />
+      )}
+      {adminOpen && (
+        <AdminPanel onClose={() => setAdminOpen(false)} productos={productos} onRefresh={fetchProductos} />
       )}
     </>
   );

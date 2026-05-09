@@ -5,6 +5,9 @@ const upload = require('../controllers/uploadController'); // Si estás usando s
 
 // ... aquí van tus rutas: router.get, router.post, etc. ...
 router.get('/', productoController.getProductos);
+router.post('/', upload.single('imagen'), productoController.createProducto);
+router.put('/:id', upload.single('imagen'), productoController.updateProducto);
+router.delete('/:id', productoController.deleteProducto);
 
 // Asegúrate de que esta línea esté al final del archivo:
 module.exports = router;
