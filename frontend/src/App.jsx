@@ -437,7 +437,7 @@ const ProductModal = ({ p, onClose, onAdd, ratings, onRate }) => {
     <>
       <div className="modal-overlay" onClick={onClose} style={{ position:'fixed', inset:0, background:'rgba(10,10,10,0.6)', backdropFilter:'blur(8px)', WebkitBackdropFilter:'blur(8px)', zIndex:3000 }} />
       <div className="modal" style={{ position:'fixed', top:'50%', left:'50%', transform:'translate(-50%,-50%)', width:'90%', maxWidth:'480px', maxHeight:'90vh', overflowY:'auto', background:'var(--surface)', zIndex:3001, borderRadius:'28px', boxShadow:'0 32px 80px rgba(0,0,0,0.3)' }}>
-        <button onClick={onClose} style={{ position:'absolute', top:'16px', right:'16px', background:'rgba(128,128,128,0.15)', border:'none', borderRadius:'50%', width:'34px', height:'34px', cursor:'pointer', fontSize:'0.85rem', color:'var(--ink-2)', zIndex:10, display:'flex', alignItems:'center', justifyContent:'center' }}
+        <button onClick={onClose} style={{ position:'absolute', top:'16px', right:'16px', background:'rgba(128,128,128,0.15)', border:'none', borderRadius:'50%', width:'42px', height:'42px', cursor:'pointer', fontSize:'1.1rem', color:'var(--ink-2)', zIndex:10, display:'flex', alignItems:'center', justifyContent:'center' }}
           onMouseOver={e => e.currentTarget.style.background='rgba(128,128,128,0.25)'}
           onMouseOut={e => e.currentTarget.style.background='rgba(128,128,128,0.15)'}
         >✕</button>
@@ -523,7 +523,7 @@ const CartPanel = ({ carrito, onClose, onAdd, onRemove, onChangeQty, totalCompra
           {totalItems > 0 && paso === 'lista' && (
             <span style={{ fontSize:'0.75rem', color:'var(--ink-3)', marginRight:'12px' }}>{totalItems} {totalItems===1?'producto':'productos'}</span>
           )}
-          <button onClick={() => { onClose(); setPaso('lista'); }} style={{ background:'none', border:'none', cursor:'pointer', fontSize:'1rem', color:'var(--ink-2)' }}>✕</button>
+          <button onClick={() => { onClose(); setPaso('lista'); }} style={{ background:'none', border:'none', cursor:'pointer', fontSize:'1.3rem', color:'var(--ink-2)', padding:'4px' }}>✕</button>
         </div>
         <div style={{ flex:1, overflowY:'auto', padding:'20px 28px' }}>
           {paso === 'lista' && (
@@ -674,7 +674,7 @@ const ReviewsPanel = ({ onClose, dark }) => {
               <span style={{ fontSize:'0.9rem', color:'var(--gold)' }}>★</span>
               <span style={{ fontSize:'0.72rem', color:'var(--ink-3)' }}>({reviews.length})</span>
             </div>
-            <button onClick={onClose} style={{ background:'none', border:'none', cursor:'pointer', fontSize:'1rem', color:'var(--ink-2)' }}>✕</button>
+            <button onClick={onClose} style={{ background:'none', border:'none', cursor:'pointer', fontSize:'1.3rem', color:'var(--ink-2)', padding:'4px' }}>✕</button>
           </div>
           <div style={{ display:'flex', gap:'4px', marginBottom:'-1px' }}>
             {[{ key:'ver', label:`💬 Leer (${reviews.length})` }, { key:'escribir', label:'✏️ Escribir' }].map(t => (
@@ -910,7 +910,7 @@ const AdminPanel = ({ onClose, productos, onRefresh }) => {
       <div className="panel" style={{ position:'fixed', top:0, right:0, width:'100%', maxWidth:'600px', height:'100%', background:'var(--surface)', zIndex:4001, display:'flex', flexDirection:'column', overflowY:'auto' }}>
         <div style={{ padding:'24px 28px', borderBottom:'1px solid var(--border)', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
           <h2 style={{ fontFamily:'var(--font-display)', fontSize:'1.4rem', fontWeight:700, color:'var(--ink)' }}>Panel Admin</h2>
-          <button onClick={onClose} style={{ background:'none', border:'none', fontSize:'1.2rem', cursor:'pointer', color:'var(--ink)' }}>✕</button>
+          <button onClick={onClose} style={{ background:'none', border:'none', fontSize:'1.4rem', cursor:'pointer', color:'var(--ink)', padding:'4px' }}>✕</button>
         </div>
 
         <div style={{ padding:'24px 28px', flex:1 }}>
