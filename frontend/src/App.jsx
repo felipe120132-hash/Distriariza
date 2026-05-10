@@ -230,6 +230,8 @@ const AquariumHero = ({ busqueda, setBusqueda, scrollY = 0 }) => {
           muted
           loop
           playsInline
+          webkit-playsinline="true"
+          preload="auto"
           style={{
             position: 'absolute',
             top: '50%', left: '50%',
