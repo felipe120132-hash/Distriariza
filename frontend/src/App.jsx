@@ -355,6 +355,14 @@ const DESCRIPCIONES = {
   "Antihongos":        { resumen:"Desinfectante general para un entorno libre de hongos.", cuerpo:"Ideal para prevenir la propagación de esporas en el agua y mantener a raya las enfermedades fúngicas más comunes del acuario.", uso:"Dosificación estándar para prevención general." },
 };
 
+const OPCIONES_COLORES = {
+  "Acuarios Importados": ["Azul", "Blanco", "Negro", "Rosado"],
+  "Jaula para Hámster 257": ["Azul", "Verde", "Rosado", "Naranja"],
+  "Jaula para Hámster S-11": ["Café", "Rosado", "Verde"],
+  "Jaula para Hámster 268": ["Azul Claro", "Azul Oscuro", "Amarillo", "Rosado", "Gris"],
+  "Jaula para Hámster 45": ["Azul", "Amarillo", "Rosado", "Naranja"]
+};
+
 /* ─────────────────────────────────────────────
    CONSTANTES
 ───────────────────────────────────────────── */
@@ -465,6 +473,9 @@ const ProductCard = ({ p, onAdd, onOpen, ratings, onRate, isBestSeller }) => (
 const ProductModal = ({ p, onClose, onAdd, ratings, onRate }) => {
   const desc = DESCRIPCIONES[p.nombre];
   const isBest = BEST_SELLER_NAMES.includes(p.nombre);
+  const colores = OPCIONES_COLORES[p.nombre];
+  const [colorSel, setColorSel] = useState(colores ? colores[0] : null);
+
   return (
     <>
       <div className="modal-overlay" onClick={onClose} style={{ position:'fixed', inset:0, background:'rgba(10,10,10,0.6)', backdropFilter:'blur(8px)', WebkitBackdropFilter:'blur(8px)', zIndex:3000 }} />
@@ -485,6 +496,26 @@ const ProductModal = ({ p, onClose, onAdd, ratings, onRate }) => {
             <span style={{ color: p.stock > 0 ? '#16a34a' : '#ef4444' }}>{p.stock > 0 ? `${p.stock} Disponibles` : 'Agotado'}</span>
           </p>
           <h2 className="modal-content-2" style={{ fontFamily:'var(--font-display)', fontSize:'1.6rem', fontWeight:700, color:'var(--ink)', marginBottom:'10px', lineHeight:1.2 }}>{p.nombre}</h2>
+          
+          {colores && (
+            <div className="modal-content-2" style={{ marginBottom:'20px' }}>
+              <p style={{ fontSize:'0.7rem', color:'var(--ink-3)', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.8px', marginBottom:'10px' }}>Elige un color:</p>
+              <div style={{ display:'flex', gap:'8px', flexWrap:'wrap' }}>
+                {colores.map(c => (
+                  <button key={c} onClick={() => setColorSel(c)} 
+                    style={{ 
+                      padding:'6px 14px', borderRadius:'10px', fontSize:'0.75rem', fontWeight:600, cursor:'pointer',
+                      border: colorSel === c ? '2.5px solid var(--accent)' : '1.5px solid var(--border)',
+                      background: colorSel === c ? 'var(--accent)' : 'transparent',
+                      color: colorSel === c ? '#fff' : 'var(--ink)',
+                      transition: 'all 0.2s'
+                    }}
+                  >{c}</button>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="modal-content-2" style={{ marginBottom:'18px' }}>
             <p style={{ fontSize:'0.7rem', color:'var(--ink-3)', fontWeight:600, marginBottom:'6px' }}>TU VALORACIÓN</p>
             <StarRating productId={p.id} ratings={ratings} onRate={onRate} size="1.3rem" />
@@ -508,7 +539,7 @@ const ProductModal = ({ p, onClose, onAdd, ratings, onRate }) => {
               <p style={{ fontSize:'0.68rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.6px', marginBottom:'3px' }}>Precio</p>
               <span style={{ fontSize:'1.6rem', fontWeight:600, color:'var(--ink)', letterSpacing:'-0.5px' }}>{moneda(p.precio)}</span>
             </div>
-            <button className="pill-btn pill-btn--accent" onClick={() => { onAdd(p); onClose(); }} disabled={p.stock <= 0} style={{ padding:'14px 28px', fontSize:'0.9rem', opacity: p.stock <= 0 ? 0.5 : 1 }}>
+            <button className="pill-btn pill-btn--accent" onClick={() => { onAdd({...p, colorSeleccionado: colorSel}); onClose(); }} disabled={p.stock <= 0} style={{ padding:'14px 28px', fontSize:'0.9rem', opacity: p.stock <= 0 ? 0.5 : 1 }}>
               {p.stock > 0 ? 'Añadir al carrito' : 'Agotado'}
             </button>
           </div>
@@ -535,7 +566,7 @@ const CartPanel = ({ carrito, onClose, onAdd, onRemove, onChangeQty, totalCompra
       console.error('Error al descontar stock:', e);
     }
 
-    const lista = carrito.map(p => `• ${p.nombre} (x${p.cantidad})`).join('\n');
+    const lista = carrito.map(p => `• ${p.nombre}${p.colorSeleccionado ? ` [Color: ${p.colorSeleccionado}]` : ''} (x${p.cantidad})`).join('\n');
     const msg = `*NUEVO PEDIDO - DISTRIBUCIONES ARIZA*\n\n*Cliente:* ${datos.nombre}\n*Dirección:* ${datos.direccion}\n*Ciudad:* ${datos.ciudad}\n*Teléfono:* ${datos.telefono}\n\n*Productos:*\n${lista}\n\n*Total: ${moneda(totalCompra)}*`;
     window.open(`https://wa.me/573219627376?text=${encodeURIComponent(msg)}`, '_blank');
     setPaso('confirmado');
@@ -562,15 +593,18 @@ const CartPanel = ({ carrito, onClose, onAdd, onRemove, onChangeQty, totalCompra
             carrito.length === 0
               ? <div style={{ textAlign:'center', marginTop:'60px' }}><p style={{ fontSize:'2.5rem', marginBottom:'12px' }}>🛒</p><p style={{ color:'var(--ink-3)', fontSize:'0.9rem' }}>Tu carrito está vacío.</p></div>
               : carrito.map(item => (
-                <div key={item.id} style={{ display:'flex', gap:'14px', alignItems:'center', paddingBlock:'16px', borderBottom:'1px solid var(--border)' }}>
+                <div key={`${item.id}-${item.colorSeleccionado || ''}`} style={{ display:'flex', gap:'14px', alignItems:'center', paddingBlock:'16px', borderBottom:'1px solid var(--border)' }}>
                   <div style={{ background:'var(--bg)', borderRadius:'12px', padding:'8px', flexShrink:0 }}>
                     <img src={imgSrc(item.imagen_url)} alt={item.nombre} style={{ width:'52px', height:'52px', objectFit:'contain' }} />
                   </div>
                   <div style={{ flex:1, minWidth:0 }}>
-                    <p style={{ fontSize:'0.85rem', fontWeight:500, marginBottom:'2px', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis', color:'var(--ink)' }}>{item.nombre}</p>
+                    <p style={{ fontSize:'0.85rem', fontWeight:600, marginBottom:'2px', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis', color:'var(--ink)' }}>{item.nombre}</p>
+                    {item.colorSeleccionado && (
+                      <p style={{ fontSize:'0.72rem', color:'var(--accent)', fontWeight:700, marginBottom:'4px' }}>Color: {item.colorSeleccionado}</p>
+                    )}
                     <p style={{ fontSize:'0.82rem', color:'var(--ink-2)' }}>{moneda(item.precio * item.cantidad)}</p>
                   </div>
-                  <Stepper value={item.cantidad} onAdd={() => onAdd(item)} onRemove={() => onRemove(item.id)} onChange={(v) => onChangeQty(item.id, v)} />
+                  <Stepper value={item.cantidad} onAdd={() => onAdd(item)} onRemove={() => onRemove(item.id, item.colorSeleccionado)} onChange={(v) => onChangeQty(item.id, item.colorSeleccionado, v)} />
                 </div>
               ))
           )}
@@ -1078,19 +1112,28 @@ export default function App() {
   const addItem = useCallback((p) =>
     setCarrito(prev => {
       if (p.stock <= 0) return prev;
-      const ex = prev.find(i => i.id === p.id);
+      const colorKey = p.colorSeleccionado || '';
+      const ex = prev.find(i => i.id === p.id && (i.colorSeleccionado || '') === colorKey);
       if (ex && ex.cantidad >= p.stock) return prev;
-      return ex ? prev.map(i => i.id===p.id ? {...i, cantidad:i.cantidad+1} : i) : [...prev, {...p, cantidad:1}];
+      return ex 
+        ? prev.map(i => (i.id===p.id && (i.colorSeleccionado || '') === colorKey) ? {...i, cantidad:i.cantidad+1} : i) 
+        : [...prev, {...p, cantidad:1}];
     }), []);
 
-  const removeOne  = (id) => setCarrito(prev => prev.map(i => i.id===id ? {...i, cantidad:i.cantidad-1} : i).filter(i => i.cantidad>0));
-  const setQty     = (id, v) => setCarrito(prev => prev.map(i => {
-    if (i.id === id) {
-      const prod = productos.find(p => p.id === id);
-      return {...i, cantidad: prod ? Math.min(v, prod.stock) : v};
-    }
-    return i;
-  }).filter(i => i.cantidad>0));
+  const removeOne  = (id, color) => {
+    const colorKey = color || '';
+    setCarrito(prev => prev.map(i => (i.id===id && (i.colorSeleccionado || '') === colorKey) ? {...i, cantidad:i.cantidad-1} : i).filter(i => i.cantidad>0));
+  };
+  const setQty     = (id, color, v) => {
+    const colorKey = color || '';
+    setCarrito(prev => prev.map(i => {
+      if (i.id === id && (i.colorSeleccionado || '') === colorKey) {
+        const prod = productos.find(p => p.id === id);
+        return {...i, cantidad: prod ? Math.min(v, prod.stock) : v};
+      }
+      return i;
+    }).filter(i => i.cantidad>0));
+  };
   const handleRate = (productId, stars) => setRatings(prev => ({...prev, [productId]: stars}));
 
   const totalItems  = carrito.reduce((s,i) => s+i.cantidad, 0);
