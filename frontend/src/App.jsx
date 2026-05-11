@@ -81,6 +81,41 @@ const GlobalStyles = ({ dark }) => (
     .prod-card { transition: transform 0.25s ease, box-shadow 0.25s ease; }
     .prod-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
 
+    .img-container {
+      position: relative;
+      overflow: hidden;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s ease;
+    }
+
+    /* Efecto de mezcla para fondos blancos de JPGs */
+    .img-blend {
+      mix-blend-mode: multiply;
+      filter: contrast(1.05);
+    }
+
+    /* Brillo sutil en el contenedor */
+    .img-container::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 50%);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .prod-card:hover .img-container::after { opacity: 1; }
+
+    .zoom-img {
+      transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+    .prod-card:hover .zoom-img {
+      transform: scale(1.12);
+    }
+
     @keyframes slideIn {
       from { transform: translateX(100%); opacity: 0; }
       to   { transform: translateX(0);   opacity: 1; }
@@ -364,25 +399,24 @@ const Stepper = ({ value, onAdd, onRemove, onChange }) => (
    BEST SELLER CARD
 ───────────────────────────────────────────── */
 const BestCard = ({ p, onAdd, onOpen, ratings, onRate, rank }) => (
-  <div className="prod-card" style={{ background:'var(--card-bg)', borderRadius:'20px', overflow:'hidden', boxShadow:'var(--shadow-sm)', flexShrink:0, width:'200px' }}>
+  <div className="prod-card" style={{ background:'var(--card-bg)', borderRadius:'24px', overflow:'hidden', boxShadow:'var(--shadow-sm)', flexShrink:0, width:'200px' }}>
     <div style={{ position:'relative' }}>
-      <div onClick={() => onOpen(p)} style={{ background:'var(--bg)', height:'150px', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', padding:'16px', borderRadius:'20px 20px 0 0' }}>
-        <img src={imgSrc(p.imagen_url)} alt={p.nombre} style={{ maxHeight:'100%', maxWidth:'100%', objectFit:'contain', transition:'transform 0.3s ease' }}
-          onMouseOver={e => e.currentTarget.style.transform='scale(1.08)'}
-          onMouseOut={e => e.currentTarget.style.transform='scale(1)'}
-        />
+      <div onClick={() => onOpen(p)} className="img-container" style={{ height:'160px', cursor:'pointer', padding:'12px', borderRadius:'24px 24px 0 0' }}>
+        <img src={imgSrc(p.imagen_url)} alt={p.nombre} className="zoom-img img-blend" style={{ maxHeight:'100%', maxWidth:'100%', objectFit:'contain' }} />
       </div>
-      <div className="badge-best" style={{ position:'absolute', top:'10px', left:'10px', background: rank===1 ? '#f59e0b' : rank===2 ? '#94a3b8' : rank===3 ? '#cd7c3a' : 'var(--accent)', color:'#fff', borderRadius:'99px', padding:'3px 10px', fontSize:'0.65rem', fontWeight:700, letterSpacing:'0.5px', boxShadow:'0 2px 8px rgba(0,0,0,0.2)' }}>
+      <div className="badge-best" style={{ position:'absolute', top:'12px', left:'12px', background: rank===1 ? '#f59e0b' : rank===2 ? '#94a3b8' : rank===3 ? '#cd7c3a' : 'var(--accent)', color:'#fff', borderRadius:'99px', padding:'4px 12px', fontSize:'0.65rem', fontWeight:700, letterSpacing:'0.5px', boxShadow:'0 4px 12px rgba(0,0,0,0.2)', zIndex:10 }}>
         #{rank} más vendido
       </div>
     </div>
-    <div style={{ padding:'12px 14px 14px' }}>
-      <h4 onClick={() => onOpen(p)} style={{ fontSize:'0.82rem', fontWeight:500, cursor:'pointer', marginBottom:'6px', lineHeight:1.3, color:'var(--ink)' }}>{p.nombre}</h4>
-      <StarRating productId={p.id} ratings={ratings} onRate={onRate} size="0.85rem" />
-      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginTop:'10px' }}>
-        <span style={{ fontSize:'0.95rem', fontWeight:600, color:'var(--ink)' }}>{moneda(p.precio)}</span>
-        <button className="pill-btn pill-btn--accent" onClick={() => onAdd(p)} disabled={p.stock <= 0} style={{ padding:'6px 12px', fontSize:'0.72rem', opacity: p.stock <= 0 ? 0.5 : 1 }}>
-          {p.stock > 0 ? '+ Añadir' : 'Agotado'}
+    <div style={{ padding:'14px 16px 16px' }}>
+      <h4 onClick={() => onOpen(p)} style={{ fontSize:'0.85rem', fontWeight:500, cursor:'pointer', marginBottom:'6px', lineHeight:1.3, color:'var(--ink)', height:'2.6em', overflow:'hidden', display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical' }}>{p.nombre}</h4>
+      <div style={{ marginBottom:'10px' }}>
+        <StarRating productId={p.id} ratings={ratings} onRate={onRate} size="0.8rem" />
+      </div>
+      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+        <span style={{ fontSize:'1rem', fontWeight:700, color:'var(--ink)' }}>{moneda(p.precio)}</span>
+        <button className="pill-btn pill-btn--accent" onClick={() => onAdd(p)} disabled={p.stock <= 0} style={{ padding:'6px 10px', fontSize:'0.7rem', opacity: p.stock <= 0 ? 0.5 : 1 }}>
+          {p.stock > 0 ? '+ Add' : 'Off'}
         </button>
       </div>
     </div>
@@ -393,36 +427,32 @@ const BestCard = ({ p, onAdd, onOpen, ratings, onRate, rank }) => (
    PRODUCT CARD
 ───────────────────────────────────────────── */
 const ProductCard = ({ p, onAdd, onOpen, ratings, onRate, isBestSeller }) => (
-  <div className="prod-card fade-up" style={{ background:'var(--card-bg)', borderRadius:'20px', overflow:'hidden', boxShadow:'var(--shadow-sm)', position:'relative' }}>
+  <div className="prod-card fade-up" style={{ background:'var(--card-bg)', borderRadius:'24px', overflow:'hidden', boxShadow:'var(--shadow-sm)', position:'relative' }}>
     {isBestSeller && (
-      <div className="badge-best" style={{ position:'absolute', top:'10px', right:'10px', background:'var(--gold)', color:'#000', borderRadius:'99px', padding:'3px 9px', fontSize:'0.6rem', fontWeight:700, letterSpacing:'0.5px', zIndex:5, boxShadow:'0 2px 8px rgba(0,0,0,0.15)' }}>
-        🔥 Top
+      <div className="badge-best" style={{ position:'absolute', top:'12px', right:'12px', background:'var(--gold)', color:'#000', borderRadius:'99px', padding:'4px 12px', fontSize:'0.65rem', fontWeight:800, letterSpacing:'0.5px', zIndex:5, boxShadow:'0 4px 12px rgba(0,0,0,0.15)' }}>
+        🔥 TOP
       </div>
     )}
-    <div onClick={() => onOpen(p)}
-      style={{ background:'var(--bg)', height:'200px', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', padding:'20px', overflow:'hidden', borderRadius:'20px 20px 0 0', transition:'background 0.2s' }}
-      onMouseOver={e => e.currentTarget.style.background='var(--border)'}
-      onMouseOut={e => e.currentTarget.style.background='var(--bg)'}
+    <div onClick={() => onOpen(p)} className="img-container"
+      style={{ height:'220px', cursor:'pointer', padding:'24px', borderRadius:'24px 24px 0 0' }}
     >
-      <img src={imgSrc(p.imagen_url)} alt={p.nombre}
-        style={{ maxHeight:'100%', maxWidth:'100%', objectFit:'contain', transition:'transform 0.35s cubic-bezier(0.22,1,0.36,1)' }}
-        onMouseOver={e => e.currentTarget.style.transform='scale(1.08)'}
-        onMouseOut={e => e.currentTarget.style.transform='scale(1)'}
+      <img src={imgSrc(p.imagen_url)} alt={p.nombre} className="zoom-img img-blend"
+        style={{ maxHeight:'100%', maxWidth:'100%', objectFit:'contain' }}
       />
     </div>
-    <div style={{ padding:'16px 18px 18px' }}>
-      <p style={{ fontSize:'0.68rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.8px', marginBottom:'4px', display:'flex', justifyContent:'space-between' }}>
+    <div style={{ padding:'18px 20px 20px' }}>
+      <p style={{ fontSize:'0.7rem', color:'var(--ink-3)', fontWeight:700, textTransform:'uppercase', letterSpacing:'1px', marginBottom:'6px', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
         <span>{p.categoria_nombre}</span>
-        <span style={{ color: p.stock > 0 ? '#16a34a' : '#ef4444' }}>{p.stock > 0 ? `Stock: ${p.stock}` : 'Agotado'}</span>
+        <span style={{ color: p.stock > 0 ? '#22c55e' : '#ef4444', background: p.stock > 0 ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)', padding:'2px 8px', borderRadius:'6px' }}>{p.stock > 0 ? `Stock: ${p.stock}` : 'Agotado'}</span>
       </p>
-      <h4 onClick={() => onOpen(p)} style={{ fontSize:'0.95rem', fontWeight:500, color:'var(--ink)', cursor:'pointer', marginBottom:'8px', lineHeight:1.3 }}>{p.nombre}</h4>
-      <div style={{ marginBottom:'12px' }}>
-        <StarRating productId={p.id} ratings={ratings} onRate={onRate} size="0.9rem" />
+      <h4 onClick={() => onOpen(p)} style={{ fontSize:'1rem', fontWeight:600, color:'var(--ink)', cursor:'pointer', marginBottom:'10px', lineHeight:1.3, height:'2.6em', overflow:'hidden', display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical' }}>{p.nombre}</h4>
+      <div style={{ marginBottom:'16px' }}>
+        <StarRating productId={p.id} ratings={ratings} onRate={onRate} size="0.95rem" />
       </div>
-      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-        <span style={{ fontSize:'1.1rem', fontWeight:600, color:'var(--ink)' }}>{moneda(p.precio)}</span>
-        <button className="pill-btn pill-btn--accent" onClick={() => onAdd(p)} disabled={p.stock <= 0} style={{ padding:'8px 16px', fontSize:'0.78rem', opacity: p.stock <= 0 ? 0.5 : 1 }}>
-          {p.stock > 0 ? '+ Añadir' : 'Agotado'}
+      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', borderTop:'1px solid var(--border)', paddingTop:'14px' }}>
+        <span style={{ fontSize:'1.2rem', fontWeight:800, color:'var(--ink)', letterSpacing:'-0.5px' }}>{moneda(p.precio)}</span>
+        <button className="pill-btn pill-btn--accent" onClick={() => onAdd(p)} disabled={p.stock <= 0} style={{ padding:'10px 20px', fontSize:'0.82rem', opacity: p.stock <= 0 ? 0.5 : 1 }}>
+          {p.stock > 0 ? 'Añadir' : 'Agotado'}
         </button>
       </div>
     </div>
@@ -443,11 +473,11 @@ const ProductModal = ({ p, onClose, onAdd, ratings, onRate }) => {
           onMouseOver={e => e.currentTarget.style.background='rgba(128,128,128,0.25)'}
           onMouseOut={e => e.currentTarget.style.background='rgba(128,128,128,0.15)'}
         >✕</button>
-        <div style={{ background:'var(--bg)', borderRadius:'28px 28px 0 0', padding:'36px 28px 28px', display:'flex', alignItems:'center', justifyContent:'center', minHeight:'220px', overflow:'hidden', position:'relative' }}>
+        <div style={{ background:'linear-gradient(180deg, #fff 0%, #f9f9f9 100%)', borderRadius:'28px 28px 0 0', padding:'40px 32px 32px', display:'flex', alignItems:'center', justifyContent:'center', minHeight:'280px', overflow:'hidden', position:'relative' }}>
           {isBest && (
-            <div style={{ position:'absolute', top:'14px', left:'14px', background:'var(--gold)', color:'#000', borderRadius:'99px', padding:'4px 12px', fontSize:'0.66rem', fontWeight:700 }}>🔥 Más vendido</div>
+            <div style={{ position:'absolute', top:'20px', left:'24px', background:'var(--gold)', color:'#000', borderRadius:'99px', padding:'5px 14px', fontSize:'0.7rem', fontWeight:800, boxShadow:'0 4px 12px rgba(0,0,0,0.1)' }}>🔥 Más vendido</div>
           )}
-          <img className="modal-img" src={imgSrc(p.imagen_url)} alt={p.nombre} style={{ maxHeight:'200px', maxWidth:'100%', objectFit:'contain', display:'block' }} />
+          <img className="modal-img img-blend" src={imgSrc(p.imagen_url)} alt={p.nombre} style={{ maxHeight:'240px', maxWidth:'100%', objectFit:'contain', display:'block', filter:'drop-shadow(0 8px 24px rgba(0,0,0,0.08))' }} />
         </div>
         <div style={{ padding:'24px 28px 28px' }}>
           <p className="modal-content-1" style={{ fontSize:'0.68rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.9px', marginBottom:'6px', display:'flex', justifyContent:'space-between' }}>
