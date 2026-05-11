@@ -424,7 +424,7 @@ const BestCard = ({ p, onAdd, onOpen, ratings, onRate, rank }) => (
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
         <span style={{ fontSize:'1rem', fontWeight:700, color:'var(--ink)' }}>{moneda(p.precio)}</span>
         <button className="pill-btn pill-btn--accent" onClick={() => onAdd(p)} disabled={p.stock <= 0} style={{ padding:'6px 10px', fontSize:'0.7rem', opacity: p.stock <= 0 ? 0.5 : 1 }}>
-          {p.stock > 0 ? '+ Add' : 'Off'}
+          {p.stock > 0 ? '+ Añadir' : 'Agotado'}
         </button>
       </div>
     </div>
