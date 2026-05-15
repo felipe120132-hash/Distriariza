@@ -875,6 +875,9 @@ const ReviewsPanel = ({ onClose, dark }) => {
 /* ─────────────────────────────────────────────
    ADMIN PANEL (Autenticación segura con JWT)
 ───────────────────────────────────────────── */
+/* ─────────────────────────────────────────────
+   ADMIN PANEL (Autenticación segura con JWT)
+───────────────────────────────────────────── */
 const AdminPanel = ({ onClose, productos, onRefresh }) => {
   const [auth, setAuth] = useState(false);
   const [token, setToken] = useState('');
@@ -883,6 +886,7 @@ const AdminPanel = ({ onClose, productos, onRefresh }) => {
   const [selected, setSelected] = useState(null);
   const [successMsg, setSuccessMsg] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
+  const [busquedaAdmin, setBusquedaAdmin] = useState(''); // 👈 NUEVO
   
   const [nombre, setNombre] = useState('');
   const [desc, setDesc] = useState('');
@@ -1033,6 +1037,11 @@ const AdminPanel = ({ onClose, productos, onRefresh }) => {
     }
   };
 
+  // 👇 PRODUCTOS FILTRADOS
+  const productosFiltrados = productos.filter(p =>
+    normaliza(p.nombre).includes(normaliza(busquedaAdmin))
+  );
+
   return (
     <>
       <div onClick={onClose} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.5)', zIndex:4000 }} />
@@ -1073,31 +1082,64 @@ const AdminPanel = ({ onClose, productos, onRefresh }) => {
           ) : (
             modo === 'lista' ? (
               <div>
-                <div style={{ display:'flex', justifyContent:'space-between', marginBottom:'20px', alignItems:'center' }}>
-                  <h3 style={{ color:'var(--ink)', fontFamily:'var(--font-display)' }}>Productos ({productos.length})</h3>
+                {/* ── HEADER ── */}
+                <div style={{ display:'flex', justifyContent:'space-between', marginBottom:'16px', alignItems:'center' }}>
+                  <h3 style={{ color:'var(--ink)', fontFamily:'var(--font-display)' }}>
+                    Productos ({productosFiltrados.length}{busquedaAdmin ? ` de ${productos.length}` : ''})
+                  </h3>
                   <button onClick={handleNew} className="pill-btn pill-btn--green">+ Nuevo</button>
                 </div>
+
+                {/* ── BARRA DE BÚSQUEDA ── */}
+                <div style={{ position:'relative', marginBottom:'20px' }}>
+                  <span style={{ position:'absolute', left:'14px', top:'50%', transform:'translateY(-50%)', fontSize:'0.9rem', opacity:0.45, pointerEvents:'none' }}>🔍</span>
+                  <input
+                    className="form-input"
+                    placeholder="Buscar producto..."
+                    value={busquedaAdmin}
+                    onChange={e => setBusquedaAdmin(e.target.value)}
+                    style={{ paddingLeft:'42px' }}
+                  />
+                  {busquedaAdmin && (
+                    <button
+                      onClick={() => setBusquedaAdmin('')}
+                      style={{ position:'absolute', right:'14px', top:'50%', transform:'translateY(-50%)', background:'none', border:'none', cursor:'pointer', fontSize:'1rem', color:'var(--ink-3)', lineHeight:1 }}
+                    >✕</button>
+                  )}
+                </div>
+
                 {successMsg && (
                   <div style={{ background:'rgba(34,197,94,0.1)', border:'1px solid rgba(34,197,94,0.3)', borderRadius:'12px', padding:'12px 16px', marginBottom:'16px', fontSize:'0.85rem', color:'#16a34a', fontWeight:600 }}>
                     ✅ {successMsg}
                   </div>
                 )}
+
+                {/* ── LISTA DE PRODUCTOS ── */}
                 <div style={{ display:'flex', flexDirection:'column', gap:'12px' }}>
-                  {productos.map(p => (
-                    <div key={p.id} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'12px', background: 'var(--card-bg)', borderRadius:'12px', border:'1px solid var(--border)' }}>
-                      <div style={{ display:'flex', alignItems:'center', gap:'12px' }}>
-                        <img src={imgSrc(p.imagen_url)} style={{ width:'40px', height:'40px', objectFit:'cover', borderRadius:'8px' }} />
-                        <div>
-                          <p style={{ fontWeight:600, fontSize:'0.85rem', color:'var(--ink)', maxWidth:'200px', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{p.nombre}</p>
-                          <p style={{ fontSize:'0.75rem', color:'var(--ink-2)' }}>{moneda(p.precio)} • Stock: <span style={{ color: p.stock > 0 ? '#16a34a' : '#ef4444', fontWeight: 'bold' }}>{p.stock}</span></p>
+                  {productosFiltrados.length === 0 ? (
+                    <div style={{ textAlign:'center', padding:'40px 20px' }}>
+                      <p style={{ fontSize:'1.8rem', marginBottom:'10px' }}>🔍</p>
+                      <p style={{ color:'var(--ink-3)', fontSize:'0.88rem' }}>
+                        No se encontró ningún producto con "{busquedaAdmin}"
+                      </p>
+                    </div>
+                  ) : (
+                    productosFiltrados.map(p => (
+                      <div key={p.id} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'12px', background: 'var(--card-bg)', borderRadius:'12px', border:'1px solid var(--border)' }}>
+                        <div style={{ display:'flex', alignItems:'center', gap:'12px' }}>
+                          <img src={imgSrc(p.imagen_url)} style={{ width:'40px', height:'40px', objectFit:'cover', borderRadius:'8px' }} />
+                          <div>
+                            <p style={{ fontWeight:600, fontSize:'0.85rem', color:'var(--ink)', maxWidth:'200px', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{p.nombre}</p>
+                            <p style={{ fontSize:'0.75rem', color:'var(--ink-2)' }}>{moneda(p.precio)} • Stock: <span style={{ color: p.stock > 0 ? '#16a34a' : '#ef4444', fontWeight: 'bold' }}>{p.stock}</span></p>
+                          </div>
+                        </div>
+                        <div style={{ display:'flex', gap:'8px' }}>
+                          <button onClick={() => handleEdit(p)} className="pill-btn pill-btn--ghost" style={{ padding:'6px 12px', fontSize:'0.7rem' }}>Editar</button>
+                          <button onClick={() => handleDelete(p.id)} className="pill-btn" style={{ background:'#ef4444', color:'white', padding:'6px 12px', fontSize:'0.7rem' }}>Borrar</button>
                         </div>
                       </div>
-                      <div style={{ display:'flex', gap:'8px' }}>
-                        <button onClick={() => handleEdit(p)} className="pill-btn pill-btn--ghost" style={{ padding:'6px 12px', fontSize:'0.7rem' }}>Editar</button>
-                        <button onClick={() => handleDelete(p.id)} className="pill-btn" style={{ background:'#ef4444', color:'white', padding:'6px 12px', fontSize:'0.7rem' }}>Borrar</button>
-                      </div>
-                    </div>
-                  ))}
+                    ))
+                  )}
                 </div>
               </div>
             ) : (
