@@ -873,14 +873,16 @@ const ReviewsPanel = ({ onClose, dark }) => {
 };
 
 /* ─────────────────────────────────────────────
-   ADMIN PANEL
+   ADMIN PANEL (Autenticación segura con JWT)
 ───────────────────────────────────────────── */
 const AdminPanel = ({ onClose, productos, onRefresh }) => {
   const [auth, setAuth] = useState(false);
+  const [token, setToken] = useState('');
   const [pass, setPass] = useState('');
   const [modo, setModo] = useState('lista'); 
   const [selected, setSelected] = useState(null);
   const [successMsg, setSuccessMsg] = useState('');
+  const [loginLoading, setLoginLoading] = useState(false);
   
   const [nombre, setNombre] = useState('');
   const [desc, setDesc] = useState('');
@@ -891,14 +893,71 @@ const AdminPanel = ({ onClose, productos, onRefresh }) => {
   const [error, setError] = useState('');
   const [cargando, setCargando] = useState(false);
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-    if (pass === '80153017') {
-      setAuth(true);
-      setError('');
-    } else {
-      setError('Contraseña incorrecta');
+  // Restaurar sesión existente al montar
+  useEffect(() => {
+    const savedToken = sessionStorage.getItem('admin_token');
+    if (savedToken) {
+      axios.get(`${BACKEND}/api/auth/verify`, {
+        headers: { 'Authorization': `Bearer ${savedToken}` }
+      }).then(() => {
+        setToken(savedToken);
+        setAuth(true);
+      }).catch(() => {
+        sessionStorage.removeItem('admin_token');
+      });
     }
+  }, []);
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoginLoading(true);
+    setError('');
+    
+    try {
+      const res = await axios.post(`${BACKEND}/api/auth/login`, { password: pass });
+      const jwt = res.data.token;
+      setToken(jwt);
+      sessionStorage.setItem('admin_token', jwt);
+      setAuth(true);
+      setPass('');
+    } catch (err) {
+      const data = err.response?.data;
+      if (data?.code === 'RATE_LIMITED') {
+        setError('🔒 Demasiados intentos. Intenta de nuevo en 15 minutos.');
+      } else if (err.response?.status === 401) {
+        setError('❌ Contraseña incorrecta.');
+      } else {
+        setError('Error de conexión. Intenta de nuevo.');
+      }
+    } finally {
+      setLoginLoading(false);
+    }
+  };
+
+  const handleLogout = () => {
+    setAuth(false);
+    setToken('');
+    setPass('');
+    sessionStorage.removeItem('admin_token');
+    setModo('lista');
+  };
+
+  // Helper para headers con JWT
+  const authHeaders = () => ({ 'Authorization': `Bearer ${token}` });
+
+  // Manejar errores de autenticación (sesión expirada, etc.)
+  const handleAuthError = (err) => {
+    if (err.response?.status === 401) {
+      const code = err.response?.data?.code;
+      if (code === 'TOKEN_EXPIRED') {
+        setError('⏰ Tu sesión ha expirado. Inicia sesión nuevamente.');
+      } else {
+        setError('🔒 Sesión inválida. Inicia sesión nuevamente.');
+      }
+      handleLogout();
+      return true;
+    }
+    return false;
   };
 
   const handleEdit = (p) => {
@@ -939,12 +998,12 @@ const AdminPanel = ({ onClose, productos, onRefresh }) => {
     try {
       if (modo === 'nuevo') {
         await axios.post(`${BACKEND}/api/productos`, formData, {
-          headers: { 'x-admin-password': pass }
+          headers: authHeaders()
         });
         setSuccessMsg('¡Producto creado con éxito!');
       } else {
         await axios.put(`${BACKEND}/api/productos/${selected.id}`, formData, {
-          headers: { 'x-admin-password': pass }
+          headers: authHeaders()
         });
         setSuccessMsg('¡Producto actualizado con éxito!');
       }
@@ -952,7 +1011,9 @@ const AdminPanel = ({ onClose, productos, onRefresh }) => {
       setModo('lista');
       setTimeout(() => setSuccessMsg(''), 4000);
     } catch (err) {
-      setError('Error al guardar el producto');
+      if (!handleAuthError(err)) {
+        setError('Error al guardar el producto');
+      }
     } finally {
       setCargando(false);
     }
@@ -962,11 +1023,13 @@ const AdminPanel = ({ onClose, productos, onRefresh }) => {
     if (!window.confirm('¿Seguro que quieres ocultar/eliminar este producto?')) return;
     try {
       await axios.delete(`${BACKEND}/api/productos/${id}`, {
-        headers: { 'x-admin-password': pass }
+        headers: authHeaders()
       });
       onRefresh();
     } catch (err) {
-      alert('Error al eliminar');
+      if (!handleAuthError(err)) {
+        alert('Error al eliminar');
+      }
     }
   };
 
@@ -976,16 +1039,36 @@ const AdminPanel = ({ onClose, productos, onRefresh }) => {
       <div className="panel" style={{ position:'fixed', top:0, right:0, width:'100%', maxWidth:'600px', height:'100%', background:'var(--surface)', zIndex:4001, display:'flex', flexDirection:'column', overflowY:'auto' }}>
         <div style={{ padding:'24px 28px', borderBottom:'1px solid var(--border)', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
           <h2 style={{ fontFamily:'var(--font-display)', fontSize:'1.4rem', fontWeight:700, color:'var(--ink)' }}>Panel Admin</h2>
-          <button onClick={onClose} style={{ background:'none', border:'none', fontSize:'1.4rem', cursor:'pointer', color:'var(--ink)', padding:'4px' }}>✕</button>
+          <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
+            {auth && (
+              <button onClick={handleLogout} className="pill-btn pill-btn--ghost" style={{ padding:'6px 14px', fontSize:'0.7rem', color:'#ef4444' }}>
+                Cerrar sesión
+              </button>
+            )}
+            <button onClick={onClose} style={{ background:'none', border:'none', fontSize:'1.4rem', cursor:'pointer', color:'var(--ink)', padding:'4px' }}>✕</button>
+          </div>
         </div>
 
         <div style={{ padding:'24px 28px', flex:1 }}>
           {!auth ? (
-            <form onSubmit={handleLogin} style={{ display:'flex', flexDirection:'column', gap:'16px', maxWidth:'300px', margin:'40px auto' }}>
-              <h3 style={{ textAlign:'center', color:'var(--ink)', fontFamily:'var(--font-display)' }}>Contraseña de acceso</h3>
-              <input type="password" value={pass} onChange={e=>setPass(e.target.value)} className="form-input" placeholder="Escribe aquí..." />
-              {error && <p style={{ color:'#ef4444', fontSize:'0.8rem', textAlign:'center' }}>{error}</p>}
-              <button type="submit" className="pill-btn pill-btn--accent" style={{ justifyContent:'center', padding:'12px' }}>Ingresar</button>
+            <form onSubmit={handleLogin} style={{ display:'flex', flexDirection:'column', gap:'16px', maxWidth:'320px', margin:'40px auto' }}>
+              <div style={{ textAlign:'center', marginBottom:'8px' }}>
+                <div style={{ fontSize:'2.5rem', marginBottom:'12px' }}>🔐</div>
+                <h3 style={{ color:'var(--ink)', fontFamily:'var(--font-display)', fontSize:'1.2rem', marginBottom:'4px' }}>Acceso Administrativo</h3>
+                <p style={{ color:'var(--ink-3)', fontSize:'0.78rem' }}>Ingresa tu contraseña para gestionar productos</p>
+              </div>
+              <input type="password" value={pass} onChange={e=>setPass(e.target.value)} className="form-input" placeholder="Contraseña..." autoComplete="current-password" />
+              {error && (
+                <div style={{ background: error.includes('Demasiados') ? 'rgba(239,68,68,0.08)' : 'rgba(239,68,68,0.06)', border: `1px solid ${error.includes('Demasiados') ? 'rgba(239,68,68,0.3)' : 'rgba(239,68,68,0.15)'}`, borderRadius:'10px', padding:'10px 14px', fontSize:'0.8rem', color:'#ef4444', textAlign:'center' }}>
+                  {error}
+                </div>
+              )}
+              <button type="submit" disabled={loginLoading || !pass.trim()} className="pill-btn pill-btn--accent" style={{ justifyContent:'center', padding:'13px', fontSize:'0.88rem', opacity: loginLoading || !pass.trim() ? 0.6 : 1 }}>
+                {loginLoading ? 'Verificando...' : 'Ingresar'}
+              </button>
+              <p style={{ fontSize:'0.65rem', color:'var(--ink-3)', textAlign:'center', lineHeight:1.5 }}>
+                🛡️ Conexión segura • Máximo 5 intentos cada 15 min
+              </p>
             </form>
           ) : (
             modo === 'lista' ? (
@@ -1061,6 +1144,12 @@ const AdminPanel = ({ onClose, productos, onRefresh }) => {
                   <p style={{ fontSize:'0.8rem', color:'var(--ink-2)', marginBottom:'8px', fontWeight:600 }}>{modo === 'editar' ? 'Cambiar imagen (opcional)' : 'Subir imagen'}</p>
                   <input type="file" accept="image/*" onChange={e => setImagen(e.target.files[0])} style={{ color:'var(--ink)', fontSize:'0.8rem' }} />
                 </div>
+
+                {error && (
+                  <div style={{ background:'rgba(239,68,68,0.06)', border:'1px solid rgba(239,68,68,0.15)', borderRadius:'10px', padding:'10px 14px', fontSize:'0.8rem', color:'#ef4444', textAlign:'center' }}>
+                    {error}
+                  </div>
+                )}
 
                 <button type="submit" disabled={cargando} className="pill-btn pill-btn--accent" style={{ justifyContent:'center', padding:'14px', marginTop:'10px', fontSize:'0.9rem' }}>
                   {cargando ? 'Guardando...' : 'Guardar Producto'}

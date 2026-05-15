@@ -45,9 +45,6 @@ const getProductos = async (req, res) => {
 };
 const createProducto = async (req, res) => {
     try {
-        const password = req.headers['x-admin-password'];
-        if (password !== '80153017') return res.status(401).json({ error: 'No autorizado' });
-
         const { nombre, descripcion, precio, categoria_id, stock } = req.body;
         const imagen_url = req.file ? req.file.filename : null;
 
@@ -65,9 +62,6 @@ const createProducto = async (req, res) => {
 
 const updateProducto = async (req, res) => {
     try {
-        const password = req.headers['x-admin-password'];
-        if (password !== '80153017') return res.status(401).json({ error: 'No autorizado' });
-
         const { id } = req.params;
         const { nombre, descripcion, precio, categoria_id, stock } = req.body;
         
@@ -92,9 +86,6 @@ const updateProducto = async (req, res) => {
 
 const deleteProducto = async (req, res) => {
     try {
-        const password = req.headers['x-admin-password'];
-        if (password !== '80153017') return res.status(401).json({ error: 'No autorizado' });
-
         const { id } = req.params;
         // En lugar de borrar físicamente, podemos ocultarlo (activo = false)
         await db.query('UPDATE productos SET activo = 0 WHERE id = ?', [id]);

@@ -1,11 +1,11 @@
 const mysql = require('mysql2/promise');
 
 const pool = mysql.createPool({
-  host: 'mysql-14c7894e-distriariza.d.aivencloud.com',
-  port: 28140,
-  user: 'avnadmin',
-  password: 'AVNS_EbW_oAxV0nWCU-TNYKW',
-  database: 'defaultdb',
+  host: process.env.DB_HOST || 'mysql-14c7894e-distriariza.d.aivencloud.com',
+  port: parseInt(process.env.DB_PORT) || 28140,
+  user: process.env.DB_USER || 'avnadmin',
+  password: process.env.DB_PASSWORD || 'AVNS_EbW_oAxV0nWCU-TNYKW',
+  database: process.env.DB_NAME || 'defaultdb',
   ssl: {
     // Esto evita el HANDSHAKE_SSL_ERROR al no validar certificados locales
     rejectUnauthorized: false,

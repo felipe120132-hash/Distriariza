@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -8,8 +9,10 @@ const db = require('./config/db');
 const productoRoutes = require('./routes/productoRoutes');
 const pedidoRoutes = require('./routes/pedidoRoutes');
 const resenaRoutes = require('./routes/resenaRoutes');
+const authRoutes = require('./routes/authRoutes');
 
 const app = express();
+app.set('trust proxy', 1); // Necesario para rate limiting detrás de proxies (Render)
 
 // ── Middlewares ───────────────────────────────────────────────────────────────
 app.use(cors({
@@ -19,7 +22,7 @@ app.use(cors({
         'http://localhost:3000'
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'x-admin-password']
+    allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
 app.use(morgan('dev'));
@@ -184,6 +187,7 @@ app.get('/api/load-catalog', async (req, res) => {
 app.use('/api/productos', productoRoutes);
 app.use('/api/pedidos', pedidoRoutes);
 app.use('/api/resenas', resenaRoutes);       // ← NUEVO
+app.use('/api/auth', authRoutes);             // ← AUTENTICACIÓN
 
 // ── 404 ───────────────────────────────────────────────────────────────────────
 app.use((req, res) => {
