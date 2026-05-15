@@ -460,7 +460,7 @@ const ProductCard = ({ p, onAdd, onOpen, ratings, onRate, isBestSeller }) => (
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', borderTop:'1px solid var(--border)', paddingTop:'14px' }}>
         <span style={{ fontSize:'1.2rem', fontWeight:800, color:'var(--ink)', letterSpacing:'-0.5px' }}>{moneda(p.precio)}</span>
         <button className="pill-btn pill-btn--accent" onClick={() => onAdd(p)} disabled={p.stock <= 0} style={{ padding:'10px 20px', fontSize:'0.82rem', opacity: p.stock <= 0 ? 0.5 : 1 }}>
-          {p.stock > 0 ? 'Añadir' : 'Agotado'}
+          {p.stock > 0 ? '+ Añadir' : 'Agotado'}
         </button>
       </div>
     </div>
@@ -540,7 +540,7 @@ const ProductModal = ({ p, onClose, onAdd, ratings, onRate }) => {
               <span style={{ fontSize:'1.6rem', fontWeight:600, color:'var(--ink)', letterSpacing:'-0.5px' }}>{moneda(p.precio)}</span>
             </div>
             <button className="pill-btn pill-btn--accent" onClick={() => { onAdd({...p, colorSeleccionado: colorSel}); onClose(); }} disabled={p.stock <= 0} style={{ padding:'14px 28px', fontSize:'0.9rem', opacity: p.stock <= 0 ? 0.5 : 1 }}>
-              {p.stock > 0 ? 'Añadir al carrito' : 'Agotado'}
+              {p.stock > 0 ? '+ Añadir al carrito' : 'Agotado'}
             </button>
           </div>
         </div>
