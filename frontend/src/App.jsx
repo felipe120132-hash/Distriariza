@@ -177,14 +177,62 @@ const GlobalStyles = ({ dark }) => (
     .cat-pill {
       flex-shrink: 0; padding: 8px 16px; border-radius: 99px;
       font-size: 0.78rem; font-weight: 600; border: none; cursor: pointer;
-      transition: background 0.2s, color 0.2s;
+      transition: background 0.25s, color 0.25s, transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.25s;
+    }
+    .cat-pill:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: var(--shadow-md);
+    }
+    .cat-pill:active {
+      transform: scale(0.95);
     }
     .cat-pill--off {
       background: ${dark ? 'rgba(255,255,255,0.07)' : 'var(--surface)'};
       color: var(--ink-2);
       box-shadow: var(--shadow-sm);
     }
+    .cat-pill--off:hover {
+      background: ${dark ? 'rgba(255,255,255,0.12)' : '#eaeae6'};
+      color: var(--ink);
+    }
     .cat-pill--on { background: var(--ink); color: ${dark ? '#111' : 'var(--surface)'}; }
+
+    .nav-tab {
+      background: none; border: none; cursor: pointer;
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+      position: relative;
+      padding: 6px 16px;
+      border-radius: 20px;
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.3s, box-shadow 0.3s;
+    }
+    .nav-tab:hover {
+      transform: translateY(-5px) scale(1.08);
+      background: ${dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.03)'};
+    }
+    .nav-tab:active {
+      transform: translateY(-2px) scale(0.95);
+    }
+    .nav-tab-icon {
+      display: inline-block;
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .nav-tab:hover .nav-tab-icon {
+      transform: scale(1.22) rotate(6deg);
+    }
+    .nav-tab-badge {
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .nav-tab:hover .nav-tab-badge {
+      transform: scale(1.15) translate(2px, -2px);
+    }
+
+    .review-tab {
+      transition: color 0.25s, border-color 0.25s, transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    }
+    .review-tab:hover {
+      transform: translateY(-2px);
+      color: var(--accent) !important;
+    }
 
     .dark-toggle {
       width: 48px; height: 26px; border-radius: 99px; border: none; cursor: pointer;
@@ -744,7 +792,7 @@ const ReviewsPanel = ({ onClose, dark }) => {
           </div>
           <div style={{ display:'flex', gap:'4px', marginBottom:'-1px' }}>
             {[{ key:'ver', label:`💬 Leer (${reviews.length})` }, { key:'escribir', label:'✏️ Escribir' }].map(t => (
-              <button key={t.key} onClick={() => setTab(t.key)} style={{ padding:'10px 18px', border:'none', cursor:'pointer', fontFamily:'var(--font-body)', fontSize:'0.8rem', fontWeight:600, background:'none', color: tab===t.key ? 'var(--accent)' : 'var(--ink-3)', borderBottom: tab===t.key ? '2px solid var(--accent)' : '2px solid transparent', transition:'color 0.2s, border-color 0.2s' }}>
+              <button key={t.key} className="review-tab" onClick={() => setTab(t.key)} style={{ padding:'10px 18px', border:'none', cursor:'pointer', fontFamily:'var(--font-body)', fontSize:'0.8rem', fontWeight:600, background:'none', color: tab===t.key ? 'var(--accent)' : 'var(--ink-3)', borderBottom: tab===t.key ? '2px solid var(--accent)' : '2px solid transparent' }}>
                 {t.label}
               </button>
             ))}
@@ -1374,18 +1422,18 @@ export default function App() {
 
       {/* ── BOTTOM NAV ── */}
       <div style={{ position:'fixed', bottom:'16px', left:'50%', transform:'translateX(-50%)', background: dark ? '#1a1a1e' : '#ffffff', borderRadius:'99px', padding:'10px 32px', display:'flex', gap:'36px', alignItems:'center', boxShadow:'0 4px 24px rgba(0,0,0,0.15)', zIndex:900, border:`1px solid var(--border)` }}>
-        <button onClick={() => { setCategoria('Todos'); setBusqueda(''); }} style={{ background:'none', border:'none', cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', gap:'2px' }}>
-          <span style={{ fontSize:'1.2rem' }}>🏪</span>
+        <button className="nav-tab" onClick={() => { setCategoria('Todos'); setBusqueda(''); }} style={{ background:'none', border:'none', cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', gap:'2px' }}>
+          <span className="nav-tab-icon" style={{ fontSize:'1.2rem' }}>🏪</span>
           <span style={{ fontSize:'0.58rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.6px', color:categoria==='Todos'?'var(--accent)':'var(--ink-3)' }}>Tienda</span>
         </button>
-        <button onClick={() => setReviewsOpen(true)} style={{ background:'none', border:'none', cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', gap:'2px' }}>
-          <span style={{ fontSize:'1.2rem' }}>💬</span>
+        <button className="nav-tab" onClick={() => setReviewsOpen(true)} style={{ background:'none', border:'none', cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', gap:'2px' }}>
+          <span className="nav-tab-icon" style={{ fontSize:'1.2rem' }}>💬</span>
           <span style={{ fontSize:'0.58rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.6px', color: reviewsOpen ? 'var(--accent)' : 'var(--ink-3)' }}>Reseñas</span>
         </button>
-        <button onClick={() => setCartOpen(true)} style={{ background:'none', border:'none', cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', gap:'2px', position:'relative' }}>
-          <span style={{ fontSize:'1.2rem' }}>🛒</span>
+        <button className="nav-tab" onClick={() => setCartOpen(true)} style={{ background:'none', border:'none', cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', gap:'2px', position:'relative' }}>
+          <span className="nav-tab-icon" style={{ fontSize:'1.2rem' }}>🛒</span>
           {totalItems > 0 && (
-            <span style={{ position:'absolute', top:'-4px', right:'-10px', background:'#ef4444', color:'#fff', fontSize:'0.58rem', width:'17px', height:'17px', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', fontWeight:700, border:'2px solid var(--surface)' }}>
+            <span className="nav-tab-badge" style={{ position:'absolute', top:'-4px', right:'-10px', background:'#ef4444', color:'#fff', fontSize:'0.58rem', width:'17px', height:'17px', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', fontWeight:700, border:'2px solid var(--surface)' }}>
               {totalItems}
             </span>
           )}
