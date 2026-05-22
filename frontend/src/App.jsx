@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, memo } from 'react';
 import axios from 'axios';
 
 /* ─────────────────────────────────────────────
@@ -6,8 +6,6 @@ import axios from 'axios';
 ───────────────────────────────────────────── */
 const GlobalStyles = ({ dark }) => (
   <style>{`
-    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Outfit:wght@500;700;800;900&display=swap');
-
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
@@ -362,7 +360,7 @@ const AquariumHero = ({ busqueda, setBusqueda, scrollY = 0 }) => {
 /* ─────────────────────────────────────────────
    STAR RATING
 ───────────────────────────────────────────── */
-const StarRating = ({ productId, ratings, onRate, readonly = false, size = '1rem' }) => {
+const StarRating = memo(({ productId, ratings, onRate, readonly = false, size = '1rem' }) => {
   const [hover, setHover] = useState(0);
   const current = ratings[productId] || 0;
   return (
@@ -380,7 +378,7 @@ const StarRating = ({ productId, ratings, onRate, readonly = false, size = '1rem
       )}
     </div>
   );
-};
+});
 
 /* ─────────────────────────────────────────────
    DESCRIPCIONES
@@ -454,11 +452,11 @@ const Stepper = ({ value, onAdd, onRemove, onChange }) => (
 /* ─────────────────────────────────────────────
    BEST SELLER CARD
 ───────────────────────────────────────────── */
-const BestCard = ({ p, onAdd, onOpen, ratings, onRate, rank }) => (
+const BestCard = memo(({ p, onAdd, onOpen, ratings, onRate, rank }) => (
   <div className="prod-card" style={{ background:'var(--card-bg)', borderRadius:'24px', overflow:'hidden', boxShadow:'var(--shadow-sm)', flexShrink:0, width:'200px' }}>
     <div style={{ position:'relative' }}>
       <div onClick={() => onOpen(p)} className="img-container" style={{ height:'160px', cursor:'pointer', padding:'12px', borderRadius:'24px 24px 0 0' }}>
-        <img src={imgSrc(p.imagen_url)} alt={p.nombre} className="zoom-img img-blend" style={{ maxHeight:'100%', maxWidth:'100%', objectFit:'contain' }} />
+        <img src={imgSrc(p.imagen_url)} alt={p.nombre} decoding="async" className="zoom-img img-blend" style={{ maxHeight:'100%', maxWidth:'100%', objectFit:'contain' }} />
       </div>
       <div className="badge-best" style={{ position:'absolute', top:'12px', left:'12px', background: rank===1 ? '#f59e0b' : rank===2 ? '#94a3b8' : rank===3 ? '#cd7c3a' : 'var(--accent)', color:'#fff', borderRadius:'99px', padding:'4px 12px', fontSize:'0.65rem', fontWeight:700, letterSpacing:'0.5px', boxShadow:'0 4px 12px rgba(0,0,0,0.2)', zIndex:10 }}>
         #{rank} más vendido
@@ -477,12 +475,12 @@ const BestCard = ({ p, onAdd, onOpen, ratings, onRate, rank }) => (
       </div>
     </div>
   </div>
-);
+));
 
 /* ─────────────────────────────────────────────
    PRODUCT CARD
 ───────────────────────────────────────────── */
-const ProductCard = ({ p, onAdd, onOpen, ratings, onRate, isBestSeller }) => (
+const ProductCard = memo(({ p, onAdd, onOpen, ratings, onRate, isBestSeller }) => (
   <div className="prod-card fade-up" style={{ background:'var(--card-bg)', borderRadius:'24px', overflow:'hidden', boxShadow:'var(--shadow-sm)', position:'relative' }}>
     {isBestSeller && (
       <div className="badge-best" style={{ position:'absolute', top:'12px', right:'12px', background:'var(--gold)', color:'#000', borderRadius:'99px', padding:'4px 12px', fontSize:'0.65rem', fontWeight:800, letterSpacing:'0.5px', zIndex:5, boxShadow:'0 4px 12px rgba(0,0,0,0.15)' }}>
@@ -492,7 +490,7 @@ const ProductCard = ({ p, onAdd, onOpen, ratings, onRate, isBestSeller }) => (
     <div onClick={() => onOpen(p)} className="img-container"
       style={{ height:'220px', cursor:'pointer', padding:'24px', borderRadius:'24px 24px 0 0' }}
     >
-      <img src={imgSrc(p.imagen_url)} alt={p.nombre} className="zoom-img img-blend"
+      <img src={imgSrc(p.imagen_url)} alt={p.nombre} loading="lazy" decoding="async" className="zoom-img img-blend"
         style={{ maxHeight:'100%', maxWidth:'100%', objectFit:'contain' }}
       />
     </div>
@@ -513,7 +511,7 @@ const ProductCard = ({ p, onAdd, onOpen, ratings, onRate, isBestSeller }) => (
       </div>
     </div>
   </div>
-);
+));
 
 /* ─────────────────────────────────────────────
    PRODUCT MODAL
@@ -1281,7 +1279,7 @@ export default function App() {
     axios.get(`${BACKEND}/api/productos`)
       .then(r => setProductos(r.data))
       .catch(() => setError('No se pudieron cargar los productos.'))
-      .finally(() => setTimeout(() => setCargando(false), 1600));
+      .finally(() => setCargando(false));
   };
 
   useEffect(() => {
