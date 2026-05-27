@@ -1,13 +1,18 @@
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'public/productos'); // Carpeta donde se guardan
+        const dir = path.join(__dirname, '../public/productos');
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+        }
+        cb(null, dir);
     },
     filename: (req, file, cb) => {
-        // Nombre único: id_producto + fecha + extensión original
-        const uniqueName = `${Date.now()}-${file.originalname}`;
+        const ext = path.extname(file.originalname);
+        const uniqueName = `${Date.now()}${ext}`; // sin espacios ni nombre original
         cb(null, uniqueName);
     }
 });
@@ -18,7 +23,7 @@ const upload = multer({
         const fileTypes = /jpeg|jpg|png|webp/;
         const mimetype = fileTypes.test(file.mimetype);
         if (mimetype) return cb(null, true);
-        cb("Error: El archivo debe ser una imagen válida");
+        cb(new Error('El archivo debe ser una imagen válida'));
     }
 });
 
