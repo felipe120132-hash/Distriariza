@@ -1,30 +1,30 @@
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const dir = path.join(__dirname, '../public/productos');
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir, { recursive: true });
-        }
-        cb(null, dir);
-    },
-    filename: (req, file, cb) => {
-        const ext = path.extname(file.originalname);
-        const uniqueName = `${Date.now()}${ext}`; // sin espacios ni nombre original
-        cb(null, uniqueName);
-    }
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key:    process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const upload = multer({ 
+const storage = new CloudinaryStorage({
+    cloudinary,
+    params: {
+        folder:          'distriariza/productos',
+        allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
+        transformation:  [{ width: 800, height: 800, crop: 'limit', quality: 'auto' }],
+    },
+});
+
+const upload = multer({
     storage,
     fileFilter: (req, file, cb) => {
         const fileTypes = /jpeg|jpg|png|webp/;
-        const mimetype = fileTypes.test(file.mimetype);
-        if (mimetype) return cb(null, true);
+        if (fileTypes.test(file.mimetype)) return cb(null, true);
         cb(new Error('El archivo debe ser una imagen válida'));
     }
 });
 
-module.exports = upload;
+// Exportar también cloudinary para usarlo en el controller (borrar imágenes viejas)
+module.exports = { upload, cloudinary };

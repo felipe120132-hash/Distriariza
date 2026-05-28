@@ -1,9 +1,10 @@
 const db = require('../config/db');
+const { cloudinary } = require('./uploadController');
 
 const getProductos = async (req, res) => {
     try {
-        const { categoria_id, q } = req.query; 
-        
+        const { categoria_id, q } = req.query;
+
         let query = `
             SELECT p.*, c.nombre AS categoria_nombre 
             FROM productos p 
@@ -12,45 +13,36 @@ const getProductos = async (req, res) => {
         `;
         let params = [];
 
-        // Filtro por Categoría
         if (categoria_id) {
             query += ' AND p.categoria_id = ?';
             params.push(categoria_id);
         }
-
-        // Lógica de Búsqueda
         if (q) {
             query += ' AND (p.nombre LIKE ? OR p.descripcion LIKE ?)';
-            const searchTerm = `%${q}%`;
-            params.push(searchTerm, searchTerm);
+            params.push(`%${q}%`, `%${q}%`);
         }
 
         const [rows] = await db.query(query, params);
 
-        // --- INSERCIÓN DE RUTA DINÁMICA DE IMÁGENES ---
-        // Esto transforma "foto.jpg" en "http://localhost:5000/productos/foto.jpg"
-        const productosConImagenFull = rows.map(p => ({
-            ...p,
-            imagen_url: p.imagen_url 
-                ? `${req.protocol}://${req.get('host')}/productos/${p.imagen_url}` 
-                : null
-        }));
+        // ── La imagen_url ya es una URL completa de Cloudinary, no la transformamos ──
+        res.json(rows);
 
-        res.json(productosConImagenFull);
-        
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Error al obtener los productos' });
     }
 };
+
 const createProducto = async (req, res) => {
     try {
         const { nombre, descripcion, precio, categoria_id, stock } = req.body;
-        const imagen_url = req.file ? req.file.filename : null;
+
+        // req.file.path = URL completa de Cloudinary (ej: https://res.cloudinary.com/...)
+        const imagen_url = req.file ? req.file.path : null;
 
         const [result] = await db.query(
             'INSERT INTO productos (nombre, descripcion, precio, categoria_id, imagen_url, activo, stock) VALUES (?, ?, ?, ?, ?, 1, ?)',
-            [nombre, descripcion || '', precio, categoria_id, imagen_url, stock || 0]
+            [nombre, descripcion || '', precio, categoria_id, imagen_url, stock || 1000]
         );
 
         res.status(201).json({ id: result.insertId, message: 'Producto creado exitosamente' });
@@ -64,13 +56,22 @@ const updateProducto = async (req, res) => {
     try {
         const { id } = req.params;
         const { nombre, descripcion, precio, categoria_id, stock } = req.body;
-        
+
         let query = 'UPDATE productos SET nombre = ?, descripcion = ?, precio = ?, categoria_id = ?, stock = ?';
         let params = [nombre, descripcion, precio, categoria_id, stock || 0];
 
         if (req.file) {
+            // Si subió imagen nueva, borrar la vieja de Cloudinary
+            const [rows] = await db.query('SELECT imagen_url FROM productos WHERE id = ?', [id]);
+            const urlVieja = rows[0]?.imagen_url;
+            if (urlVieja && urlVieja.includes('cloudinary')) {
+                const partes = urlVieja.split('/');
+                const archivoConExt = partes[partes.length - 1];
+                const publicId = `distriariza/productos/${archivoConExt.split('.')[0]}`;
+                await cloudinary.uploader.destroy(publicId);
+            }
             query += ', imagen_url = ?';
-            params.push(req.file.filename);
+            params.push(req.file.path); // URL completa de Cloudinary
         }
 
         query += ' WHERE id = ?';
@@ -87,7 +88,6 @@ const updateProducto = async (req, res) => {
 const deleteProducto = async (req, res) => {
     try {
         const { id } = req.params;
-        // En lugar de borrar físicamente, podemos ocultarlo (activo = false)
         await db.query('UPDATE productos SET activo = 0 WHERE id = ?', [id]);
         res.json({ message: 'Producto eliminado exitosamente' });
     } catch (error) {
@@ -98,7 +98,7 @@ const deleteProducto = async (req, res) => {
 
 const descontarStock = async (req, res) => {
     try {
-        const { items } = req.body; // [{ id, cantidad }]
+        const { items } = req.body;
         if (!Array.isArray(items) || items.length === 0)
             return res.status(400).json({ error: 'No se enviaron productos' });
 
