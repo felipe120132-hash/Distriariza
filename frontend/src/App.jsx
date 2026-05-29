@@ -23,9 +23,9 @@ const GlobalStyles = ({ dark }) => (
       --radius:  16px;
       --font-body: 'DM Sans', sans-serif;
       --font-display: 'Outfit', sans-serif;
-      --shadow-sm: ${dark ? '0 1px 6px rgba(0,0,0,0.18)' : '0 1px 4px rgba(0,0,0,0.04)'};}
-      --shadow-md: ${dark ? '0 4px 16px rgba(0,0,0,0.22)' : '0 4px 14px rgba(0,0,0,0.06)'};
-      --shadow-lg: ${dark ? '0 8px 28px rgba(0,0,0,0.28)' : '0 8px 28px rgba(0,0,0,0.08)'};
+      --shadow-sm: ${dark ? '0 1px 3px rgba(0,0,0,0.4)' : '0 1px 3px rgba(0,0,0,0.06)'};
+      --shadow-md: ${dark ? '0 4px 20px rgba(0,0,0,0.5)' : '0 4px 20px rgba(0,0,0,0.08)'};
+      --shadow-lg: ${dark ? '0 12px 40px rgba(0,0,0,0.6)' : '0 12px 40px rgba(0,0,0,0.12)'};
     }
 
     body {
