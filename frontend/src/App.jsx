@@ -436,22 +436,20 @@ const AquariumHero = ({ busqueda, setBusqueda, scrollY = 0 }) => {
         <h1 style={{ fontFamily:'var(--font-display)', fontSize:'clamp(2.2rem,5vw,3.5rem)', fontWeight:700, color:'#fff', lineHeight:1.15, marginBottom:'20px', textShadow:'0 4px 16px rgba(0,0,0,0.4)' }}>
           Todo para tus<br/>peces y hámsters.
         </h1>
-        <div style={{ position:'relative', maxWidth:'320px' }}>
-          <span style={{ position:'absolute', left:'14px', top:'50%', transform:'translateY(-50%)', fontSize:'0.9rem', opacity:0.6, color:'#444' }}>🔍</span>
-          <input type="text" placeholder="Buscar productos…" value={busqueda} onChange={e => setBusqueda(e.target.value)}
-            style={{ 
-              width:'100%', 
-              padding:'13px 18px 13px 40px', 
-              borderRadius:'99px', 
-              border:'none', 
-              background:'#ffffff', 
-              color:'#333', 
-              fontFamily:'var(--font-body)', 
-              fontSize:'0.88rem', 
-              outline:'none',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.15)'
-            }}
+        <div className="form-control" style={{ width: '100%', maxWidth: '320px', margin: '20px 0 0' }}>
+          <input 
+            type="text" 
+            required 
+            value={busqueda} 
+            onChange={e => setBusqueda(e.target.value)} 
           />
+          <label>
+            {"Buscar productos…".split("").map((char, index) => (
+              <span key={index} style={{ transitionDelay: `${index * 50}ms` }}>
+                {char === " " ? "\u00A0" : char}
+              </span>
+            ))}
+          </label>
         </div>
       </div>
 
