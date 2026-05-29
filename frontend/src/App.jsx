@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, memo } from 'react';
+import { useEffect, useState, useCallback, memo, Fragment } from 'react';
 import axios from 'axios';
 
 /* ─────────────────────────────────────────────
@@ -446,143 +446,63 @@ const GlobalStyles = ({ dark }) => (
       z-index: 5;
     }
 
-    /* ── WHEEL SELECTOR BY BYLLZZ ── */
-    .wheel-selector {
-      position: relative;
-      width: 320px;
-      height: 320px;
-      margin: 20px auto 40px;
+    /* ── CUSTOM CHECKBOX BY WHITENERVOSA ── */
+    .customCheckBoxHolder {
       display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      margin: 24px 0 40px;
+    }
+
+    .customCheckBoxInput {
+      display: none;
+    }
+
+    .customCheckBoxWrapper {
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .customCheckBox {
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-      overflow: hidden;
-      border-radius: 50%;
-      background: ${dark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.015)'};
-      border: 2px solid var(--border);
-      box-shadow: var(--shadow-sm);
-    }
-
-    .wheel-selector::after {
-      content: '▼';
-      position: absolute;
-      top: 12px;
-      left: calc(50% - 7px);
-      color: var(--accent);
-      font-size: 0.85rem;
-      z-index: 10;
-      animation: bounceArrow 1.5s ease-in-out infinite;
-      text-shadow: 0 2px 6px rgba(26, 92, 255, 0.3);
-    }
-
-    @keyframes bounceArrow {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(3px); }
-    }
-
-    .hint-pop {
-      position: absolute;
-      top: 36px;
-      background: var(--accent);
-      color: #fff;
-      font-size: 0.62rem;
-      font-weight: 700;
-      padding: 4px 10px;
+      padding: 10px 22px;
+      background: ${dark ? 'rgba(255,255,255,0.05)' : 'var(--surface)'};
+      border: 1.5px solid var(--border);
       border-radius: 99px;
-      letter-spacing: 0.8px;
-      box-shadow: 0 4px 12px rgba(26, 92, 255, 0.3);
-      z-index: 10;
-      pointer-events: none;
-      animation: floatHint 2s ease-in-out infinite;
+      color: var(--ink-2);
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      font-weight: 600;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     }
 
-    @keyframes floatHint {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-3px); }
+    .customCheckBox:hover {
+      background: ${dark ? 'rgba(255,255,255,0.08)' : '#eaeae6'};
+      color: var(--ink);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
     }
 
-    .radio-input {
-      position: relative;
-      width: 250px;
-      height: 250px;
-      border-radius: 50%;
-      background: ${dark ? 'rgba(31, 31, 37, 0.96)' : 'rgba(255, 255, 255, 0.96)'};
-      border: 1.5px dashed var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    .customCheckBoxInput:checked + .customCheckBoxWrapper .customCheckBox {
+      background: var(--ink);
+      border-color: var(--ink);
+      color: ${dark ? '#111' : 'var(--surface)'};
+      box-shadow: var(--shadow-md);
+      transform: scale(1.04);
     }
 
-    .glass-overlay {
-      position: absolute;
-      inset: 0;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(255,255,255,0) 45%, ${dark ? 'rgba(0,0,0,0.35)' : 'rgba(0,0,0,0.04)'} 100%);
-      pointer-events: none;
-      z-index: 2;
+    .customCheckBoxInput:checked + .customCheckBoxWrapper .customCheckBox:hover {
+      transform: translateY(-2px) scale(1.04);
     }
 
-    .wheel-label {
-      position: absolute;
-      width: 130px;
-      height: 40px;
+    .customCheckBox .inner {
       display: flex;
       align-items: center;
       gap: 6px;
-      cursor: pointer;
-      transform-origin: left center;
-      left: 50%;
-      top: calc(50% - 20px);
-      transform: rotate(var(--angle)) translateX(20px);
-      transition: color 0.3s, transform 0.3s, font-weight 0.3s;
-      color: var(--ink-2);
-      user-select: none;
-      z-index: 3;
-    }
-
-    .wheel-label:hover {
-      color: var(--ink);
-    }
-
-    .wheel-label.active {
-      color: var(--accent);
-      font-weight: 700;
-      transform: rotate(var(--angle)) translateX(30px) scale(1.08);
-    }
-
-    .num {
-      font-family: var(--font-display);
-      font-size: 0.68rem;
-      opacity: 0.5;
-    }
-
-    .wheel-label.active .num {
-      opacity: 1;
-      color: var(--accent);
-    }
-
-    .label {
-      font-family: var(--font-body);
-      font-size: 0.75rem;
-      letter-spacing: 0.3px;
-      text-transform: uppercase;
-      white-space: nowrap;
-    }
-
-    .center-pointer {
-      position: absolute;
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: var(--accent);
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 6px 18px rgba(26, 92, 255, 0.35);
-      z-index: 5;
-      font-size: 0.95rem;
-      pointer-events: none;
     }
   `}</style>
 );
@@ -1722,36 +1642,24 @@ export default function App() {
             )}
 
             <section style={{ marginBottom:'48px', display:'flex', flexDirection:'column', alignItems:'center' }}>
-              {(() => {
-                const activeIdx = CATEGORIAS_WHEEL.findIndex(c => c.val === categoria);
-                const rotationAngle = activeIdx !== -1 ? -CATEGORIAS_WHEEL[activeIdx].angle - 90 : -90;
-                return (
-                  <div className="wheel-selector">
-                    <div className="hint-pop">CATEGORÍAS</div>
-                    <div 
-                      className="radio-input" 
-                      style={{ transform: `rotate(${rotationAngle}deg)` }}
-                    >
-                      <div className="glass-overlay"></div>
-                      {CATEGORIAS_WHEEL.map((cat) => (
-                        <div 
-                          key={cat.val}
-                          className={`wheel-label ${categoria === cat.val ? 'active' : ''}`}
-                          style={{ '--angle': `${cat.angle}deg` }}
-                          onClick={() => {
-                            setCategoria(cat.val);
-                            if (cat.val === 'Todos') setBusqueda('');
-                          }}
-                        >
-                          <span className="num">{cat.num}</span>
-                          <span className="label">{cat.icon} {cat.label}</span>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="center-pointer">🧭</div>
-                  </div>
-                );
-              })()}
+              {/* ── CATEGORÍA FILTER ── */}
+            <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '6px', scrollbarWidth: 'none', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <button
+                className={`cat-pill ${categoria === 'Todos' ? 'cat-pill--on' : 'cat-pill--off'}`}
+                onClick={() => { setCategoria('Todos'); setBusqueda(''); }}
+              >
+                Todos
+              </button>
+              {COLECCIONES.map((c) => (
+                <button
+                  key={c.val}
+                  className={`cat-pill ${categoria === c.val ? 'cat-pill--on' : 'cat-pill--off'}`}
+                  onClick={() => setCategoria(c.val)}
+                >
+                  {c.icon} {c.label}
+                </button>
+              ))}
+            </div>
             </section>
 
             <section>
