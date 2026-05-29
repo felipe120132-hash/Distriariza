@@ -191,7 +191,11 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
                 <h3 style={{ color:'var(--ink)', fontFamily:'var(--font-display)', fontSize:'1.2rem', marginBottom:'4px' }}>Acceso Administrativo</h3>
                 <p style={{ color:'var(--ink-3)', fontSize:'0.78rem' }}>Ingresa tu contraseña para gestionar productos</p>
               </div>
-              <input type="password" value={pass} onChange={e=>setPass(e.target.value)} className="form-input" placeholder="Contraseña..." autoComplete="current-password" />
+              <div className="inputbox">
+                <input type="password" value={pass} onChange={e => setPass(e.target.value)} autoComplete="current-password" required />
+                <span>Contraseña</span>
+                <i />
+              </div>
               {error && (
                 <div style={{ background: error.includes('Demasiados') ? 'rgba(239,68,68,0.08)' : 'rgba(239,68,68,0.06)', border: `1px solid ${error.includes('Demasiados') ? 'rgba(239,68,68,0.3)' : 'rgba(239,68,68,0.15)'}`, borderRadius:'10px', padding:'10px 14px', fontSize:'0.8rem', color:'#ef4444', textAlign:'center' }}>
                   {error}

@@ -366,6 +366,62 @@ export const EstilosGlobales = ({ dark }) => (
       transform: translateY(-30px);
     }
 
+    /* ── INPUTBOX STYLE (adaptado a la paleta de la página) ── */
+    .inputbox {
+      position: relative;
+      width: 100%;
+    }
+    .inputbox input {
+      position: relative;
+      width: 100%;
+      padding: 20px 10px 10px;
+      background: transparent;
+      outline: none;
+      box-shadow: none;
+      border: none;
+      color: var(--ink);
+      font-family: var(--font-body);
+      font-size: 1em;
+      letter-spacing: 0.05em;
+      transition: 0.5s;
+      z-index: 10;
+    }
+    .inputbox span {
+      position: absolute;
+      left: 10px;
+      top: 0;
+      padding: 20px 0 10px;
+      font-size: 1em;
+      color: var(--ink-3);
+      letter-spacing: 0.05em;
+      transition: 0.5s;
+      pointer-events: none;
+    }
+    .inputbox input:valid ~ span,
+    .inputbox input:focus ~ span {
+      color: var(--accent);
+      transform: translateX(-10px) translateY(-28px);
+      font-size: 0.75em;
+    }
+    .inputbox i {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 2px;
+      background: var(--accent);
+      border-radius: 4px;
+      transition: 0.5s;
+      pointer-events: none;
+      z-index: 9;
+    }
+    .inputbox input:valid ~ i,
+    .inputbox input:focus ~ i {
+      height: 44px;
+      background: ${dark ? 'rgba(26,92,255,0.15)' : 'rgba(26,92,255,0.08)'};
+      border-radius: 8px;
+    }
+
     /* ── FROM UIVERSE.IO BY NAWSOME – HAMSTER WHEEL ── */
     :root {
       --dur: 1s;
