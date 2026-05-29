@@ -153,6 +153,61 @@ const GlobalStyles = ({ dark }) => (
     .pill-btn--ghost:hover { background: ${dark ? 'rgba(255,255,255,0.14)' : '#e2e2de'}; }
     .pill-btn--green { background: var(--green); color: #fff; }
 
+    /* ── FROM UIVERSE.IO BY ADAMGIEBL – SEND BUTTON ── */
+    .send-btn {
+      font-family: var(--font-body);
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      border: none;
+      border-radius: 99px;
+      background: var(--accent);
+      color: #fff;
+      padding: 9px 22px 9px 16px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      overflow: hidden;
+      position: relative;
+      transition: background 0.25s, opacity 0.2s, transform 0.15s;
+    }
+    .send-btn:hover { background: var(--accent-h); }
+    .send-btn:active { transform: scale(0.96); }
+    .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .send-btn .svg-wrapper-1 {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .send-btn .svg-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .send-btn:hover:not(:disabled) .svg-wrapper {
+      transform: translateX(2px) rotate(-35deg);
+    }
+    .send-btn svg {
+      width: 16px; height: 16px;
+      transition: transform 0.3s ease;
+    }
+    .send-btn--sm {
+      font-size: 0.7rem;
+      padding: 6px 14px 6px 10px;
+    }
+    .send-btn--sm .svg-wrapper { width: 18px; height: 18px; }
+    .send-btn--sm svg { width: 13px; height: 13px; }
+    .send-btn--lg {
+      font-size: 0.9rem;
+      padding: 13px 28px 13px 22px;
+    }
+    .send-btn--lg .svg-wrapper { width: 24px; height: 24px; }
+    .send-btn--lg svg { width: 18px; height: 18px; }
+
     .icon-btn {
       width: 36px; height: 36px; border-radius: 10px;
       border: none; background: ${dark ? 'rgba(255,255,255,0.1)' : '#ededea'}; color: var(--ink);
@@ -828,8 +883,11 @@ const BestCard = memo(({ p, onAdd, onOpen, ratings, onRate, rank }) => (
       </div>
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
         <span style={{ fontSize:'1rem', fontWeight:700, color:'var(--ink)' }}>{moneda(p.precio)}</span>
-        <button className="pill-btn pill-btn--accent" onClick={() => onAdd(p)} disabled={p.stock <= 0} style={{ padding:'6px 10px', fontSize:'0.7rem', opacity: p.stock <= 0 ? 0.5 : 1 }}>
-          {p.stock > 0 ? '+ Añadir' : 'Agotado'}
+        <button className="send-btn send-btn--sm" onClick={() => onAdd(p)} disabled={p.stock <= 0}>
+          <div className="svg-wrapper-1"><div className="svg-wrapper">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M1.946 9.315c-.522-.174-.527-.455.01-.634l19.087-6.362c.529-.176.832.12.684.638l-5.454 19.086c-.15.529-.455.547-.679.045L12 14l6-8-8 6-8.054-2.685z"/></svg>
+          </div></div>
+          <span>{p.stock > 0 ? 'Añadir' : 'Agotado'}</span>
         </button>
       </div>
     </div>
@@ -864,8 +922,11 @@ const ProductCard = memo(({ p, onAdd, onOpen, ratings, onRate, isBestSeller }) =
       </div>
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', borderTop:'1px solid var(--border)', paddingTop:'14px' }}>
         <span style={{ fontSize:'1.2rem', fontWeight:800, color:'var(--ink)', letterSpacing:'-0.5px' }}>{moneda(p.precio)}</span>
-        <button className="pill-btn pill-btn--accent" onClick={() => onAdd(p)} disabled={p.stock <= 0} style={{ padding:'10px 20px', fontSize:'0.82rem', opacity: p.stock <= 0 ? 0.5 : 1 }}>
-          {p.stock > 0 ? '+ Añadir' : 'Agotado'}
+        <button className="send-btn" onClick={() => onAdd(p)} disabled={p.stock <= 0}>
+          <div className="svg-wrapper-1"><div className="svg-wrapper">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M1.946 9.315c-.522-.174-.527-.455.01-.634l19.087-6.362c.529-.176.832.12.684.638l-5.454 19.086c-.15.529-.455.547-.679.045L12 14l6-8-8 6-8.054-2.685z"/></svg>
+          </div></div>
+          <span>{p.stock > 0 ? 'Añadir' : 'Agotado'}</span>
         </button>
       </div>
     </div>
@@ -944,8 +1005,11 @@ const ProductModal = ({ p, onClose, onAdd, ratings, onRate }) => {
               <p style={{ fontSize:'0.68rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.6px', marginBottom:'3px' }}>Precio</p>
               <span style={{ fontSize:'1.6rem', fontWeight:600, color:'var(--ink)', letterSpacing:'-0.5px' }}>{moneda(p.precio)}</span>
             </div>
-            <button className="pill-btn pill-btn--accent" onClick={() => { onAdd({...p, colorSeleccionado: colorSel}); onClose(); }} disabled={p.stock <= 0} style={{ padding:'14px 28px', fontSize:'0.9rem', opacity: p.stock <= 0 ? 0.5 : 1 }}>
-              {p.stock > 0 ? '+ Añadir al carrito' : 'Agotado'}
+            <button className="send-btn send-btn--lg" onClick={() => { onAdd({...p, colorSeleccionado: colorSel}); onClose(); }} disabled={p.stock <= 0}>
+              <div className="svg-wrapper-1"><div className="svg-wrapper">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M1.946 9.315c-.522-.174-.527-.455.01-.634l19.087-6.362c.529-.176.832.12.684.638l-5.454 19.086c-.15.529-.455.547-.679.045L12 14l6-8-8 6-8.054-2.685z"/></svg>
+              </div></div>
+              <span>{p.stock > 0 ? 'Añadir al carrito' : 'Agotado'}</span>
             </button>
           </div>
         </div>
@@ -1764,56 +1828,23 @@ export default function App() {
             </div>
             </section>
 
-            <section style={{ position: 'relative', overflow: 'hidden', borderRadius: '16px' }}>
-              {/* ── VIDEO FONDO HÁMSTER ── */}
-              <video
-                autoPlay muted loop playsInline
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  opacity: 0.30,
-                  pointerEvents: 'none',
-                  zIndex: 0,
-                  borderRadius: '16px',
-                }}
-              >
-                <source src="/hamster.mp4" type="video/mp4" />
-              </video>
-
-              {/* Overlay degradado para legibilidad de tarjetas */}
-              <div style={{
-                position: 'absolute',
-                inset: 0,
-                background: dark
-                  ? 'linear-gradient(to bottom, rgba(15,15,18,0.55) 0%, rgba(15,15,18,0.35) 40%, rgba(15,15,18,0.35) 60%, rgba(15,15,18,0.55) 100%)'
-                  : 'linear-gradient(to bottom, rgba(248,248,244,0.55) 0%, rgba(248,248,244,0.35) 40%, rgba(248,248,244,0.35) 60%, rgba(248,248,244,0.55) 100%)',
-                pointerEvents: 'none',
-                zIndex: 1,
-                borderRadius: '16px',
-              }} />
-
-              {/* Contenido de productos */}
-              <div style={{ position: 'relative', zIndex: 2, padding: '24px 0' }}>
-                <div style={{ display:'flex', justifyContent:'space-between', alignItems:'baseline', marginBottom:'24px' }}>
-                  <h2 style={{ fontSize:'1rem', fontWeight:600, color:'var(--ink)' }}>{categoria === 'Todos' ? 'Todos los productos' : categoria}</h2>
-                  <span style={{ fontSize:'0.8rem', color:'var(--ink-3)' }}>{visibles.length} resultado{visibles.length!==1&&'s'}</span>
-                </div>
-                {error && <p style={{ color:'#ef4444', textAlign:'center', padding:'40px' }}>{error}</p>}
-                <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(230px, 1fr))', gap:'20px' }}>
-                  {visibles.map(p => (
-                    <ProductCard key={p.id} p={p} onAdd={addItem} onOpen={setSeleccionado} ratings={ratings} onRate={handleRate} isBestSeller={BEST_SELLER_NAMES.includes(p.nombre)} />
-                  ))}
-                </div>
-                {visibles.length === 0 && !error && (
-                  <div style={{ textAlign:'center', padding:'80px 20px' }}>
-                    <p style={{ fontSize:'2rem', marginBottom:'12px' }}>🔍</p>
-                    <p style={{ color:'var(--ink-3)' }}>No se encontraron productos.</p>
-                  </div>
-                )}
+            <section>
+              <div style={{ display:'flex', justifyContent:'space-between', alignItems:'baseline', marginBottom:'24px' }}>
+                <h2 style={{ fontSize:'1rem', fontWeight:600, color:'var(--ink)' }}>{categoria === 'Todos' ? 'Todos los productos' : categoria}</h2>
+                <span style={{ fontSize:'0.8rem', color:'var(--ink-3)' }}>{visibles.length} resultado{visibles.length!==1&&'s'}</span>
               </div>
+              {error && <p style={{ color:'#ef4444', textAlign:'center', padding:'40px' }}>{error}</p>}
+              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(230px, 1fr))', gap:'20px' }}>
+                {visibles.map(p => (
+                  <ProductCard key={p.id} p={p} onAdd={addItem} onOpen={setSeleccionado} ratings={ratings} onRate={handleRate} isBestSeller={BEST_SELLER_NAMES.includes(p.nombre)} />
+                ))}
+              </div>
+              {visibles.length === 0 && !error && (
+                <div style={{ textAlign:'center', padding:'80px 20px' }}>
+                  <p style={{ fontSize:'2rem', marginBottom:'12px' }}>🔍</p>
+                  <p style={{ color:'var(--ink-3)' }}>No se encontraron productos.</p>
+                </div>
+              )}
             </section>
 
           </div>
