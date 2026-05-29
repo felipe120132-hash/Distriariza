@@ -264,17 +264,6 @@ const GlobalStyles = ({ dark }) => (
 /* ─────────────────────────────────────────────
    HÁMSTER MASCOTA
 ───────────────────────────────────────────── */
-const HAMSTER_PHRASES = [
-  '¡Al carrito! 🛒',
-  '¡Buena elección! ✨',
-  '¡Sí sí sí! 🎉',
-  '¡Me encanta! ❤️',
-  '¡Eso eso eso! 🐹',
-  '¡Nom nom! 😋',
-  '¡Qué rico! 🌟',
-  '¡Genial! 🙌',
-];
-
 const HamsterMascot = () => {
   const [posX, setPosX]       = useState(120);
   const [facingLeft, setFacingLeft] = useState(false);
@@ -360,30 +349,30 @@ const HamsterMascot = () => {
         </div>
       )}
 
-      {/* Hámster — video con fondo removido via mix-blend-mode */}
+      {/* Hámster — video con fondo blanco removido via mix-blend-mode */}
       <div
         className={excited ? 'hamster-bounce' : ''}
         style={{
           position:'absolute',
           bottom: 0,
           left: posX,
-          width: 90,
-          height: 90,
+          width: 100,
+          height: 100,
           transform: `scaleX(${facingLeft ? -1 : 1})`,
           transition: 'transform 0.2s',
+          mixBlendMode: 'multiply',
           filter: excited
-            ? 'drop-shadow(0 0 10px rgba(249,115,22,0.8))'
-            : 'drop-shadow(0 4px 8px rgba(0,0,0,0.2))',
+            ? 'drop-shadow(0 0 12px rgba(249,115,22,0.9)) brightness(1.05)'
+            : 'none',
         }}
       >
         <video
           autoPlay muted loop playsInline
           style={{
-            width:'100%',
-            height:'100%',
-            objectFit:'cover',
-            borderRadius:'50% 50% 0 0',
-            mixBlendMode:'multiply',
+            width: '100%',
+            height: '100%',
+            objectFit: 'contain',
+            display: 'block',
           }}
         >
           <source src="/hamster.mp4" type="video/mp4"/>
