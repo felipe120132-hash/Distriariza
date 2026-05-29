@@ -463,23 +463,10 @@ const GlobalStyles = ({ dark }) => (
         ${dark ? 'hsl(220,15%,28%)' : 'hsl(220,15%,22%)'} 72%,
         hsla(0,0%,60%,0) 100%
       ),
-      conic-gradient(
-        from 0deg,
-        hsla(0,0%,60%,0) 0%,
-        hsla(0,0%,60%,0) calc(var(--spoke-w) * 1),
-        ${dark ? 'hsl(220,15%,28%)' : 'hsl(220,15%,22%)'} calc(var(--spoke-w) * 1),
-        ${dark ? 'hsl(220,15%,28%)' : 'hsl(220,15%,22%)'} calc(var(--spoke-w) * 2),
-        hsla(0,0%,60%,0) calc(var(--spoke-w) * 2),
-        hsla(0,0%,60%,0) calc(var(--spoke-w) * 3),
-        ${dark ? 'hsl(220,15%,28%)' : 'hsl(220,15%,22%)'} calc(var(--spoke-w) * 3),
-        ${dark ? 'hsl(220,15%,28%)' : 'hsl(220,15%,22%)'} calc(var(--spoke-w) * 4),
-        hsla(0,0%,60%,0) calc(var(--spoke-w) * 4),
-        hsla(0,0%,60%,0) calc(var(--spoke-w) * 5),
-        ${dark ? 'hsl(220,15%,28%)' : 'hsl(220,15%,22%)'} calc(var(--spoke-w) * 5),
-        ${dark ? 'hsl(220,15%,28%)' : 'hsl(220,15%,22%)'} calc(var(--spoke-w) * 6),
-        hsla(0,0%,60%,0) calc(var(--spoke-w) * 6)
+      repeating-conic-gradient(
+        ${dark ? 'hsl(220,15%,35%)' : 'hsl(220,15%,22%)'} 0deg 3deg,
+        transparent 3deg 45deg
       );
-      --spoke-w: calc(100% / 12);
       z-index: 1;
     }
     @keyframes hamster {
