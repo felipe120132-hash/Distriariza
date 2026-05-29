@@ -154,59 +154,65 @@ const GlobalStyles = ({ dark }) => (
     .pill-btn--green { background: var(--green); color: #fff; }
 
     /* ── FROM UIVERSE.IO BY ADAMGIEBL – SEND BUTTON ── */
+    @keyframes fly-1 {
+      from { transform: translateY(0.1em); }
+      to   { transform: translateY(-0.1em); }
+    }
+
     .send-btn {
       font-family: var(--font-body);
       font-size: 0.82rem;
       font-weight: 700;
-      letter-spacing: 0.02em;
       cursor: pointer;
       border: none;
-      border-radius: 99px;
+      border-radius: 16px;
       background: var(--accent);
       color: #fff;
-      padding: 9px 22px 9px 16px;
+      padding: 0.6em 1em 0.6em 0.9em;
       display: inline-flex;
       align-items: center;
-      gap: 8px;
       overflow: hidden;
-      position: relative;
-      transition: background 0.25s, opacity 0.2s, transform 0.15s;
+      transition: background 0.2s, transform 0.15s, opacity 0.2s;
     }
-    .send-btn:hover { background: var(--accent-h); }
-    .send-btn:active { transform: scale(0.96); }
+    .send-btn:hover:not(:disabled) { background: var(--accent-h); }
+    .send-btn:active { transform: scale(0.95); }
     .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .send-btn span {
+      display: block;
+      margin-left: 0.3em;
+      transition: all 0.3s ease-in-out;
+    }
+    .send-btn svg {
+      display: block;
+      transform-origin: center center;
+      transition: transform 0.3s ease-in-out;
+    }
     .send-btn .svg-wrapper-1 {
       display: flex;
       align-items: center;
-      justify-content: center;
     }
     .send-btn .svg-wrapper {
       display: flex;
       align-items: center;
-      justify-content: center;
-      width: 22px;
-      height: 22px;
-      transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
     }
+
+    /* hover effects */
     .send-btn:hover:not(:disabled) .svg-wrapper {
-      transform: translateX(2px) rotate(-35deg);
+      animation: fly-1 0.6s ease-in-out infinite alternate;
     }
-    .send-btn svg {
-      width: 16px; height: 16px;
-      transition: transform 0.3s ease;
+    .send-btn:hover:not(:disabled) svg {
+      transform: translateX(1.2em) rotate(45deg) scale(1.1);
     }
-    .send-btn--sm {
-      font-size: 0.7rem;
-      padding: 6px 14px 6px 10px;
+    .send-btn:hover:not(:disabled) span {
+      transform: translateX(5em);
     }
-    .send-btn--sm .svg-wrapper { width: 18px; height: 18px; }
-    .send-btn--sm svg { width: 13px; height: 13px; }
-    .send-btn--lg {
-      font-size: 0.9rem;
-      padding: 13px 28px 13px 22px;
-    }
-    .send-btn--lg .svg-wrapper { width: 24px; height: 24px; }
-    .send-btn--lg svg { width: 18px; height: 18px; }
+
+    /* size variants */
+    .send-btn--sm { font-size: 0.7rem;  border-radius: 12px; }
+    .send-btn--sm svg { width: 14px; height: 14px; }
+    .send-btn--lg { font-size: 0.9rem; border-radius: 16px; padding: 0.75em 1.2em 0.75em 1em; }
+    .send-btn--lg svg { width: 20px; height: 20px; }
 
     .icon-btn {
       width: 36px; height: 36px; border-radius: 10px;
