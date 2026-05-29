@@ -305,145 +305,226 @@ const GlobalStyles = ({ dark }) => (
       transform: translateY(-30px);
     }
 
-    /* ── FROM UIVERSE.IO BY JEREMY_4982 ── */
-    @keyframes dropAndShift {
-      0% {
-        transform: translate(0px, 15px);
-      }
-      16.67% {
-        transform: translate(80px, 13px);
-      }
-      33.34% {
-        transform: translate(40px, 10px);
-      }
-      50.01% {
-        transform: translate(40px, -30px);
-      }
-      66.68% {
-        transform: translate(40px, 55px);
-      }
-      83.35% {
-        transform: translate(40px, 10px);
-      }
-      100% {
-        transform: translate(0px, 15px);
-      }
+    /* ── FROM UIVERSE.IO BY NAWSOME – HAMSTER WHEEL ── */
+    :root {
+      --dur: 1s;
+      --hamster-color: ${dark ? '#e8a87c' : '#d4834a'};
+      --hamster-accent: ${dark ? '#c97b4b' : '#a85c28'};
+      --wheel-color: ${dark ? '#4a4a5a' : '#3a3a4a'};
+      --spoke-color: ${dark ? '#6a6a7a' : '#555565'};
     }
-    @keyframes bubbleGlint {
-      0% {
-        top: 3px;
-        left: 4px;
-        opacity: 0;
-      }
-      8.335% {
-        top: 6px;
-        left: 6px;
-        opacity: 0.5;
-      }
-      16.67% {
-        top: 3px;
-        left: 4px;
-        opacity: 0;
-      }
-      33.34% {
-        top: 3px;
-        left: 4px;
-        opacity: 0.5;
-      }
-      50.01% {
-        top: 3px;
-        left: 4px;
-        opacity: 0;
-      }
-      58.345% {
-        top: 6px;
-        left: 6px;
-        opacity: 0.5;
-      }
-      66.68% {
-        top: 3px;
-        left: 4px;
-        opacity: 0;
-      }
-      83.35% {
-        top: 6px;
-        left: 6px;
-        opacity: 0.5;
-      }
-      100% {
-        top: 3px;
-        left: 4px;
-        opacity: 0;
-      }
+    .wheel-and-hamster {
+      --dur: 1s;
+      position: relative;
+      width: 12em;
+      height: 12em;
+      font-size: 14px;
     }
-
-    .Strich1 {
+    .wheel,
+    .hamster,
+    .hamster div,
+    .spoke {
       position: absolute;
-      width: 130px;
-      height: 50px;
-      background: ${dark ? '#222228' : '#0a0a0c'};
-      border-radius: 25px;
-      transform: rotate(45deg);
-      box-shadow: ${dark ? '0 12px 32px rgba(0,0,0,0.6)' : '0 4px 10px rgba(0,0,0,0.15)'};
-      z-index: 0;
     }
-    .Strich2 {
-      position: absolute;
-      width: 130px;
-      height: 50px;
-      background: ${dark ? '#222228' : '#0a0a0c'};
-      border-radius: 25px;
-      transform: rotate(-90deg);
-      box-shadow: ${dark ? '0 12px 32px rgba(0,0,0,0.6)' : '0 4px 10px rgba(0,0,0,0.15)'};
-      z-index: 0;
-    }
-
-    .bubble {
-      position: absolute;
-      top: 0;
-      left: 15px;
-      width: 20px;
-      height: 20px;
+    .wheel,
+    .spoke {
       border-radius: 50%;
-      background: radial-gradient(circle at 30% 30%, #ffb3c1, #e64980, #ff8787);
-      animation: dropAndShift 5s ease-in-out infinite;
-      z-index: 1;
-    }
-
-    .bubble1 {
-      position: absolute;
       top: 0;
-      width: 20px;
-      height: 20px;
-      background: radial-gradient(circle at 30% 30%, #edb3ff, #ac49e6, #fb87ff);
-      border-radius: 50%;
-      left: 8px;
-      animation: dropAndShift 6s ease-in-out infinite;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    .wheel {
+      background: radial-gradient(
+        100% 100% at center,
+        hsla(0,0%,60%,0) 47.8%,
+        ${dark ? 'hsl(220,15%,28%)' : 'hsl(220,15%,22%)'} 48%
+      );
       z-index: 2;
     }
-    .bubble2 {
-      position: absolute;
-      top: 0;
-      width: 20px;
-      height: 20px;
-      background: radial-gradient(circle at 30% 30%, #b3d8ff, #4963e6, #87a7ff);
-      border-radius: 50%;
-      left: 12px;
-      animation: dropAndShift 4s ease-in-out infinite;
+    .hamster {
+      animation: hamster var(--dur) ease-in-out infinite;
+      top: 50%;
+      left: calc(50% - 3.5em);
+      width: 7em;
+      height: 3.75em;
+      transform: rotate(4deg) translate(-0.8em,1.85em);
+      transform-origin: 50% 0;
       z-index: 3;
     }
-    .bubble3 {
-      position: absolute;
+    .hamster__head {
+      animation: hamsterHead var(--dur) ease-in-out infinite;
+      background: ${dark ? '#e8a87c' : '#d4834a'};
+      border-radius: 70% 30% 0 100% / 40% 25% 25% 60%;
+      box-shadow: 0 -0.25em 0 ${dark ? '#c97b4b' : '#a85c28'};
       top: 0;
-      width: 20px;
-      height: 20px;
-      background: radial-gradient(circle at 30% 30%, #b3ffbc, #35a32f, #75ba61);
+      left: -2em;
+      width: 2.75em;
+      height: 2.5em;
+      transform-origin: 100% 50%;
+    }
+    .hamster__ear {
+      animation: hamsterEar var(--dur) ease-in-out infinite;
+      background: ${dark ? '#e8a87c' : '#d4834a'};
+      border-radius: 50% 50% 30% 30%;
+      box-shadow: -0.25em -0.25em 0 ${dark ? '#c97b4b' : '#a85c28'} inset,
+                  0.25em 0.25em 0 ${dark ? '#f5c4a0' : '#e8a080'} inset;
+      top: -0.25em;
+      right: -0.25em;
+      width: 0.75em;
+      height: 0.75em;
+      transform-origin: 50% 30%;
+    }
+    .hamster__eye {
+      animation: hamsterEye var(--dur) ease-in-out infinite;
+      background-color: ${dark ? '#1a1a2e' : '#111'};
       border-radius: 50%;
-      left: 10px;
-      animation: dropAndShift 7s ease-in-out infinite;
+      top: 0.375em;
+      left: 1.25em;
+      width: 0.5em;
+      height: 0.5em;
+    }
+    .hamster__nose {
+      background: ${dark ? '#e8747c' : '#d46060'};
+      border-radius: 35% 65% 85% 15% / 70% 50% 50% 30%;
+      top: 0.75em;
+      left: 0;
+      width: 0.2em;
+      height: 0.25em;
+    }
+    .hamster__body {
+      animation: hamsterBody var(--dur) ease-in-out infinite;
+      background: ${dark ? '#e8a87c' : '#d4834a'};
+      border-radius: 50% 30% 50% 30% / 20% 60% 35% 75%;
+      box-shadow: 0.1em -0.75em 0 ${dark ? '#d4935c' : '#c07840'} inset,
+                  0.15em -0.5em 0 ${dark ? '#f5c4a0' : '#e8a080'} inset;
+      top: 0.25em;
+      left: 2em;
+      width: 4.5em;
+      height: 3em;
+      transform-origin: 17% 60%;
+    }
+    .hamster__limb--fr,
+    .hamster__limb--fl {
+      clip-path: polygon(0 0,100% 0,70% 80%,60% 100%,0% 100%,40% 80%);
+      top: 2em;
+      left: 0.5em;
+      width: 1em;
+      height: 1.5em;
+      transform-origin: 50% 0;
+    }
+    .hamster__limb--fr {
+      animation: hamsterFRLimb var(--dur) linear infinite;
+      background: linear-gradient(${dark ? '#d4935c' : '#c07840'} 80%, ${dark ? '#e8a87c' : '#d4834a'} 80%);
+      z-index: 1;
+    }
+    .hamster__limb--fl {
+      animation: hamsterFLLimb var(--dur) linear infinite;
+      background: linear-gradient(${dark ? '#e8a87c' : '#d4834a'} 80%, ${dark ? '#f5c4a0' : '#e8a080'} 80%);
       z-index: 4;
     }
-      z-index: 5;
+    .hamster__limb--br,
+    .hamster__limb--bl {
+      border-radius: 0.75em 0.75em 0 0;
+      clip-path: polygon(0 0,100% 0,100% 30%,70% 90%,70% 100%,30% 100%,40% 90%,0% 30%);
+      top: 1em;
+      left: 2.8em;
+      width: 1.5em;
+      height: 2.5em;
+      transform-origin: 50% 30%;
+    }
+    .hamster__limb--br {
+      animation: hamsterBRLimb var(--dur) linear infinite;
+      background: linear-gradient(${dark ? '#d4935c' : '#c07840'} 80%, ${dark ? '#e8a87c' : '#d4834a'} 80%);
+      z-index: 1;
+    }
+    .hamster__limb--bl {
+      animation: hamsterBLLimb var(--dur) linear infinite;
+      background: linear-gradient(${dark ? '#e8a87c' : '#d4834a'} 80%, ${dark ? '#f5c4a0' : '#e8a080'} 80%);
+      z-index: 4;
+    }
+    .hamster__tail {
+      animation: hamsterTail var(--dur) linear infinite;
+      background: ${dark ? '#d4935c' : '#c07840'};
+      border-radius: 0.25em 50% 50% 0.25em;
+      box-shadow: 0 -0.2em 0 0.1em ${dark ? '#c07840' : '#a85c28'} inset;
+      top: 1.5em;
+      right: -0.5em;
+      width: 1em;
+      height: 0.5em;
+      transform-origin: 0.25em 0.25em;
+    }
+    .spoke {
+      animation: spoke var(--dur) linear infinite;
+      background: radial-gradient(100% 100% at center,
+        ${dark ? 'hsl(220,15%,28%)' : 'hsl(220,15%,22%)'} 4.8%,
+        hsla(0,0%,60%,0) 5%,
+        hsla(0,0%,60%,0) 71.8%,
+        ${dark ? 'hsl(220,15%,28%)' : 'hsl(220,15%,22%)'} 72%,
+        hsla(0,0%,60%,0) 100%
+      ),
+      conic-gradient(
+        from 0deg,
+        hsla(0,0%,60%,0) 0%,
+        hsla(0,0%,60%,0) calc(var(--spoke-w) * 1),
+        ${dark ? 'hsl(220,15%,28%)' : 'hsl(220,15%,22%)'} calc(var(--spoke-w) * 1),
+        ${dark ? 'hsl(220,15%,28%)' : 'hsl(220,15%,22%)'} calc(var(--spoke-w) * 2),
+        hsla(0,0%,60%,0) calc(var(--spoke-w) * 2),
+        hsla(0,0%,60%,0) calc(var(--spoke-w) * 3),
+        ${dark ? 'hsl(220,15%,28%)' : 'hsl(220,15%,22%)'} calc(var(--spoke-w) * 3),
+        ${dark ? 'hsl(220,15%,28%)' : 'hsl(220,15%,22%)'} calc(var(--spoke-w) * 4),
+        hsla(0,0%,60%,0) calc(var(--spoke-w) * 4),
+        hsla(0,0%,60%,0) calc(var(--spoke-w) * 5),
+        ${dark ? 'hsl(220,15%,28%)' : 'hsl(220,15%,22%)'} calc(var(--spoke-w) * 5),
+        ${dark ? 'hsl(220,15%,28%)' : 'hsl(220,15%,22%)'} calc(var(--spoke-w) * 6),
+        hsla(0,0%,60%,0) calc(var(--spoke-w) * 6)
+      );
+      --spoke-w: calc(100% / 12);
+      z-index: 1;
+    }
+    @keyframes hamster {
+      from, to { transform: rotate(4deg) translate(-0.8em,1.85em); }
+      50% { transform: rotate(0) translate(-0.8em,1.85em); }
+    }
+    @keyframes hamsterHead {
+      from, 25%, 50%, 75%, to { transform: rotate(0); }
+      12.5%, 37.5%, 62.5%, 87.5% { transform: rotate(8deg); }
+    }
+    @keyframes hamsterEye {
+      from, 90%, to { transform: scaleY(1); }
+      95% { transform: scaleY(0); }
+    }
+    @keyframes hamsterEar {
+      from, 25%, 50%, 75%, to { transform: rotate(0); }
+      12.5%, 37.5%, 62.5%, 87.5% { transform: rotate(12deg); }
+    }
+    @keyframes hamsterBody {
+      from, 25%, 50%, 75%, to { transform: rotate(0); }
+      12.5%, 37.5%, 62.5%, 87.5% { transform: rotate(-2deg); }
+    }
+    @keyframes hamsterFRLimb {
+      from, 25%, 50%, 75%, to { transform: rotate(50deg) translateZ(-1px); }
+      12.5%, 37.5%, 62.5%, 87.5% { transform: rotate(-30deg) translateZ(-1px); }
+    }
+    @keyframes hamsterFLLimb {
+      from, 25%, 50%, 75%, to { transform: rotate(-30deg); }
+      12.5%, 37.5%, 62.5%, 87.5% { transform: rotate(50deg); }
+    }
+    @keyframes hamsterBRLimb {
+      from, 25%, 50%, 75%, to { transform: rotate(-60deg) translateZ(-1px); }
+      12.5%, 37.5%, 62.5%, 87.5% { transform: rotate(20deg) translateZ(-1px); }
+    }
+    @keyframes hamsterBLLimb {
+      from, 25%, 50%, 75%, to { transform: rotate(20deg); }
+      12.5%, 37.5%, 62.5%, 87.5% { transform: rotate(-60deg); }
+    }
+    @keyframes hamsterTail {
+      from, 25%, 50%, 75%, to { transform: rotate(30deg) translateZ(-1px); }
+      12.5%, 37.5%, 62.5%, 87.5% { transform: rotate(10deg) translateZ(-1px); }
+    }
+    @keyframes spoke {
+      from { transform: rotate(0); }
+      to { transform: rotate(-1turn); }
     }
 
     /* ── CUSTOM CHECKBOX BY WHITENERVOSA ── */
@@ -512,26 +593,60 @@ const GlobalStyles = ({ dark }) => (
 ───────────────────────────────────────────── */
 const Loader = () => (
   <div style={{
-    position: 'fixed', inset: 0, background: 'var(--bg)',
+    position: 'fixed', inset: 0,
+    background: 'var(--bg)',
     display: 'flex', flexDirection: 'column',
-    alignItems: 'center', justifyContent: 'center', gap: '40px', zIndex: 9999
+    alignItems: 'center', justifyContent: 'center',
+    gap: '36px', zIndex: 9999
   }}>
-    <div style={{ position: 'relative', width: '130px', height: '130px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div className="Strich1">
-        <div className="Strich2">
-          <div className="bubble"></div>
-          <div className="bubble1"></div>
-          <div className="bubble2"></div>
-          <div className="bubble3"></div>
-          <div className="bubble4"></div>
+    {/* Glow ring behind wheel */}
+    <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{
+        position: 'absolute',
+        width: '200px', height: '200px',
+        borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(212,131,74,0.18) 0%, transparent 70%)',
+        filter: 'blur(12px)',
+        animation: 'pulse 2s ease-in-out infinite',
+      }} />
+      <div
+        aria-label="Hamster corriendo en una rueda"
+        role="img"
+        className="wheel-and-hamster"
+        style={{ fontSize: '16px' }}
+      >
+        <div className="wheel"></div>
+        <div className="hamster">
+          <div className="hamster__body">
+            <div className="hamster__head">
+              <div className="hamster__ear"></div>
+              <div className="hamster__eye"></div>
+              <div className="hamster__nose"></div>
+            </div>
+            <div className="hamster__limb hamster__limb--fr"></div>
+            <div className="hamster__limb hamster__limb--fl"></div>
+            <div className="hamster__limb hamster__limb--br"></div>
+            <div className="hamster__limb hamster__limb--bl"></div>
+            <div className="hamster__tail"></div>
+          </div>
         </div>
+        <div className="spoke"></div>
       </div>
     </div>
-    <div style={{ textAlign: 'center', zIndex: 10 }}>
-      <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.75rem', fontWeight: 700, color: 'var(--ink)', letterSpacing: '-0.5px' }}>
+
+    <div style={{ textAlign: 'center' }}>
+      <p style={{
+        fontFamily: 'var(--font-display)', fontSize: '1.8rem',
+        fontWeight: 800, color: 'var(--ink)', letterSpacing: '-0.5px',
+        marginBottom: '6px'
+      }}>
         Distribuciones Ariza
       </p>
-      <p style={{ fontSize: '0.85rem', color: 'var(--ink-3)', marginTop: '8px', fontWeight: 500, letterSpacing: '0.5px' }}>
+      <p style={{
+        fontSize: '0.82rem', color: 'var(--ink-3)',
+        fontWeight: 500, letterSpacing: '1.5px',
+        textTransform: 'uppercase'
+      }}>
         Cargando catálogo…
       </p>
     </div>
