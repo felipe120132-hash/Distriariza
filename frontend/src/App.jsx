@@ -305,64 +305,154 @@ const GlobalStyles = ({ dark }) => (
       transform: translateY(-30px);
     }
 
-    /* ── FROM UIVERSE.IO BY ANDREW-DEMCHENK0 ── */
-    .loader {
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    /* ── FROM UIVERSE.IO BY JEREMY_4982 ── */
+    @keyframes dropAndShift {
+      0% {
+        transform: translate(0px, 15px);
+      }
+      16.67% {
+        transform: translate(80px, 13px);
+      }
+      33.34% {
+        transform: translate(40px, 10px);
+      }
+      50.01% {
+        transform: translate(40px, -30px);
+      }
+      66.68% {
+        transform: translate(40px, 55px);
+      }
+      83.35% {
+        transform: translate(40px, 10px);
+      }
+      100% {
+        transform: translate(0px, 15px);
+      }
+    }
+    @keyframes bubbleGlint {
+      0% {
+        top: 3px;
+        left: 4px;
+        opacity: 0;
+      }
+      8.335% {
+        top: 6px;
+        left: 6px;
+        opacity: 0.5;
+      }
+      16.67% {
+        top: 3px;
+        left: 4px;
+        opacity: 0;
+      }
+      33.34% {
+        top: 3px;
+        left: 4px;
+        opacity: 0.5;
+      }
+      50.01% {
+        top: 3px;
+        left: 4px;
+        opacity: 0;
+      }
+      58.345% {
+        top: 6px;
+        left: 6px;
+        opacity: 0.5;
+      }
+      66.68% {
+        top: 3px;
+        left: 4px;
+        opacity: 0;
+      }
+      83.35% {
+        top: 6px;
+        left: 6px;
+        opacity: 0.5;
+      }
+      100% {
+        top: 3px;
+        left: 4px;
+        opacity: 0;
+      }
     }
 
-    .glitch {
-      position: relative;
-      font-size: 25px;
-      font-weight: 700;
-      line-height: 1.2;
-      color: var(--ink);
-      letter-spacing: 5px;
-      z-index: 1;
-      animation: shift 1s ease-in-out infinite alternate;
+    .Strich1 {
+      position: absolute;
+      width: 130px;
+      height: 50px;
+      background: ${dark ? '#222228' : '#0a0a0c'};
+      border-radius: 25px;
+      transform: rotate(45deg);
+      box-shadow: ${dark ? '0 12px 32px rgba(0,0,0,0.6)' : '0 4px 10px rgba(0,0,0,0.15)'};
+      z-index: 0;
+    }
+    .Strich2 {
+      position: absolute;
+      width: 130px;
+      height: 50px;
+      background: ${dark ? '#222228' : '#0a0a0c'};
+      border-radius: 25px;
+      transform: rotate(-90deg);
+      box-shadow: ${dark ? '0 12px 32px rgba(0,0,0,0.6)' : '0 4px 10px rgba(0,0,0,0.15)'};
+      z-index: 0;
     }
 
-    .glitch:before,
-    .glitch:after {
-      display: block;
-      content: attr(data-glitch);
+    .bubble {
       position: absolute;
       top: 0;
-      left: 0;
-      opacity: 0.8;
+      left: 15px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #ffb3c1, #e64980, #ff8787);
+      animation: dropAndShift 5s ease-in-out infinite;
+      z-index: 1;
     }
 
-    .glitch:before {
-      animation: glitch 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
-      color: #8b00ff;
-      z-index: -1;
+    .bubble1 {
+      position: absolute;
+      top: 0;
+      width: 20px;
+      height: 20px;
+      background: radial-gradient(circle at 30% 30%, #edb3ff, #ac49e6, #fb87ff);
+      border-radius: 50%;
+      left: 8px;
+      animation: dropAndShift 6s ease-in-out infinite;
+      z-index: 2;
     }
-
-    .glitch:after {
-      animation: glitch 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) reverse both infinite;
-      color: #00e571;
-      z-index: -2;
+    .bubble2 {
+      position: absolute;
+      top: 0;
+      width: 20px;
+      height: 20px;
+      background: radial-gradient(circle at 30% 30%, #b3d8ff, #4963e6, #87a7ff);
+      border-radius: 50%;
+      left: 12px;
+      animation: dropAndShift 4s ease-in-out infinite;
+      z-index: 3;
     }
-
-    @keyframes glitch {
-      0% { transform: translate(0); }
-      20% { transform: translate(-3px, 3px); }
-      40% { transform: translate(-3px, -3px); }
-      60% { transform: translate(3px, 3px); }
-      80% { transform: translate(3px, -3px); }
-      to { transform: translate(0); }
+    .bubble3 {
+      position: absolute;
+      top: 0;
+      width: 20px;
+      height: 20px;
+      background: radial-gradient(circle at 30% 30%, #b3ffbc, #35a32f, #75ba61);
+      border-radius: 50%;
+      left: 10px;
+      animation: dropAndShift 7s ease-in-out infinite;
+      z-index: 4;
     }
-
-    @keyframes shift {
-      0%, 40%, 44%, 58%, 61%, 65%, 69%, 73%, 100% { transform: skewX(0deg); }
-      41% { transform: skewX(10deg); }
-      42% { transform: skewX(-10deg); }
-      59% { transform: skewX(40deg) skewY(10deg); }
-      60% { transform: skewX(-40deg) skewY(-10deg); }
-      63% { transform: skewX(10deg) skewY(-5deg); }
-      70% { transform: skewX(-50deg) skewY(-20deg); }
-      71% { transform: skewX(10deg) skewY(-10deg); }
+    .bubble4 {
+      position: absolute;
+      top: 0;
+      width: 20px;
+      height: 20px;
+      background: radial-gradient(circle at 30% 30%, #ffe3b3, #e68d49, #ffa887);
+      border-radius: 50%;
+      left: 14px;
+      animation: dropAndShift 5.5s ease-in-out infinite;
+      z-index: 5;
     }
   `}</style>
 );
@@ -374,18 +464,26 @@ const Loader = () => (
   <div style={{
     position: 'fixed', inset: 0, background: 'var(--bg)',
     display: 'flex', flexDirection: 'column',
-    alignItems: 'center', justifyContent: 'center', gap: '28px', zIndex: 9999
+    alignItems: 'center', justifyContent: 'center', gap: '40px', zIndex: 9999
   }}>
-    <div style={{ textAlign: 'center' }}>
-      <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.6rem', color: 'var(--ink)', letterSpacing: '-0.5px' }}>
+    <div style={{ position: 'relative', width: '130px', height: '130px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div className="Strich1">
+        <div className="Strich2">
+          <div className="bubble"></div>
+          <div className="bubble1"></div>
+          <div className="bubble2"></div>
+          <div className="bubble3"></div>
+          <div className="bubble4"></div>
+        </div>
+      </div>
+    </div>
+    <div style={{ textAlign: 'center', zIndex: 10 }}>
+      <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.75rem', fontWeight: 700, color: 'var(--ink)', letterSpacing: '-0.5px' }}>
         Distribuciones Ariza
       </p>
-      <p style={{ fontSize: '0.8rem', color: 'var(--ink-3)', marginTop: '6px', fontWeight: 400 }}>
+      <p style={{ fontSize: '0.85rem', color: 'var(--ink-3)', marginTop: '8px', fontWeight: 500, letterSpacing: '0.5px' }}>
         Cargando catálogo…
       </p>
-    </div>
-    <div className="loader">
-      <div data-glitch="Loading..." className="glitch">Loading...</div>
     </div>
   </div>
 );
