@@ -889,7 +889,7 @@ const BestCard = memo(({ p, onAdd, onOpen, ratings, onRate, rank }) => (
     <div style={{ padding:'14px 16px 16px' }}>
       <h4 onClick={() => onOpen(p)} style={{ fontSize:'0.85rem', fontWeight:500, cursor:'pointer', marginBottom:'6px', lineHeight:1.3, color:'var(--ink)', height:'2.6em', overflow:'hidden', display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical' }}>{p.nombre}</h4>
       <div style={{ marginBottom:'10px' }}>
-        <StarRating productId={p.id} ratings={ratings} onRate={onRate} size="0.8rem" />
+        <span style={{ fontSize:'0.75rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'1px', color: p.stock > 0 ? '#22c55e' : '#ef4444', background: p.stock > 0 ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)', padding:'4px 10px', borderRadius:'8px', display:'inline-block' }}>{p.stock > 0 ? `Stock: ${p.stock}` : 'Agotado'}</span>
       </div>
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
         <span style={{ fontSize:'1rem', fontWeight:700, color:'var(--ink)' }}>{moneda(p.precio)}</span>
@@ -924,11 +924,10 @@ const ProductCard = memo(({ p, onAdd, onOpen, ratings, onRate, isBestSeller }) =
     <div style={{ padding:'18px 20px 20px' }}>
       <p style={{ fontSize:'0.7rem', color:'var(--ink-3)', fontWeight:700, textTransform:'uppercase', letterSpacing:'1px', marginBottom:'6px', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
         <span>{p.categoria_nombre}</span>
-        <span style={{ color: p.stock > 0 ? '#22c55e' : '#ef4444', background: p.stock > 0 ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)', padding:'2px 8px', borderRadius:'6px' }}>{p.stock > 0 ? `Stock: ${p.stock}` : 'Agotado'}</span>
       </p>
       <h4 onClick={() => onOpen(p)} style={{ fontSize:'1rem', fontWeight:600, color:'var(--ink)', cursor:'pointer', marginBottom:'10px', lineHeight:1.3, height:'2.6em', overflow:'hidden', display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical' }}>{p.nombre}</h4>
       <div style={{ marginBottom:'16px' }}>
-        <StarRating productId={p.id} ratings={ratings} onRate={onRate} size="0.95rem" />
+        <span style={{ fontSize:'0.75rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'1px', color: p.stock > 0 ? '#22c55e' : '#ef4444', background: p.stock > 0 ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)', padding:'4px 10px', borderRadius:'8px', display:'inline-block' }}>{p.stock > 0 ? `Stock: ${p.stock}` : 'Agotado'}</span>
       </div>
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', borderTop:'1px solid var(--border)', paddingTop:'14px' }}>
         <span style={{ fontSize:'1.2rem', fontWeight:800, color:'var(--ink)', letterSpacing:'-0.5px' }}>{moneda(p.precio)}</span>
@@ -969,7 +968,6 @@ const ProductModal = ({ p, onClose, onAdd, ratings, onRate }) => {
         <div style={{ padding:'24px 28px 28px' }}>
           <p className="modal-content-1" style={{ fontSize:'0.68rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.9px', marginBottom:'6px', display:'flex', justifyContent:'space-between' }}>
             <span>{p.categoria_nombre}</span>
-            <span style={{ color: p.stock > 0 ? '#16a34a' : '#ef4444' }}>{p.stock > 0 ? `${p.stock} Disponibles` : 'Agotado'}</span>
           </p>
           <h2 className="modal-content-2" style={{ fontFamily:'var(--font-display)', fontSize:'1.6rem', fontWeight:700, color:'var(--ink)', marginBottom:'10px', lineHeight:1.2 }}>{p.nombre}</h2>
           
@@ -993,8 +991,7 @@ const ProductModal = ({ p, onClose, onAdd, ratings, onRate }) => {
           )}
 
           <div className="modal-content-2" style={{ marginBottom:'18px' }}>
-            <p style={{ fontSize:'0.7rem', color:'var(--ink-3)', fontWeight:600, marginBottom:'6px' }}>TU VALORACIÓN</p>
-            <StarRating productId={p.id} ratings={ratings} onRate={onRate} size="1.3rem" />
+            <span style={{ fontSize:'0.85rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'1px', color: p.stock > 0 ? '#16a34a' : '#ef4444', background: p.stock > 0 ? 'rgba(22,163,74,0.1)' : 'rgba(239,68,68,0.1)', padding:'6px 14px', borderRadius:'10px', display:'inline-block' }}>{p.stock > 0 ? `STOCK: ${p.stock}` : 'AGOTADO'}</span>
           </div>
           <div className="modal-content-3" style={{ color:'var(--ink-2)', fontSize:'0.9rem', lineHeight:1.75, marginBottom:'28px' }}>
             {desc ? (
