@@ -168,7 +168,7 @@ const GlobalStyles = ({ dark }) => (
       border-radius: 16px;
       background: var(--accent);
       color: #fff;
-      padding: 0.6em 1em 0.6em 0.9em;
+      padding: 0.6em 1em 0.6em 0.85em;
       display: inline-flex;
       align-items: center;
       overflow: hidden;
@@ -178,41 +178,45 @@ const GlobalStyles = ({ dark }) => (
     .send-btn:active { transform: scale(0.95); }
     .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    .send-btn span {
-      display: block;
-      margin-left: 0.3em;
-      transition: all 0.3s ease-in-out;
-    }
-    .send-btn svg {
-      display: block;
+    /* el "+" icóno */
+    .send-btn .plus-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15em;
+      font-weight: 900;
+      line-height: 1;
+      min-width: 1em;
       transform-origin: center center;
       transition: transform 0.3s ease-in-out;
+      flex-shrink: 0;
     }
-    .send-btn .svg-wrapper-1 {
-      display: flex;
-      align-items: center;
+    /* el texto */
+    .send-btn .btn-label {
+      display: block;
+      margin-left: 0.35em;
+      transition: transform 0.3s ease-in-out;
+      white-space: nowrap;
     }
-    .send-btn .svg-wrapper {
-      display: flex;
-      align-items: center;
-    }
+    .send-btn .svg-wrapper-1 { display: flex; align-items: center; }
+    .send-btn .svg-wrapper   { display: flex; align-items: center; }
 
-    /* hover effects */
+    /* hover */
     .send-btn:hover:not(:disabled) .svg-wrapper {
       animation: fly-1 0.6s ease-in-out infinite alternate;
     }
-    .send-btn:hover:not(:disabled) svg {
+    .send-btn:hover:not(:disabled) .plus-icon {
       transform: translateX(1.2em) rotate(45deg) scale(1.1);
     }
-    .send-btn:hover:not(:disabled) span {
+    .send-btn:hover:not(:disabled) .btn-label {
       transform: translateX(5em);
     }
 
-    /* size variants */
-    .send-btn--sm { font-size: 0.7rem;  border-radius: 12px; }
-    .send-btn--sm svg { width: 14px; height: 14px; }
+    /* tamaños */
+    .send-btn--sm { font-size: 0.72rem; border-radius: 12px; padding: 0.5em 0.9em 0.5em 0.75em; }
+    .send-btn--sm .plus-icon { font-size: 1.1em; }
     .send-btn--lg { font-size: 0.9rem; border-radius: 16px; padding: 0.75em 1.2em 0.75em 1em; }
-    .send-btn--lg svg { width: 20px; height: 20px; }
+    .send-btn--lg .plus-icon { font-size: 1.25em; }
 
     .icon-btn {
       width: 36px; height: 36px; border-radius: 10px;
@@ -891,9 +895,9 @@ const BestCard = memo(({ p, onAdd, onOpen, ratings, onRate, rank }) => (
         <span style={{ fontSize:'1rem', fontWeight:700, color:'var(--ink)' }}>{moneda(p.precio)}</span>
         <button className="send-btn send-btn--sm" onClick={() => onAdd(p)} disabled={p.stock <= 0}>
           <div className="svg-wrapper-1"><div className="svg-wrapper">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M1.946 9.315c-.522-.174-.527-.455.01-.634l19.087-6.362c.529-.176.832.12.684.638l-5.454 19.086c-.15.529-.455.547-.679.045L12 14l6-8-8 6-8.054-2.685z"/></svg>
+            <span className="plus-icon">+</span>
           </div></div>
-          <span>{p.stock > 0 ? 'Añadir' : 'Agotado'}</span>
+          <span className="btn-label">{p.stock > 0 ? 'Añadir' : 'Agotado'}</span>
         </button>
       </div>
     </div>
@@ -930,9 +934,9 @@ const ProductCard = memo(({ p, onAdd, onOpen, ratings, onRate, isBestSeller }) =
         <span style={{ fontSize:'1.2rem', fontWeight:800, color:'var(--ink)', letterSpacing:'-0.5px' }}>{moneda(p.precio)}</span>
         <button className="send-btn" onClick={() => onAdd(p)} disabled={p.stock <= 0}>
           <div className="svg-wrapper-1"><div className="svg-wrapper">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M1.946 9.315c-.522-.174-.527-.455.01-.634l19.087-6.362c.529-.176.832.12.684.638l-5.454 19.086c-.15.529-.455.547-.679.045L12 14l6-8-8 6-8.054-2.685z"/></svg>
+            <span className="plus-icon">+</span>
           </div></div>
-          <span>{p.stock > 0 ? 'Añadir' : 'Agotado'}</span>
+          <span className="btn-label">{p.stock > 0 ? 'Añadir' : 'Agotado'}</span>
         </button>
       </div>
     </div>
