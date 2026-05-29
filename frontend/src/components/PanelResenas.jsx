@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { BACKEND } from '../constants/index.js';
 
-export const REVIEWS_INICIALES = [
+const REVIEWS_INICIALES = [
   { id:'r1', nombre:'Valentina Ospina', avatar:'🐠', estrellas:5, fecha:'hace 2 días',    texto:'Llevo 3 años comprando en Distribuciones Ariza y nunca me han fallado. El Acuaprime es increíble, mis peces nunca han estado tan saludables. El envío fue súper rápido y el empaque llegó perfecto. ¡100% recomendado!', producto:'Acuaprime 120ml' },
   { id:'r2', nombre:'Carlos Mendoza',   avatar:'🐡', estrellas:5, fecha:'hace 5 días',    texto:'Compré el Cycle para iniciar mi primer acuario plantado y los resultados son sorprendentes. El agua cristalina desde la primera semana, sin pico de amoniaco. El asesoramiento por WhatsApp también es excelente.', producto:'Cycle 120ml' },
   { id:'r3', nombre:'Mariana Ríos',     avatar:'🐹', estrellas:5, fecha:'hace 1 semana',  texto:'Los accesorios para mi hámster son de muy buena calidad, se nota que son productos pensados en el bienestar del animal. Mi Coco está feliz desde que llegó su nueva jaula. El precio es justo y la atención al cliente es de primera.', producto:'Accesorios para hamsters' },
