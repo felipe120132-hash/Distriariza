@@ -1764,23 +1764,56 @@ export default function App() {
             </div>
             </section>
 
-            <section>
-              <div style={{ display:'flex', justifyContent:'space-between', alignItems:'baseline', marginBottom:'24px' }}>
-                <h2 style={{ fontSize:'1rem', fontWeight:600, color:'var(--ink)' }}>{categoria === 'Todos' ? 'Todos los productos' : categoria}</h2>
-                <span style={{ fontSize:'0.8rem', color:'var(--ink-3)' }}>{visibles.length} resultado{visibles.length!==1&&'s'}</span>
-              </div>
-              {error && <p style={{ color:'#ef4444', textAlign:'center', padding:'40px' }}>{error}</p>}
-              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(230px, 1fr))', gap:'20px' }}>
-                {visibles.map(p => (
-                  <ProductCard key={p.id} p={p} onAdd={addItem} onOpen={setSeleccionado} ratings={ratings} onRate={handleRate} isBestSeller={BEST_SELLER_NAMES.includes(p.nombre)} />
-                ))}
-              </div>
-              {visibles.length === 0 && !error && (
-                <div style={{ textAlign:'center', padding:'80px 20px' }}>
-                  <p style={{ fontSize:'2rem', marginBottom:'12px' }}>🔍</p>
-                  <p style={{ color:'var(--ink-3)' }}>No se encontraron productos.</p>
+            <section style={{ position: 'relative', overflow: 'hidden', borderRadius: '16px' }}>
+              {/* ── VIDEO FONDO HÁMSTER ── */}
+              <video
+                autoPlay muted loop playsInline
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  opacity: 0.30,
+                  pointerEvents: 'none',
+                  zIndex: 0,
+                  borderRadius: '16px',
+                }}
+              >
+                <source src="/hamster.mp4" type="video/mp4" />
+              </video>
+
+              {/* Overlay degradado para legibilidad de tarjetas */}
+              <div style={{
+                position: 'absolute',
+                inset: 0,
+                background: dark
+                  ? 'linear-gradient(to bottom, rgba(15,15,18,0.55) 0%, rgba(15,15,18,0.35) 40%, rgba(15,15,18,0.35) 60%, rgba(15,15,18,0.55) 100%)'
+                  : 'linear-gradient(to bottom, rgba(248,248,244,0.55) 0%, rgba(248,248,244,0.35) 40%, rgba(248,248,244,0.35) 60%, rgba(248,248,244,0.55) 100%)',
+                pointerEvents: 'none',
+                zIndex: 1,
+                borderRadius: '16px',
+              }} />
+
+              {/* Contenido de productos */}
+              <div style={{ position: 'relative', zIndex: 2, padding: '24px 0' }}>
+                <div style={{ display:'flex', justifyContent:'space-between', alignItems:'baseline', marginBottom:'24px' }}>
+                  <h2 style={{ fontSize:'1rem', fontWeight:600, color:'var(--ink)' }}>{categoria === 'Todos' ? 'Todos los productos' : categoria}</h2>
+                  <span style={{ fontSize:'0.8rem', color:'var(--ink-3)' }}>{visibles.length} resultado{visibles.length!==1&&'s'}</span>
                 </div>
-              )}
+                {error && <p style={{ color:'#ef4444', textAlign:'center', padding:'40px' }}>{error}</p>}
+                <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(230px, 1fr))', gap:'20px' }}>
+                  {visibles.map(p => (
+                    <ProductCard key={p.id} p={p} onAdd={addItem} onOpen={setSeleccionado} ratings={ratings} onRate={handleRate} isBestSeller={BEST_SELLER_NAMES.includes(p.nombre)} />
+                  ))}
+                </div>
+                {visibles.length === 0 && !error && (
+                  <div style={{ textAlign:'center', padding:'80px 20px' }}>
+                    <p style={{ fontSize:'2rem', marginBottom:'12px' }}>🔍</p>
+                    <p style={{ color:'var(--ink-3)' }}>No se encontraron productos.</p>
+                  </div>
+                )}
+              </div>
             </section>
 
           </div>
