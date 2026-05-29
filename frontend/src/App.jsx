@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, memo } from 'react';
+import { useEffect, useState, useCallback, memo, useRef } from 'react';
 import axios from 'axios';
 
 /* ─────────────────────────────────────────────
@@ -89,13 +89,11 @@ const GlobalStyles = ({ dark }) => (
       transition: background 0.3s ease;
     }
 
-    /* Efecto de mezcla para fondos blancos de JPGs */
     .img-blend {
       mix-blend-mode: multiply;
       filter: contrast(1.05);
     }
 
-    /* Brillo sutil en el contenedor */
     .img-container::after {
       content: '';
       position: absolute;
@@ -177,66 +175,37 @@ const GlobalStyles = ({ dark }) => (
       font-size: 0.78rem; font-weight: 600; border: none; cursor: pointer;
       transition: background 0.25s, color 0.25s, transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.25s;
     }
-    .cat-pill:hover {
-      transform: translateY(-3px) scale(1.05);
-      box-shadow: var(--shadow-md);
-    }
-    .cat-pill:active {
-      transform: scale(0.95);
-    }
+    .cat-pill:hover { transform: translateY(-3px) scale(1.05); box-shadow: var(--shadow-md); }
+    .cat-pill:active { transform: scale(0.95); }
     .cat-pill--off {
       background: ${dark ? 'rgba(255,255,255,0.07)' : 'var(--surface)'};
-      color: var(--ink-2);
-      box-shadow: var(--shadow-sm);
+      color: var(--ink-2); box-shadow: var(--shadow-sm);
     }
-    .cat-pill--off:hover {
-      background: ${dark ? 'rgba(255,255,255,0.12)' : '#eaeae6'};
-      color: var(--ink);
-    }
+    .cat-pill--off:hover { background: ${dark ? 'rgba(255,255,255,0.12)' : '#eaeae6'}; color: var(--ink); }
     .cat-pill--on { background: var(--ink); color: ${dark ? '#111' : 'var(--surface)'}; }
 
     .nav-tab {
       background: none; border: none; cursor: pointer;
       display: flex; flex-direction: column; align-items: center; gap: 2px;
-      position: relative;
-      padding: 6px 16px;
-      border-radius: 20px;
+      position: relative; padding: 6px 16px; border-radius: 20px;
       transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.3s, box-shadow 0.3s;
     }
-    .nav-tab:hover {
-      transform: translateY(-5px) scale(1.08);
-      background: ${dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.03)'};
-    }
-    .nav-tab:active {
-      transform: translateY(-2px) scale(0.95);
-    }
-    .nav-tab-icon {
-      display: inline-block;
-      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    .nav-tab:hover .nav-tab-icon {
-      transform: scale(1.22) rotate(6deg);
-    }
-    .nav-tab-badge {
-      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    .nav-tab:hover .nav-tab-badge {
-      transform: scale(1.15) translate(2px, -2px);
-    }
+    .nav-tab:hover { transform: translateY(-5px) scale(1.08); background: ${dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.03)'}; }
+    .nav-tab:active { transform: translateY(-2px) scale(0.95); }
+    .nav-tab-icon { display: inline-block; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    .nav-tab:hover .nav-tab-icon { transform: scale(1.22) rotate(6deg); }
+    .nav-tab-badge { transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    .nav-tab:hover .nav-tab-badge { transform: scale(1.15) translate(2px, -2px); }
 
     .review-tab {
       transition: color 0.25s, border-color 0.25s, transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
     }
-    .review-tab:hover {
-      transform: translateY(-2px);
-      color: var(--accent) !important;
-    }
+    .review-tab:hover { transform: translateY(-2px); color: var(--accent) !important; }
 
     .dark-toggle {
       width: 48px; height: 26px; border-radius: 99px; border: none; cursor: pointer;
       position: relative; transition: background 0.3s;
-      background: ${dark ? 'var(--accent)' : '#d1d1ce'};
-      flex-shrink: 0;
+      background: ${dark ? 'var(--accent)' : '#d1d1ce'}; flex-shrink: 0;
     }
     .dark-toggle::after {
       content: ''; position: absolute; top: 3px;
@@ -261,6 +230,31 @@ const GlobalStyles = ({ dark }) => (
     }
     .best-scroll::-webkit-scrollbar { display: none; }
 
+    /* ── HÁMSTER ── */
+    @keyframes hamsterBounce {
+      from { transform: translateY(0px); }
+      to   { transform: translateY(-20px); }
+    }
+    @keyframes hamsterPop {
+      from { transform: scale(0.5) translateY(10px); opacity: 0; }
+      to   { transform: scale(1) translateY(0); opacity: 1; }
+    }
+    @keyframes hamsterWiggle {
+      0%   { transform: rotate(0deg); }
+      25%  { transform: rotate(-8deg); }
+      75%  { transform: rotate(8deg); }
+      100% { transform: rotate(0deg); }
+    }
+    .hamster-bounce {
+      animation: hamsterBounce 0.28s ease-in-out infinite alternate;
+    }
+    .hamster-wiggle {
+      animation: hamsterWiggle 0.25s ease-in-out infinite;
+    }
+    .hamster-bubble {
+      animation: hamsterPop 0.3s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+
     * { transition-property: background-color, border-color, color; transition-duration: 0.25s; }
     .caustic-ray, .bubble, .seaweed { transition: none !important; }
     .parallax-layer { transition: none !important; }
@@ -268,19 +262,151 @@ const GlobalStyles = ({ dark }) => (
 );
 
 /* ─────────────────────────────────────────────
+   HÁMSTER MASCOTA
+───────────────────────────────────────────── */
+const HAMSTER_PHRASES = [
+  '¡Al carrito! 🛒',
+  '¡Buena elección! ✨',
+  '¡Sí sí sí! 🎉',
+  '¡Me encanta! ❤️',
+  '¡Eso eso eso! 🐹',
+  '¡Nom nom! 😋',
+  '¡Qué rico! 🌟',
+  '¡Genial! 🙌',
+];
+
+const HamsterMascot = () => {
+  const [posX, setPosX]       = useState(120);
+  const [facingLeft, setFacingLeft] = useState(false);
+  const [excited, setExcited] = useState(false);
+  const [bubble, setBubble]   = useState(null);
+
+  const posRef      = useRef(120);
+  const dirRef      = useRef(1);
+  const excitedRef  = useRef(false);
+  const animRef     = useRef(null);
+  const timerRef    = useRef(null);
+
+  /* Movimiento autónomo */
+  useEffect(() => {
+    let last = performance.now();
+    const tick = (now) => {
+      if (!excitedRef.current) {
+        const dt = now - last;
+        posRef.current += 0.055 * dt * dirRef.current;
+        const maxX = window.innerWidth - 110;
+        if (posRef.current >= maxX) { posRef.current = maxX; dirRef.current = -1; }
+        if (posRef.current <= 10)   { posRef.current = 10;   dirRef.current =  1; }
+        setFacingLeft(dirRef.current === -1);
+        setPosX(posRef.current);
+      }
+      last = now;
+      animRef.current = requestAnimationFrame(tick);
+    };
+    animRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(animRef.current);
+  }, []);
+
+  /* Exponer función global para que cualquier botón la llame */
+  useEffect(() => {
+    window.__hamsterExcite = () => {
+      if (excitedRef.current) return;
+      excitedRef.current = true;
+      setExcited(true);
+      setBubble(HAMSTER_PHRASES[Math.floor(Math.random() * HAMSTER_PHRASES.length)]);
+      if (timerRef.current) clearTimeout(timerRef.current);
+      timerRef.current = setTimeout(() => {
+        setExcited(false);
+        setBubble(null);
+        excitedRef.current = false;
+      }, 2600);
+    };
+    return () => { delete window.__hamsterExcite; };
+  }, []);
+
+  const bubbleLeft = Math.min(posX, window.innerWidth - 180);
+
+  return (
+    <div style={{ position:'fixed', bottom:0, left:0, width:'100%', pointerEvents:'none', zIndex:9999 }}>
+
+      {/* Burbuja */}
+      {bubble && (
+        <div className="hamster-bubble" style={{
+          position:'absolute',
+          bottom: 105,
+          left: Math.max(8, bubbleLeft - 8),
+          background:'#fff',
+          border:'2.5px solid #f97316',
+          borderRadius:16,
+          padding:'7px 14px',
+          fontSize:13,
+          fontWeight:700,
+          color:'#333',
+          whiteSpace:'nowrap',
+          boxShadow:'0 4px 16px rgba(249,115,22,0.25)',
+          fontFamily:'var(--font-body)',
+        }}>
+          {bubble}
+          {/* Colita de la burbuja */}
+          <div style={{
+            position:'absolute', bottom:-9, left:20,
+            width:14, height:14,
+            background:'#fff',
+            border:'2.5px solid #f97316',
+            borderTop:'none', borderLeft:'none',
+            transform:'rotate(45deg)',
+            borderRadius:'0 0 4px 0',
+          }}/>
+        </div>
+      )}
+
+      {/* Hámster — video con fondo removido via mix-blend-mode */}
+      <div
+        className={excited ? 'hamster-bounce' : ''}
+        style={{
+          position:'absolute',
+          bottom: 0,
+          left: posX,
+          width: 90,
+          height: 90,
+          transform: `scaleX(${facingLeft ? -1 : 1})`,
+          transition: 'transform 0.2s',
+          filter: excited
+            ? 'drop-shadow(0 0 10px rgba(249,115,22,0.8))'
+            : 'drop-shadow(0 4px 8px rgba(0,0,0,0.2))',
+        }}
+      >
+        <video
+          autoPlay muted loop playsInline
+          style={{
+            width:'100%',
+            height:'100%',
+            objectFit:'cover',
+            borderRadius:'50% 50% 0 0',
+            mixBlendMode:'multiply',
+          }}
+        >
+          <source src="/hamster.mp4" type="video/mp4"/>
+        </video>
+      </div>
+    </div>
+  );
+};
+
+/* ─────────────────────────────────────────────
    LOADER
 ───────────────────────────────────────────── */
 const Loader = () => (
   <div style={{
-    position: 'fixed', inset: 0, background: 'var(--bg)',
-    display: 'flex', flexDirection: 'column',
-    alignItems: 'center', justifyContent: 'center', gap: '28px', zIndex: 9999
+    position:'fixed', inset:0, background:'var(--bg)',
+    display:'flex', flexDirection:'column',
+    alignItems:'center', justifyContent:'center', gap:'28px', zIndex:9999
   }}>
-    <div style={{ textAlign: 'center' }}>
-      <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.6rem', color: 'var(--ink)', letterSpacing: '-0.5px' }}>
+    <div style={{ textAlign:'center' }}>
+      <p style={{ fontFamily:'var(--font-display)', fontSize:'1.6rem', color:'var(--ink)', letterSpacing:'-0.5px' }}>
         Distribuciones Ariza
       </p>
-      <p style={{ fontSize: '0.8rem', color: 'var(--ink-3)', marginTop: '6px', fontWeight: 400 }}>
+      <p style={{ fontSize:'0.8rem', color:'var(--ink-3)', marginTop:'6px', fontWeight:400 }}>
         Cargando catálogo…
       </p>
     </div>
@@ -289,70 +415,31 @@ const Loader = () => (
 );
 
 /* ─────────────────────────────────────────────
-   VIDEO ID
-───────────────────────────────────────────── */
-const VIDEO_ID = "V9v7jGqTx7E";
-
-/* ─────────────────────────────────────────────
    AQUARIUM HERO
 ───────────────────────────────────────────── */
 const AquariumHero = ({ busqueda, setBusqueda, scrollY = 0 }) => {
   const s = Math.max(0, Math.min(scrollY, 440));
   return (
     <div className="aquarium-hero">
-
-      {/* ── VIDEO DE FONDO ── */}
-      <div style={{
-        position: 'absolute', inset: 0, zIndex: 0,
-        overflow: 'hidden', pointerEvents: 'none',
-      }}>
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          webkit-playsinline="true"
-          preload="auto"
-          style={{
-            position: 'absolute',
-            top: '50%', left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: '177.78vh',
-            minWidth: '100%',
-            height: '56.25vw',
-            minHeight: '100%',
-            objectFit: 'cover',
-          }}
+      <div style={{ position:'absolute', inset:0, zIndex:0, overflow:'hidden', pointerEvents:'none' }}>
+        <video autoPlay muted loop playsInline webkit-playsinline="true" preload="auto"
+          style={{ position:'absolute', top:'50%', left:'50%', transform:'translate(-50%,-50%)', width:'177.78vh', minWidth:'100%', height:'56.25vw', minHeight:'100%', objectFit:'cover' }}
         >
-          <source src="/hero.mp4" type="video/mp4" />
+          <source src="/hero.mp4" type="video/mp4"/>
         </video>
       </div>
-
-      {/* ── TEXTO Y BUSCADOR ── */}
-      <div className="parallax-layer hero-text" style={{ zIndex:20, transform:`translateY(${s * -0.45}px)`, opacity:Math.max(0, 1 - s / 180), willChange:'transform, opacity' }}>
+      <div className="parallax-layer hero-text" style={{ zIndex:20, transform:`translateY(${s*-0.45}px)`, opacity:Math.max(0,1-s/180), willChange:'transform, opacity' }}>
         <p style={{ fontSize:'0.72rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'1.8px', color:'rgba(255,255,255,0.7)', marginBottom:'8px' }}>Tienda en línea</p>
         <h1 style={{ fontFamily:'var(--font-display)', fontSize:'clamp(2.2rem,5vw,3.5rem)', fontWeight:700, color:'#fff', lineHeight:1.15, marginBottom:'20px', textShadow:'0 4px 16px rgba(0,0,0,0.4)' }}>
           Todo para tus<br/>peces y hámsters.
         </h1>
         <div style={{ position:'relative', maxWidth:'320px' }}>
           <span style={{ position:'absolute', left:'14px', top:'50%', transform:'translateY(-50%)', fontSize:'0.9rem', opacity:0.6, color:'#444' }}>🔍</span>
-          <input type="text" placeholder="Buscar productos…" value={busqueda} onChange={e => setBusqueda(e.target.value)}
-            style={{ 
-              width:'100%', 
-              padding:'13px 18px 13px 40px', 
-              borderRadius:'99px', 
-              border:'none', 
-              background:'#ffffff', 
-              color:'#333', 
-              fontFamily:'var(--font-body)', 
-              fontSize:'0.88rem', 
-              outline:'none',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.15)'
-            }}
+          <input type="text" placeholder="Buscar productos…" value={busqueda} onChange={e=>setBusqueda(e.target.value)}
+            style={{ width:'100%', padding:'13px 18px 13px 40px', borderRadius:'99px', border:'none', background:'#ffffff', color:'#333', fontFamily:'var(--font-body)', fontSize:'0.88rem', outline:'none', boxShadow:'0 8px 32px rgba(0,0,0,0.15)' }}
           />
         </div>
       </div>
-
     </div>
   );
 };
@@ -360,20 +447,20 @@ const AquariumHero = ({ busqueda, setBusqueda, scrollY = 0 }) => {
 /* ─────────────────────────────────────────────
    STAR RATING
 ───────────────────────────────────────────── */
-const StarRating = memo(({ productId, ratings, onRate, readonly = false, size = '1rem' }) => {
+const StarRating = memo(({ productId, ratings, onRate, readonly=false, size='1rem' }) => {
   const [hover, setHover] = useState(0);
   const current = ratings[productId] || 0;
   return (
     <div style={{ display:'flex', gap:'2px', alignItems:'center' }}>
       {[1,2,3,4,5].map(star => (
-        <span key={star} className={readonly ? '' : 'star'}
-          style={{ fontSize:size, color:(hover || current) >= star ? 'var(--gold)' : 'var(--ink-3)', lineHeight:1, cursor:readonly ? 'default' : 'pointer' }}
-          onMouseEnter={() => !readonly && setHover(star)}
-          onMouseLeave={() => !readonly && setHover(0)}
-          onClick={() => !readonly && onRate(productId, star)}
+        <span key={star} className={readonly?'':'star'}
+          style={{ fontSize:size, color:(hover||current)>=star?'var(--gold)':'var(--ink-3)', lineHeight:1, cursor:readonly?'default':'pointer' }}
+          onMouseEnter={()=>!readonly&&setHover(star)}
+          onMouseLeave={()=>!readonly&&setHover(0)}
+          onClick={()=>!readonly&&onRate(productId,star)}
         >★</span>
       ))}
-      {current > 0 && !readonly && (
+      {current>0&&!readonly&&(
         <span style={{ fontSize:'0.7rem', color:'var(--ink-3)', marginLeft:'4px' }}>{current}/5</span>
       )}
     </div>
@@ -402,47 +489,52 @@ const DESCRIPCIONES = {
 };
 
 const OPCIONES_COLORES = {
-  "Acuarios Importados": ["Azul", "Blanco", "Negro", "Rosado"],
-  "Jaula para Hámster 257": ["Azul", "Verde", "Rosado", "Naranja"],
-  "Jaula para Hámster S-11": ["Café", "Rosado", "Verde"],
-  "Jaula para Hámster 268": ["Azul Claro", "Azul Oscuro", "Amarillo", "Rosado", "Gris"],
-  "Jaula para Hámster 45": ["Azul", "Amarillo", "Rosado", "Naranja"]
+  "Acuarios Importados": ["Azul","Blanco","Negro","Rosado"],
+  "Jaula para Hámster 257": ["Azul","Verde","Rosado","Naranja"],
+  "Jaula para Hámster S-11": ["Café","Rosado","Verde"],
+  "Jaula para Hámster 268": ["Azul Claro","Azul Oscuro","Amarillo","Rosado","Gris"],
+  "Jaula para Hámster 45": ["Azul","Amarillo","Rosado","Naranja"],
 };
 
 /* ─────────────────────────────────────────────
    CONSTANTES
 ───────────────────────────────────────────── */
 const COLECCIONES = [
-  { label:'Líquidos',   val:'Líquidos vitales',         icon:'💧' },
-  { label:'Comida',     val:'Alimentos',                icon:'🫙' },
-  { label:'Accesorios', val:'Accesorios',               icon:'🎨' },
-  { label:'Equipos',    val:'Equipos',                  icon:'⚙️' },
-  { label:'Hámsters',   val:'Jaulas para Hámster',      icon:'🐹' },
+  { label:'Líquidos',   val:'Líquidos vitales',    icon:'💧' },
+  { label:'Comida',     val:'Alimentos',            icon:'🫙' },
+  { label:'Accesorios', val:'Accesorios',           icon:'🎨' },
+  { label:'Equipos',    val:'Equipos',              icon:'⚙️' },
+  { label:'Hámsters',   val:'Jaulas para Hámster',  icon:'🐹' },
 ];
 
 const BEST_SELLER_NAMES = [
-  'Acuaprime 120ml', 'Cycle 120ml', 'Alga Clear 20ml',
-  'Clarify 20ml', 'Test Plus Ultra PH',
+  'Acuaprime 120ml','Cycle 120ml','Alga Clear 20ml','Clarify 20ml','Test Plus Ultra PH',
 ];
 
 const BACKEND = "https://distriariza.onrender.com";
 
 const moneda = (v) =>
-  new Intl.NumberFormat('es-CO', { style:'currency', currency:'COP', minimumFractionDigits:0 }).format(v);
+  new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',minimumFractionDigits:0}).format(v);
 
 const imgSrc = (url) =>
   !url ? 'https://via.placeholder.com/300' : url.startsWith('http') ? url : `${BACKEND}/productos/${url}`;
 
-const normaliza = (s) => (s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase();
+const normaliza = (s) =>
+  (s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase();
 
 /* ─────────────────────────────────────────────
-   HELPERS UI
+   HELPER — dispara al hámster
+───────────────────────────────────────────── */
+const exciteHamster = () => window.__hamsterExcite?.();
+
+/* ─────────────────────────────────────────────
+   STEPPER
 ───────────────────────────────────────────── */
 const Stepper = ({ value, onAdd, onRemove, onChange }) => (
   <div style={{ display:'flex', alignItems:'center', gap:'8px' }}>
     <button className="icon-btn" onClick={onRemove} aria-label="Restar">−</button>
     <input type="number" min="1" value={value}
-      onChange={(e) => { const v=parseInt(e.target.value); if(!isNaN(v) && v>=0) onChange(v); }}
+      onChange={(e)=>{const v=parseInt(e.target.value);if(!isNaN(v)&&v>=0)onChange(v);}}
       style={{ width:'36px', textAlign:'center', border:'1.5px solid var(--border)', borderRadius:'8px', padding:'5px 0', fontFamily:'var(--font-body)', fontWeight:600, fontSize:'0.9rem', background:'transparent', color:'var(--ink)' }}
     />
     <button className="icon-btn" onClick={onAdd} aria-label="Sumar">+</button>
@@ -455,22 +547,24 @@ const Stepper = ({ value, onAdd, onRemove, onChange }) => (
 const BestCard = memo(({ p, onAdd, onOpen, ratings, onRate, rank }) => (
   <div className="prod-card" style={{ background:'var(--card-bg)', borderRadius:'24px', overflow:'hidden', boxShadow:'var(--shadow-sm)', flexShrink:0, width:'200px' }}>
     <div style={{ position:'relative' }}>
-      <div onClick={() => onOpen(p)} className="img-container" style={{ height:'160px', cursor:'pointer', padding:'12px', borderRadius:'24px 24px 0 0' }}>
-        <img src={imgSrc(p.imagen_url)} alt={p.nombre} decoding="async" className="zoom-img img-blend" style={{ maxHeight:'100%', maxWidth:'100%', objectFit:'contain' }} />
+      <div onClick={()=>onOpen(p)} className="img-container" style={{ height:'160px', cursor:'pointer', padding:'12px', borderRadius:'24px 24px 0 0' }}>
+        <img src={imgSrc(p.imagen_url)} alt={p.nombre} decoding="async" className="zoom-img img-blend" style={{ maxHeight:'100%', maxWidth:'100%', objectFit:'contain' }}/>
       </div>
-      <div className="badge-best" style={{ position:'absolute', top:'12px', left:'12px', background: rank===1 ? '#f59e0b' : rank===2 ? '#94a3b8' : rank===3 ? '#cd7c3a' : 'var(--accent)', color:'#fff', borderRadius:'99px', padding:'4px 12px', fontSize:'0.65rem', fontWeight:700, letterSpacing:'0.5px', boxShadow:'0 4px 12px rgba(0,0,0,0.2)', zIndex:10 }}>
+      <div className="badge-best" style={{ position:'absolute', top:'12px', left:'12px', background:rank===1?'#f59e0b':rank===2?'#94a3b8':rank===3?'#cd7c3a':'var(--accent)', color:'#fff', borderRadius:'99px', padding:'4px 12px', fontSize:'0.65rem', fontWeight:700, letterSpacing:'0.5px', boxShadow:'0 4px 12px rgba(0,0,0,0.2)', zIndex:10 }}>
         #{rank} más vendido
       </div>
     </div>
     <div style={{ padding:'14px 16px 16px' }}>
-      <h4 onClick={() => onOpen(p)} style={{ fontSize:'0.85rem', fontWeight:500, cursor:'pointer', marginBottom:'6px', lineHeight:1.3, color:'var(--ink)', height:'2.6em', overflow:'hidden', display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical' }}>{p.nombre}</h4>
-      <div style={{ marginBottom:'10px' }}>
-        <StarRating productId={p.id} ratings={ratings} onRate={onRate} size="0.8rem" />
-      </div>
+      <h4 onClick={()=>onOpen(p)} style={{ fontSize:'0.85rem', fontWeight:500, cursor:'pointer', marginBottom:'6px', lineHeight:1.3, color:'var(--ink)', height:'2.6em', overflow:'hidden', display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical' }}>{p.nombre}</h4>
+      <div style={{ marginBottom:'10px' }}><StarRating productId={p.id} ratings={ratings} onRate={onRate} size="0.8rem"/></div>
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
         <span style={{ fontSize:'1rem', fontWeight:700, color:'var(--ink)' }}>{moneda(p.precio)}</span>
-        <button className="pill-btn pill-btn--accent" onClick={() => onAdd(p)} disabled={p.stock <= 0} style={{ padding:'6px 10px', fontSize:'0.7rem', opacity: p.stock <= 0 ? 0.5 : 1 }}>
-          {p.stock > 0 ? '+ Añadir' : 'Agotado'}
+        <button className="pill-btn pill-btn--accent"
+          onClick={()=>{ onAdd(p); exciteHamster(); }}
+          disabled={p.stock<=0}
+          style={{ padding:'6px 10px', fontSize:'0.7rem', opacity:p.stock<=0?0.5:1 }}
+        >
+          {p.stock>0?'+ Añadir':'Agotado'}
         </button>
       </div>
     </div>
@@ -487,26 +581,26 @@ const ProductCard = memo(({ p, onAdd, onOpen, ratings, onRate, isBestSeller }) =
         🔥 TOP
       </div>
     )}
-    <div onClick={() => onOpen(p)} className="img-container"
-      style={{ height:'220px', cursor:'pointer', padding:'24px', borderRadius:'24px 24px 0 0' }}
-    >
-      <img src={imgSrc(p.imagen_url)} alt={p.nombre} loading="lazy" decoding="async" className="zoom-img img-blend"
-        style={{ maxHeight:'100%', maxWidth:'100%', objectFit:'contain' }}
-      />
+    <div onClick={()=>onOpen(p)} className="img-container" style={{ height:'220px', cursor:'pointer', padding:'24px', borderRadius:'24px 24px 0 0' }}>
+      <img src={imgSrc(p.imagen_url)} alt={p.nombre} loading="lazy" decoding="async" className="zoom-img img-blend" style={{ maxHeight:'100%', maxWidth:'100%', objectFit:'contain' }}/>
     </div>
     <div style={{ padding:'18px 20px 20px' }}>
       <p style={{ fontSize:'0.7rem', color:'var(--ink-3)', fontWeight:700, textTransform:'uppercase', letterSpacing:'1px', marginBottom:'6px', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
         <span>{p.categoria_nombre}</span>
-        <span style={{ color: p.stock > 0 ? '#22c55e' : '#ef4444', background: p.stock > 0 ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)', padding:'2px 8px', borderRadius:'6px' }}>{p.stock > 0 ? `Stock: ${p.stock}` : 'Agotado'}</span>
+        <span style={{ color:p.stock>0?'#22c55e':'#ef4444', background:p.stock>0?'rgba(34,197,94,0.1)':'rgba(239,68,68,0.1)', padding:'2px 8px', borderRadius:'6px' }}>
+          {p.stock>0?`Stock: ${p.stock}`:'Agotado'}
+        </span>
       </p>
-      <h4 onClick={() => onOpen(p)} style={{ fontSize:'1rem', fontWeight:600, color:'var(--ink)', cursor:'pointer', marginBottom:'10px', lineHeight:1.3, height:'2.6em', overflow:'hidden', display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical' }}>{p.nombre}</h4>
-      <div style={{ marginBottom:'16px' }}>
-        <StarRating productId={p.id} ratings={ratings} onRate={onRate} size="0.95rem" />
-      </div>
+      <h4 onClick={()=>onOpen(p)} style={{ fontSize:'1rem', fontWeight:600, color:'var(--ink)', cursor:'pointer', marginBottom:'10px', lineHeight:1.3, height:'2.6em', overflow:'hidden', display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical' }}>{p.nombre}</h4>
+      <div style={{ marginBottom:'16px' }}><StarRating productId={p.id} ratings={ratings} onRate={onRate} size="0.95rem"/></div>
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', borderTop:'1px solid var(--border)', paddingTop:'14px' }}>
         <span style={{ fontSize:'1.2rem', fontWeight:800, color:'var(--ink)', letterSpacing:'-0.5px' }}>{moneda(p.precio)}</span>
-        <button className="pill-btn pill-btn--accent" onClick={() => onAdd(p)} disabled={p.stock <= 0} style={{ padding:'10px 20px', fontSize:'0.82rem', opacity: p.stock <= 0 ? 0.5 : 1 }}>
-          {p.stock > 0 ? '+ Añadir' : 'Agotado'}
+        <button className="pill-btn pill-btn--accent"
+          onClick={()=>{ onAdd(p); exciteHamster(); }}
+          disabled={p.stock<=0}
+          style={{ padding:'10px 20px', fontSize:'0.82rem', opacity:p.stock<=0?0.5:1 }}
+        >
+          {p.stock>0?'+ Añadir':'Agotado'}
         </button>
       </div>
     </div>
@@ -517,57 +611,47 @@ const ProductCard = memo(({ p, onAdd, onOpen, ratings, onRate, isBestSeller }) =
    PRODUCT MODAL
 ───────────────────────────────────────────── */
 const ProductModal = ({ p, onClose, onAdd, ratings, onRate }) => {
-  const desc = DESCRIPCIONES[p.nombre];
-  const isBest = BEST_SELLER_NAMES.includes(p.nombre);
+  const desc    = DESCRIPCIONES[p.nombre];
+  const isBest  = BEST_SELLER_NAMES.includes(p.nombre);
   const colores = OPCIONES_COLORES[p.nombre];
-  const [colorSel, setColorSel] = useState(colores ? colores[0] : null);
+  const [colorSel, setColorSel] = useState(colores?colores[0]:null);
 
   return (
     <>
-      <div className="modal-overlay" onClick={onClose} style={{ position:'fixed', inset:0, background:'rgba(10,10,10,0.6)', backdropFilter:'blur(8px)', WebkitBackdropFilter:'blur(8px)', zIndex:3000 }} />
+      <div className="modal-overlay" onClick={onClose} style={{ position:'fixed', inset:0, background:'rgba(10,10,10,0.6)', backdropFilter:'blur(8px)', WebkitBackdropFilter:'blur(8px)', zIndex:3000 }}/>
       <div className="modal" style={{ position:'fixed', top:'50%', left:'50%', transform:'translate(-50%,-50%)', width:'90%', maxWidth:'480px', maxHeight:'90vh', overflowY:'auto', background:'var(--surface)', zIndex:3001, borderRadius:'28px', boxShadow:'0 32px 80px rgba(0,0,0,0.3)' }}>
         <button onClick={onClose} style={{ position:'absolute', top:'16px', right:'16px', background:'rgba(128,128,128,0.15)', border:'none', borderRadius:'50%', width:'42px', height:'42px', cursor:'pointer', fontSize:'1.1rem', color:'var(--ink-2)', zIndex:10, display:'flex', alignItems:'center', justifyContent:'center' }}
-          onMouseOver={e => e.currentTarget.style.background='rgba(128,128,128,0.25)'}
-          onMouseOut={e => e.currentTarget.style.background='rgba(128,128,128,0.15)'}
+          onMouseOver={e=>e.currentTarget.style.background='rgba(128,128,128,0.25)'}
+          onMouseOut={e=>e.currentTarget.style.background='rgba(128,128,128,0.15)'}
         >✕</button>
-        <div style={{ background:'linear-gradient(180deg, #fff 0%, #f9f9f9 100%)', borderRadius:'28px 28px 0 0', padding:'40px 32px 32px', display:'flex', alignItems:'center', justifyContent:'center', minHeight:'280px', overflow:'hidden', position:'relative' }}>
-          {isBest && (
-            <div style={{ position:'absolute', top:'20px', left:'24px', background:'var(--gold)', color:'#000', borderRadius:'99px', padding:'5px 14px', fontSize:'0.7rem', fontWeight:800, boxShadow:'0 4px 12px rgba(0,0,0,0.1)' }}>🔥 Más vendido</div>
-          )}
-          <img className="modal-img img-blend" src={imgSrc(p.imagen_url)} alt={p.nombre} style={{ maxHeight:'240px', maxWidth:'100%', objectFit:'contain', display:'block', filter:'drop-shadow(0 8px 24px rgba(0,0,0,0.08))' }} />
+        <div style={{ background:'linear-gradient(180deg,#fff 0%,#f9f9f9 100%)', borderRadius:'28px 28px 0 0', padding:'40px 32px 32px', display:'flex', alignItems:'center', justifyContent:'center', minHeight:'280px', overflow:'hidden', position:'relative' }}>
+          {isBest&&<div style={{ position:'absolute', top:'20px', left:'24px', background:'var(--gold)', color:'#000', borderRadius:'99px', padding:'5px 14px', fontSize:'0.7rem', fontWeight:800, boxShadow:'0 4px 12px rgba(0,0,0,0.1)' }}>🔥 Más vendido</div>}
+          <img className="modal-img img-blend" src={imgSrc(p.imagen_url)} alt={p.nombre} style={{ maxHeight:'240px', maxWidth:'100%', objectFit:'contain', display:'block', filter:'drop-shadow(0 8px 24px rgba(0,0,0,0.08))' }}/>
         </div>
         <div style={{ padding:'24px 28px 28px' }}>
           <p className="modal-content-1" style={{ fontSize:'0.68rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.9px', marginBottom:'6px', display:'flex', justifyContent:'space-between' }}>
             <span>{p.categoria_nombre}</span>
-            <span style={{ color: p.stock > 0 ? '#16a34a' : '#ef4444' }}>{p.stock > 0 ? `${p.stock} Disponibles` : 'Agotado'}</span>
+            <span style={{ color:p.stock>0?'#16a34a':'#ef4444' }}>{p.stock>0?`${p.stock} Disponibles`:'Agotado'}</span>
           </p>
           <h2 className="modal-content-2" style={{ fontFamily:'var(--font-display)', fontSize:'1.6rem', fontWeight:700, color:'var(--ink)', marginBottom:'10px', lineHeight:1.2 }}>{p.nombre}</h2>
-          
-          {colores && (
+          {colores&&(
             <div className="modal-content-2" style={{ marginBottom:'20px' }}>
               <p style={{ fontSize:'0.7rem', color:'var(--ink-3)', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.8px', marginBottom:'10px' }}>Elige un color:</p>
               <div style={{ display:'flex', gap:'8px', flexWrap:'wrap' }}>
-                {colores.map(c => (
-                  <button key={c} onClick={() => setColorSel(c)} 
-                    style={{ 
-                      padding:'6px 14px', borderRadius:'10px', fontSize:'0.75rem', fontWeight:600, cursor:'pointer',
-                      border: colorSel === c ? '2.5px solid var(--accent)' : '1.5px solid var(--border)',
-                      background: colorSel === c ? 'var(--accent)' : 'transparent',
-                      color: colorSel === c ? '#fff' : 'var(--ink)',
-                      transition: 'all 0.2s'
-                    }}
+                {colores.map(c=>(
+                  <button key={c} onClick={()=>setColorSel(c)}
+                    style={{ padding:'6px 14px', borderRadius:'10px', fontSize:'0.75rem', fontWeight:600, cursor:'pointer', border:colorSel===c?'2.5px solid var(--accent)':'1.5px solid var(--border)', background:colorSel===c?'var(--accent)':'transparent', color:colorSel===c?'#fff':'var(--ink)', transition:'all 0.2s' }}
                   >{c}</button>
                 ))}
               </div>
             </div>
           )}
-
           <div className="modal-content-2" style={{ marginBottom:'18px' }}>
             <p style={{ fontSize:'0.7rem', color:'var(--ink-3)', fontWeight:600, marginBottom:'6px' }}>TU VALORACIÓN</p>
-            <StarRating productId={p.id} ratings={ratings} onRate={onRate} size="1.3rem" />
+            <StarRating productId={p.id} ratings={ratings} onRate={onRate} size="1.3rem"/>
           </div>
           <div className="modal-content-3" style={{ color:'var(--ink-2)', fontSize:'0.9rem', lineHeight:1.75, marginBottom:'28px' }}>
-            {desc ? (
+            {desc?(
               <>
                 <p style={{ color:'var(--ink)', fontWeight:500, marginBottom:'10px' }}>{desc.resumen}</p>
                 <p style={{ marginBottom:'14px' }}>{desc.cuerpo}</p>
@@ -576,8 +660,8 @@ const ProductModal = ({ p, onClose, onAdd, ratings, onRate }) => {
                   <span style={{ color:'var(--ink-2)' }}>{desc.uso}</span>
                 </div>
               </>
-            ) : (
-              <p>{p.descripcion || 'Calidad garantizada para tu mascota.'}</p>
+            ):(
+              <p>{p.descripcion||'Calidad garantizada para tu mascota.'}</p>
             )}
           </div>
           <div className="modal-content-4" style={{ display:'flex', justifyContent:'space-between', alignItems:'center', borderTop:'1px solid var(--border)', paddingTop:'20px' }}>
@@ -585,8 +669,12 @@ const ProductModal = ({ p, onClose, onAdd, ratings, onRate }) => {
               <p style={{ fontSize:'0.68rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.6px', marginBottom:'3px' }}>Precio</p>
               <span style={{ fontSize:'1.6rem', fontWeight:600, color:'var(--ink)', letterSpacing:'-0.5px' }}>{moneda(p.precio)}</span>
             </div>
-            <button className="pill-btn pill-btn--accent" onClick={() => { onAdd({...p, colorSeleccionado: colorSel}); onClose(); }} disabled={p.stock <= 0} style={{ padding:'14px 28px', fontSize:'0.9rem', opacity: p.stock <= 0 ? 0.5 : 1 }}>
-              {p.stock > 0 ? '+ Añadir al carrito' : 'Agotado'}
+            <button className="pill-btn pill-btn--accent"
+              onClick={()=>{ onAdd({...p,colorSeleccionado:colorSel}); exciteHamster(); onClose(); }}
+              disabled={p.stock<=0}
+              style={{ padding:'14px 28px', fontSize:'0.9rem', opacity:p.stock<=0?0.5:1 }}
+            >
+              {p.stock>0?'+ Añadir al carrito':'Agotado'}
             </button>
           </div>
         </div>
@@ -599,88 +687,78 @@ const ProductModal = ({ p, onClose, onAdd, ratings, onRate }) => {
    CART PANEL
 ───────────────────────────────────────────── */
 const CartPanel = ({ carrito, onClose, onAdd, onRemove, onChangeQty, totalCompra, totalItems }) => {
-  const [paso, setPaso] = useState('lista');
+  const [paso, setPaso]   = useState('lista');
   const [datos, setDatos] = useState({ nombre:'', direccion:'', ciudad:'', telefono:'' });
 
   const enviarWhatsApp = async () => {
-    // Descontar stock en la base de datos
     try {
-      await axios.post(`${BACKEND}/api/productos/descontar-stock`, {
-        items: carrito.map(p => ({ id: p.id, cantidad: p.cantidad }))
+      await axios.post(`${BACKEND}/api/productos/descontar-stock`,{
+        items: carrito.map(p=>({id:p.id,cantidad:p.cantidad}))
       });
-    } catch (e) {
-      console.error('Error al descontar stock:', e);
-    }
-
-    const lista = carrito.map(p => `• ${p.nombre}${p.colorSeleccionado ? ` [Color: ${p.colorSeleccionado}]` : ''} (x${p.cantidad})`).join('\n');
-    const msg = `*NUEVO PEDIDO - DISTRIBUCIONES ARIZA*\n\n*Cliente:* ${datos.nombre}\n*Dirección:* ${datos.direccion}\n*Ciudad:* ${datos.ciudad}\n*Teléfono:* ${datos.telefono}\n\n*Productos:*\n${lista}\n\n*Total: ${moneda(totalCompra)}*`;
-    window.open(`https://wa.me/573219627376?text=${encodeURIComponent(msg)}`, '_blank');
+    } catch(e){ console.error('Error al descontar stock:',e); }
+    const lista = carrito.map(p=>`• ${p.nombre}${p.colorSeleccionado?` [Color: ${p.colorSeleccionado}]`:''} (x${p.cantidad})`).join('\n');
+    const msg   = `*NUEVO PEDIDO - DISTRIBUCIONES ARIZA*\n\n*Cliente:* ${datos.nombre}\n*Dirección:* ${datos.direccion}\n*Ciudad:* ${datos.ciudad}\n*Teléfono:* ${datos.telefono}\n\n*Productos:*\n${lista}\n\n*Total: ${moneda(totalCompra)}*`;
+    window.open(`https://wa.me/573219627376?text=${encodeURIComponent(msg)}`,'_blank');
     setPaso('confirmado');
   };
 
   return (
     <>
-      <div onClick={() => { onClose(); setPaso('lista'); }} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.3)', zIndex:1500 }} />
-      <div className="panel" style={{ position:'fixed', top:0, right:0, width:'100%', maxWidth:'400px', height:'100%', background:'var(--surface)', zIndex:2000, display:'flex', flexDirection:'column' }}>
-        <div style={{ display:'flex', alignItems:'center', padding:'24px 28px', borderBottom:'1px solid var(--border)' }}>
-          {paso === 'envio' && (
-            <button onClick={() => setPaso('lista')} style={{ background:'none', border:'none', cursor:'pointer', marginRight:'14px', fontSize:'1.1rem', color:'var(--ink-2)' }}>←</button>
-          )}
-          <h2 style={{ fontFamily:'var(--font-display)', fontSize:'1.25rem', fontWeight:700, color:'var(--ink)', flex:1 }}>
-            {paso === 'lista' ? 'Carrito' : paso === 'envio' ? 'Datos de entrega' : '¡Listo!'}
+      <div onClick={()=>{onClose();setPaso('lista');}} style={{ position:'fixed',inset:0,background:'rgba(0,0,0,0.3)',zIndex:1500 }}/>
+      <div className="panel" style={{ position:'fixed',top:0,right:0,width:'100%',maxWidth:'400px',height:'100%',background:'var(--surface)',zIndex:2000,display:'flex',flexDirection:'column' }}>
+        <div style={{ display:'flex',alignItems:'center',padding:'24px 28px',borderBottom:'1px solid var(--border)' }}>
+          {paso==='envio'&&<button onClick={()=>setPaso('lista')} style={{ background:'none',border:'none',cursor:'pointer',marginRight:'14px',fontSize:'1.1rem',color:'var(--ink-2)' }}>←</button>}
+          <h2 style={{ fontFamily:'var(--font-display)',fontSize:'1.25rem',fontWeight:700,color:'var(--ink)',flex:1 }}>
+            {paso==='lista'?'Carrito':paso==='envio'?'Datos de entrega':'¡Listo!'}
           </h2>
-          {totalItems > 0 && paso === 'lista' && (
-            <span style={{ fontSize:'0.75rem', color:'var(--ink-3)', marginRight:'12px' }}>{totalItems} {totalItems===1?'producto':'productos'}</span>
-          )}
-          <button onClick={() => { onClose(); setPaso('lista'); }} style={{ background:'none', border:'none', cursor:'pointer', fontSize:'1.3rem', color:'var(--ink-2)', padding:'4px' }}>✕</button>
+          {totalItems>0&&paso==='lista'&&<span style={{ fontSize:'0.75rem',color:'var(--ink-3)',marginRight:'12px' }}>{totalItems} {totalItems===1?'producto':'productos'}</span>}
+          <button onClick={()=>{onClose();setPaso('lista');}} style={{ background:'none',border:'none',cursor:'pointer',fontSize:'1.3rem',color:'var(--ink-2)',padding:'4px' }}>✕</button>
         </div>
-        <div style={{ flex:1, overflowY:'auto', padding:'20px 28px' }}>
-          {paso === 'lista' && (
-            carrito.length === 0
-              ? <div style={{ textAlign:'center', marginTop:'60px' }}><p style={{ fontSize:'2.5rem', marginBottom:'12px' }}>🛒</p><p style={{ color:'var(--ink-3)', fontSize:'0.9rem' }}>Tu carrito está vacío.</p></div>
-              : carrito.map(item => (
-                <div key={`${item.id}-${item.colorSeleccionado || ''}`} style={{ display:'flex', gap:'14px', alignItems:'center', paddingBlock:'16px', borderBottom:'1px solid var(--border)' }}>
-                  <div style={{ background:'var(--bg)', borderRadius:'12px', padding:'8px', flexShrink:0 }}>
-                    <img src={imgSrc(item.imagen_url)} alt={item.nombre} style={{ width:'52px', height:'52px', objectFit:'contain' }} />
+        <div style={{ flex:1,overflowY:'auto',padding:'20px 28px' }}>
+          {paso==='lista'&&(
+            carrito.length===0
+              ?<div style={{ textAlign:'center',marginTop:'60px' }}><p style={{ fontSize:'2.5rem',marginBottom:'12px' }}>🛒</p><p style={{ color:'var(--ink-3)',fontSize:'0.9rem' }}>Tu carrito está vacío.</p></div>
+              :carrito.map(item=>(
+                <div key={`${item.id}-${item.colorSeleccionado||''}`} style={{ display:'flex',gap:'14px',alignItems:'center',paddingBlock:'16px',borderBottom:'1px solid var(--border)' }}>
+                  <div style={{ background:'var(--bg)',borderRadius:'12px',padding:'8px',flexShrink:0 }}>
+                    <img src={imgSrc(item.imagen_url)} alt={item.nombre} style={{ width:'52px',height:'52px',objectFit:'contain' }}/>
                   </div>
-                  <div style={{ flex:1, minWidth:0 }}>
-                    <p style={{ fontSize:'0.85rem', fontWeight:600, marginBottom:'2px', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis', color:'var(--ink)' }}>{item.nombre}</p>
-                    {item.colorSeleccionado && (
-                      <p style={{ fontSize:'0.72rem', color:'var(--accent)', fontWeight:700, marginBottom:'4px' }}>Color: {item.colorSeleccionado}</p>
-                    )}
-                    <p style={{ fontSize:'0.82rem', color:'var(--ink-2)' }}>{moneda(item.precio * item.cantidad)}</p>
+                  <div style={{ flex:1,minWidth:0 }}>
+                    <p style={{ fontSize:'0.85rem',fontWeight:600,marginBottom:'2px',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',color:'var(--ink)' }}>{item.nombre}</p>
+                    {item.colorSeleccionado&&<p style={{ fontSize:'0.72rem',color:'var(--accent)',fontWeight:700,marginBottom:'4px' }}>Color: {item.colorSeleccionado}</p>}
+                    <p style={{ fontSize:'0.82rem',color:'var(--ink-2)' }}>{moneda(item.precio*item.cantidad)}</p>
                   </div>
-                  <Stepper value={item.cantidad} onAdd={() => onAdd(item)} onRemove={() => onRemove(item.id, item.colorSeleccionado)} onChange={(v) => onChangeQty(item.id, item.colorSeleccionado, v)} />
+                  <Stepper value={item.cantidad} onAdd={()=>onAdd(item)} onRemove={()=>onRemove(item.id,item.colorSeleccionado)} onChange={(v)=>onChangeQty(item.id,item.colorSeleccionado,v)}/>
                 </div>
               ))
           )}
-          {paso === 'envio' && (
-            <div style={{ display:'flex', flexDirection:'column', gap:'12px', marginTop:'4px' }}>
-              {[{key:'nombre',ph:'Nombre completo'},{key:'direccion',ph:'Dirección'},{key:'ciudad',ph:'Ciudad'},{key:'telefono',ph:'Teléfono'}].map(({ key, ph }) => (
-                <input key={key} className="form-input" placeholder={ph} value={datos[key]} onChange={e => setDatos(d => ({...d,[key]:e.target.value}))} />
+          {paso==='envio'&&(
+            <div style={{ display:'flex',flexDirection:'column',gap:'12px',marginTop:'4px' }}>
+              {[{key:'nombre',ph:'Nombre completo'},{key:'direccion',ph:'Dirección'},{key:'ciudad',ph:'Ciudad'},{key:'telefono',ph:'Teléfono'}].map(({key,ph})=>(
+                <input key={key} className="form-input" placeholder={ph} value={datos[key]} onChange={e=>setDatos(d=>({...d,[key]:e.target.value}))}/>
               ))}
             </div>
           )}
-          {paso === 'confirmado' && (
-            <div style={{ textAlign:'center', padding:'60px 16px' }}>
-              <div style={{ fontSize:'3.5rem', marginBottom:'16px' }}>✅</div>
-              <h3 style={{ fontFamily:'var(--font-display)', fontSize:'1.4rem', marginBottom:'8px', color:'var(--ink)' }}>Pedido enviado</h3>
-              <p style={{ color:'var(--ink-3)', fontSize:'0.9rem', marginBottom:'28px' }}>Te contactaremos pronto por WhatsApp.</p>
-              <button className="pill-btn pill-btn--ghost" onClick={() => { onClose(); setPaso('lista'); }} style={{ width:'100%', justifyContent:'center', padding:'14px' }}>Volver a la tienda</button>
+          {paso==='confirmado'&&(
+            <div style={{ textAlign:'center',padding:'60px 16px' }}>
+              <div style={{ fontSize:'3.5rem',marginBottom:'16px' }}>✅</div>
+              <h3 style={{ fontFamily:'var(--font-display)',fontSize:'1.4rem',marginBottom:'8px',color:'var(--ink)' }}>Pedido enviado</h3>
+              <p style={{ color:'var(--ink-3)',fontSize:'0.9rem',marginBottom:'28px' }}>Te contactaremos pronto por WhatsApp.</p>
+              <button className="pill-btn pill-btn--ghost" onClick={()=>{onClose();setPaso('lista');}} style={{ width:'100%',justifyContent:'center',padding:'14px' }}>Volver a la tienda</button>
             </div>
           )}
         </div>
-        {carrito.length > 0 && paso !== 'confirmado' && (
-          <div style={{ padding:'20px 28px', borderTop:'1px solid var(--border)', background:'var(--surface)' }}>
-            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'baseline', marginBottom:'16px' }}>
-              <span style={{ fontSize:'0.82rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.6px' }}>Total</span>
-              <span style={{ fontSize:'1.4rem', fontWeight:600, color:'var(--ink)' }}>{moneda(totalCompra)}</span>
+        {carrito.length>0&&paso!=='confirmado'&&(
+          <div style={{ padding:'20px 28px',borderTop:'1px solid var(--border)',background:'var(--surface)' }}>
+            <div style={{ display:'flex',justifyContent:'space-between',alignItems:'baseline',marginBottom:'16px' }}>
+              <span style={{ fontSize:'0.82rem',color:'var(--ink-3)',fontWeight:600,textTransform:'uppercase',letterSpacing:'0.6px' }}>Total</span>
+              <span style={{ fontSize:'1.4rem',fontWeight:600,color:'var(--ink)' }}>{moneda(totalCompra)}</span>
             </div>
             <button className={`pill-btn ${paso==='lista'?'pill-btn--accent':'pill-btn--green'}`}
-              onClick={paso==='lista' ? () => setPaso('envio') : enviarWhatsApp}
-              style={{ width:'100%', justifyContent:'center', padding:'15px', fontSize:'0.9rem' }}
+              onClick={paso==='lista'?()=>setPaso('envio'):enviarWhatsApp}
+              style={{ width:'100%',justifyContent:'center',padding:'15px',fontSize:'0.9rem' }}
             >
-              {paso==='lista' ? 'Continuar' : 'Pedir por WhatsApp →'}
+              {paso==='lista'?'Continuar':'Pedir por WhatsApp →'}
             </button>
           </div>
         )}
@@ -690,7 +768,7 @@ const CartPanel = ({ carrito, onClose, onAdd, onRemove, onChangeQty, totalCompra
 };
 
 /* ─────────────────────────────────────────────
-   REVIEWS INICIALES
+   REVIEWS
 ───────────────────────────────────────────── */
 const REVIEWS_INICIALES = [
   { id:'r1', nombre:'Valentina Ospina', avatar:'🐠', estrellas:5, fecha:'hace 2 días',    texto:'Llevo 3 años comprando en Distribuciones Ariza y nunca me han fallado. El Acuaprime es increíble, mis peces nunca han estado tan saludables. El envío fue súper rápido y el empaque llegó perfecto. ¡100% recomendado!', producto:'Acuaprime 120ml' },
@@ -701,162 +779,127 @@ const REVIEWS_INICIALES = [
   { id:'r6', nombre:'Santiago Gómez',   avatar:'🐠', estrellas:5, fecha:'hace 1 mes',     texto:'Pedí por WhatsApp y me respondieron en minutos. El proceso de compra fue muy fácil, el pago seguro y el producto llegó bien sellado y en perfecto estado. El Clarify hace exactamente lo que promete, agua como vidrio.', producto:'Clarify 20ml' },
 ];
 
-/* ─────────────────────────────────────────────
-   REVIEWS PANEL
-───────────────────────────────────────────── */
 const ReviewsPanel = ({ onClose, dark }) => {
   const avatares = ['🐠','🐡','🐟','🦈','🐙','🐬','🦑','🐹','🐾'];
-  const [reviews, setReviews]     = useState(REVIEWS_INICIALES);
-  const [cargando, setCargando]   = useState(true);
-  const [tab, setTab]             = useState('ver');
-  const [nombre, setNombre]       = useState('');
-  const [texto, setTexto]         = useState('');
-  const [producto, setProducto]   = useState('');
-  const [estrellas, setEstrellas] = useState(0);
-  const [hoverStar, setHoverStar] = useState(0);
-  const [enviado, setEnviado]     = useState(false);
-  const [error, setError]         = useState('');
+  const [reviews,setReviews]     = useState(REVIEWS_INICIALES);
+  const [cargando,setCargando]   = useState(true);
+  const [tab,setTab]             = useState('ver');
+  const [nombre,setNombre]       = useState('');
+  const [texto,setTexto]         = useState('');
+  const [producto,setProducto]   = useState('');
+  const [estrellas,setEstrellas] = useState(0);
+  const [hoverStar,setHoverStar] = useState(0);
+  const [enviado,setEnviado]     = useState(false);
+  const [error,setError]         = useState('');
 
-  useEffect(() => {
+  useEffect(()=>{
     setCargando(true);
     axios.get(`${BACKEND}/api/resenas`)
-      .then(r => {
-        const backendIds = new Set(r.data.map(rev => String(rev.id)));
-        const sinDup = REVIEWS_INICIALES.filter(rev => !backendIds.has(String(rev.id)));
-        const backendFormateadas = r.data.map(rev => ({
-          id:        String(rev.id),
-          nombre:    rev.autor,
-          avatar:    avatares[Math.floor(Math.random() * avatares.length)],
-          estrellas: rev.calificacion,
-          fecha:     new Date(rev.creado_en).toLocaleDateString('es-CO', { day:'numeric', month:'short', year:'numeric' }),
-          texto:     rev.comentario,
-          producto:  rev.producto_nombre || 'Producto general',
+      .then(r=>{
+        const backendIds = new Set(r.data.map(rev=>String(rev.id)));
+        const sinDup = REVIEWS_INICIALES.filter(rev=>!backendIds.has(String(rev.id)));
+        const backendFormateadas = r.data.map(rev=>({
+          id:String(rev.id), nombre:rev.autor,
+          avatar:avatares[Math.floor(Math.random()*avatares.length)],
+          estrellas:rev.calificacion,
+          fecha:new Date(rev.creado_en).toLocaleDateString('es-CO',{day:'numeric',month:'short',year:'numeric'}),
+          texto:rev.comentario, producto:rev.producto_nombre||'Producto general',
         }));
-        setReviews([...backendFormateadas, ...sinDup]);
+        setReviews([...backendFormateadas,...sinDup]);
       })
-      .catch(() => { setReviews(REVIEWS_INICIALES); })
-      .finally(() => setCargando(false));
-  }, []);
+      .catch(()=>setReviews(REVIEWS_INICIALES))
+      .finally(()=>setCargando(false));
+  },[]);
 
-  const handleSubmit = async () => {
-    if (!nombre.trim())           return setError('Por favor ingresa tu nombre.');
-    if (estrellas === 0)          return setError('Por favor selecciona una calificación.');
-    if (texto.trim().length < 10) return setError('Escribe un comentario más detallado (mínimo 10 caracteres).');
+  const handleSubmit = async()=>{
+    if(!nombre.trim())           return setError('Por favor ingresa tu nombre.');
+    if(estrellas===0)            return setError('Por favor selecciona una calificación.');
+    if(texto.trim().length<10)   return setError('Escribe un comentario más detallado (mínimo 10 caracteres).');
     setError('');
     try {
-      const res = await axios.post(`${BACKEND}/api/resenas`, {
-        producto_id:     1,
-        producto_nombre: producto.trim() || 'Producto general',
-        autor:           nombre.trim(),
-        calificacion:    estrellas,
-        comentario:      texto.trim(),
+      const res = await axios.post(`${BACKEND}/api/resenas`,{
+        producto_id:1, producto_nombre:producto.trim()||'Producto general',
+        autor:nombre.trim(), calificacion:estrellas, comentario:texto.trim(),
       });
-      const nueva = {
-        id:        String(res.data.id),
-        nombre:    nombre.trim(),
-        avatar:    avatares[Math.floor(Math.random() * avatares.length)],
-        estrellas,
-        fecha:     'justo ahora',
-        texto:     texto.trim(),
-        producto:  producto.trim() || 'Producto general',
-      };
-      setReviews(prev => [nueva, ...prev]);
+      const nueva = { id:String(res.data.id), nombre:nombre.trim(), avatar:avatares[Math.floor(Math.random()*avatares.length)], estrellas, fecha:'justo ahora', texto:texto.trim(), producto:producto.trim()||'Producto general' };
+      setReviews(prev=>[nueva,...prev]);
       setNombre(''); setTexto(''); setProducto(''); setEstrellas(0);
-      setEnviado(true);
-      setTab('ver');
-      setTimeout(() => setEnviado(false), 4000);
-    } catch {
-      setError('No se pudo publicar la reseña. Verificá tu conexión.');
-    }
+      setEnviado(true); setTab('ver');
+      setTimeout(()=>setEnviado(false),4000);
+    } catch { setError('No se pudo publicar la reseña. Verificá tu conexión.'); }
   };
 
-  const promedio = reviews.length > 0
-    ? (reviews.reduce((s, r) => s + r.estrellas, 0) / reviews.length).toFixed(1)
-    : '5.0';
+  const promedio = reviews.length>0?(reviews.reduce((s,r)=>s+r.estrellas,0)/reviews.length).toFixed(1):'5.0';
 
   return (
     <>
-      <div onClick={onClose} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.3)', zIndex:1500 }} />
-      <div className="panel" style={{ position:'fixed', top:0, right:0, width:'100%', maxWidth:'420px', height:'100%', background:'var(--surface)', zIndex:2000, display:'flex', flexDirection:'column' }}>
-        <div style={{ padding:'24px 28px 0', borderBottom:'1px solid var(--border)' }}>
-          <div style={{ display:'flex', alignItems:'center', marginBottom:'16px' }}>
-            <h2 style={{ fontFamily:'var(--font-display)', fontSize:'1.25rem', fontWeight:700, color:'var(--ink)', flex:1 }}>Reseñas</h2>
-            <div style={{ display:'flex', alignItems:'center', gap:'6px', marginRight:'16px' }}>
-              <span style={{ fontSize:'1rem', fontWeight:700, color:'var(--ink)' }}>{promedio}</span>
-              <span style={{ fontSize:'0.9rem', color:'var(--gold)' }}>★</span>
-              <span style={{ fontSize:'0.72rem', color:'var(--ink-3)' }}>({reviews.length})</span>
+      <div onClick={onClose} style={{ position:'fixed',inset:0,background:'rgba(0,0,0,0.3)',zIndex:1500 }}/>
+      <div className="panel" style={{ position:'fixed',top:0,right:0,width:'100%',maxWidth:'420px',height:'100%',background:'var(--surface)',zIndex:2000,display:'flex',flexDirection:'column' }}>
+        <div style={{ padding:'24px 28px 0',borderBottom:'1px solid var(--border)' }}>
+          <div style={{ display:'flex',alignItems:'center',marginBottom:'16px' }}>
+            <h2 style={{ fontFamily:'var(--font-display)',fontSize:'1.25rem',fontWeight:700,color:'var(--ink)',flex:1 }}>Reseñas</h2>
+            <div style={{ display:'flex',alignItems:'center',gap:'6px',marginRight:'16px' }}>
+              <span style={{ fontSize:'1rem',fontWeight:700,color:'var(--ink)' }}>{promedio}</span>
+              <span style={{ fontSize:'0.9rem',color:'var(--gold)' }}>★</span>
+              <span style={{ fontSize:'0.72rem',color:'var(--ink-3)' }}>({reviews.length})</span>
             </div>
-            <button onClick={onClose} style={{ background:'none', border:'none', cursor:'pointer', fontSize:'1.3rem', color:'var(--ink-2)', padding:'4px' }}>✕</button>
+            <button onClick={onClose} style={{ background:'none',border:'none',cursor:'pointer',fontSize:'1.3rem',color:'var(--ink-2)',padding:'4px' }}>✕</button>
           </div>
-          <div style={{ display:'flex', gap:'4px', marginBottom:'-1px' }}>
-            {[{ key:'ver', label:`💬 Leer (${reviews.length})` }, { key:'escribir', label:'✏️ Escribir' }].map(t => (
-              <button key={t.key} className="review-tab" onClick={() => setTab(t.key)} style={{ padding:'10px 18px', border:'none', cursor:'pointer', fontFamily:'var(--font-body)', fontSize:'0.8rem', fontWeight:600, background:'none', color: tab===t.key ? 'var(--accent)' : 'var(--ink-3)', borderBottom: tab===t.key ? '2px solid var(--accent)' : '2px solid transparent' }}>
+          <div style={{ display:'flex',gap:'4px',marginBottom:'-1px' }}>
+            {[{key:'ver',label:`💬 Leer (${reviews.length})`},{key:'escribir',label:'✏️ Escribir'}].map(t=>(
+              <button key={t.key} className="review-tab" onClick={()=>setTab(t.key)} style={{ padding:'10px 18px',border:'none',cursor:'pointer',fontFamily:'var(--font-body)',fontSize:'0.8rem',fontWeight:600,background:'none',color:tab===t.key?'var(--accent)':'var(--ink-3)',borderBottom:tab===t.key?'2px solid var(--accent)':'2px solid transparent' }}>
                 {t.label}
               </button>
             ))}
           </div>
         </div>
-        <div style={{ flex:1, overflowY:'auto', padding:'20px 28px' }}>
-          {tab === 'ver' && (
+        <div style={{ flex:1,overflowY:'auto',padding:'20px 28px' }}>
+          {tab==='ver'&&(
             <>
-              <div style={{ background:'var(--bg)', borderRadius:'16px', padding:'18px 20px', marginBottom:'20px', display:'flex', gap:'20px', alignItems:'center' }}>
-                <div style={{ textAlign:'center', flexShrink:0 }}>
-                  <p style={{ fontFamily:'var(--font-display)', fontSize:'2.6rem', fontWeight:700, color:'var(--ink)', lineHeight:1 }}>{promedio}</p>
-                  <div style={{ display:'flex', gap:'2px', justifyContent:'center', margin:'5px 0' }}>
-                    {[1,2,3,4,5].map(s => (
-                      <span key={s} style={{ fontSize:'0.9rem', color: s <= Math.round(promedio) ? 'var(--gold)' : 'var(--ink-3)' }}>★</span>
-                    ))}
+              <div style={{ background:'var(--bg)',borderRadius:'16px',padding:'18px 20px',marginBottom:'20px',display:'flex',gap:'20px',alignItems:'center' }}>
+                <div style={{ textAlign:'center',flexShrink:0 }}>
+                  <p style={{ fontFamily:'var(--font-display)',fontSize:'2.6rem',fontWeight:700,color:'var(--ink)',lineHeight:1 }}>{promedio}</p>
+                  <div style={{ display:'flex',gap:'2px',justifyContent:'center',margin:'5px 0' }}>
+                    {[1,2,3,4,5].map(s=><span key={s} style={{ fontSize:'0.9rem',color:s<=Math.round(promedio)?'var(--gold)':'var(--ink-3)' }}>★</span>)}
                   </div>
-                  <p style={{ fontSize:'0.65rem', color:'var(--ink-3)', fontWeight:600 }}>{reviews.length} reseñas</p>
+                  <p style={{ fontSize:'0.65rem',color:'var(--ink-3)',fontWeight:600 }}>{reviews.length} reseñas</p>
                 </div>
                 <div style={{ flex:1 }}>
-                  {[5,4,3,2,1].map(s => {
-                    const count = reviews.filter(r => r.estrellas === s).length;
-                    const pct   = reviews.length > 0 ? Math.round((count / reviews.length) * 100) : 0;
-                    return (
-                      <div key={s} style={{ display:'flex', alignItems:'center', gap:'6px', marginBottom:'4px' }}>
-                        <span style={{ fontSize:'0.68rem', color:'var(--ink-3)', width:'7px', textAlign:'right' }}>{s}</span>
-                        <span style={{ fontSize:'0.65rem', color:'var(--gold)' }}>★</span>
-                        <div style={{ flex:1, height:'5px', background:'var(--border)', borderRadius:'99px', overflow:'hidden' }}>
-                          <div style={{ width:`${pct}%`, height:'100%', background:'var(--gold)', borderRadius:'99px' }} />
+                  {[5,4,3,2,1].map(s=>{
+                    const count=reviews.filter(r=>r.estrellas===s).length;
+                    const pct=reviews.length>0?Math.round((count/reviews.length)*100):0;
+                    return(
+                      <div key={s} style={{ display:'flex',alignItems:'center',gap:'6px',marginBottom:'4px' }}>
+                        <span style={{ fontSize:'0.68rem',color:'var(--ink-3)',width:'7px',textAlign:'right' }}>{s}</span>
+                        <span style={{ fontSize:'0.65rem',color:'var(--gold)' }}>★</span>
+                        <div style={{ flex:1,height:'5px',background:'var(--border)',borderRadius:'99px',overflow:'hidden' }}>
+                          <div style={{ width:`${pct}%`,height:'100%',background:'var(--gold)',borderRadius:'99px' }}/>
                         </div>
-                        <span style={{ fontSize:'0.62rem', color:'var(--ink-3)', width:'22px' }}>{count}</span>
+                        <span style={{ fontSize:'0.62rem',color:'var(--ink-3)',width:'22px' }}>{count}</span>
                       </div>
                     );
                   })}
                 </div>
               </div>
-              {enviado && (
-                <div style={{ background:'rgba(34,197,94,0.1)', border:'1px solid rgba(34,197,94,0.3)', borderRadius:'12px', padding:'12px 16px', marginBottom:'16px', fontSize:'0.82rem', color:'#16a34a', display:'flex', alignItems:'center', gap:'8px' }}>
-                  ✅ ¡Gracias! Tu reseña ya está publicada y visible para todos.
-                </div>
-              )}
-              {cargando ? (
-                <div style={{ display:'flex', justifyContent:'center', padding:'40px 0' }}>
-                  <div className="loader-ring" />
-                </div>
-              ) : (
-                <div style={{ display:'flex', flexDirection:'column', gap:'14px' }}>
-                  {reviews.map((r, i) => (
-                    <div key={r.id} className="fade-up" style={{ background:'var(--card-bg)', borderRadius:'16px', padding:'18px 20px', border:'1px solid var(--border)', animationDelay:`${i * 0.04}s` }}>
-                      <div style={{ display:'flex', alignItems:'center', gap:'10px', marginBottom:'10px' }}>
-                        <div style={{ width:'38px', height:'38px', borderRadius:'50%', background: dark ? 'rgba(255,255,255,0.08)' : '#f0f0ee', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'1.25rem', flexShrink:0 }}>
-                          {r.avatar}
+              {enviado&&<div style={{ background:'rgba(34,197,94,0.1)',border:'1px solid rgba(34,197,94,0.3)',borderRadius:'12px',padding:'12px 16px',marginBottom:'16px',fontSize:'0.82rem',color:'#16a34a',display:'flex',alignItems:'center',gap:'8px' }}>✅ ¡Gracias! Tu reseña ya está publicada.</div>}
+              {cargando?<div style={{ display:'flex',justifyContent:'center',padding:'40px 0' }}><div className="loader-ring"/></div>:(
+                <div style={{ display:'flex',flexDirection:'column',gap:'14px' }}>
+                  {reviews.map((r,i)=>(
+                    <div key={r.id} className="fade-up" style={{ background:'var(--card-bg)',borderRadius:'16px',padding:'18px 20px',border:'1px solid var(--border)',animationDelay:`${i*0.04}s` }}>
+                      <div style={{ display:'flex',alignItems:'center',gap:'10px',marginBottom:'10px' }}>
+                        <div style={{ width:'38px',height:'38px',borderRadius:'50%',background:dark?'rgba(255,255,255,0.08)':'#f0f0ee',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'1.25rem',flexShrink:0 }}>{r.avatar}</div>
+                        <div style={{ flex:1,minWidth:0 }}>
+                          <p style={{ fontWeight:600,fontSize:'0.85rem',color:'var(--ink)',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis' }}>{r.nombre}</p>
+                          <p style={{ fontSize:'0.64rem',color:'var(--ink-3)',marginTop:'1px' }}>{r.fecha}</p>
                         </div>
-                        <div style={{ flex:1, minWidth:0 }}>
-                          <p style={{ fontWeight:600, fontSize:'0.85rem', color:'var(--ink)', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{r.nombre}</p>
-                          <p style={{ fontSize:'0.64rem', color:'var(--ink-3)', marginTop:'1px' }}>{r.fecha}</p>
-                        </div>
-                        <div style={{ display:'flex', gap:'1px', flexShrink:0 }}>
-                          {[1,2,3,4,5].map(s => (
-                            <span key={s} style={{ fontSize:'0.72rem', color: s <= r.estrellas ? 'var(--gold)' : 'var(--ink-3)' }}>★</span>
-                          ))}
+                        <div style={{ display:'flex',gap:'1px',flexShrink:0 }}>
+                          {[1,2,3,4,5].map(s=><span key={s} style={{ fontSize:'0.72rem',color:s<=r.estrellas?'var(--gold)':'var(--ink-3)' }}>★</span>)}
                         </div>
                       </div>
-                      <p style={{ fontSize:'0.83rem', color:'var(--ink-2)', lineHeight:1.65, marginBottom:'10px' }}>"{r.texto}"</p>
-                      <div style={{ display:'inline-flex', alignItems:'center', gap:'4px', background: dark ? 'rgba(26,92,255,0.15)' : 'rgba(26,92,255,0.07)', borderRadius:'99px', padding:'3px 9px' }}>
+                      <p style={{ fontSize:'0.83rem',color:'var(--ink-2)',lineHeight:1.65,marginBottom:'10px' }}>"{r.texto}"</p>
+                      <div style={{ display:'inline-flex',alignItems:'center',gap:'4px',background:dark?'rgba(26,92,255,0.15)':'rgba(26,92,255,0.07)',borderRadius:'99px',padding:'3px 9px' }}>
                         <span style={{ fontSize:'0.55rem' }}>🛒</span>
-                        <span style={{ fontSize:'0.64rem', fontWeight:600, color:'var(--accent)' }}>{r.producto}</span>
+                        <span style={{ fontSize:'0.64rem',fontWeight:600,color:'var(--accent)' }}>{r.producto}</span>
                       </div>
                     </div>
                   ))}
@@ -864,52 +907,36 @@ const ReviewsPanel = ({ onClose, dark }) => {
               )}
             </>
           )}
-          {tab === 'escribir' && (
+          {tab==='escribir'&&(
             <div>
               <div style={{ marginBottom:'20px' }}>
-                <p style={{ fontSize:'0.72rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.7px', marginBottom:'10px' }}>Tu calificación *</p>
-                <div style={{ display:'flex', gap:'8px', alignItems:'center' }}>
-                  {[1,2,3,4,5].map(s => (
-                    <span key={s} className="star"
-                      style={{ fontSize:'2rem', color:(hoverStar||estrellas) >= s ? 'var(--gold)' : 'var(--ink-3)', cursor:'pointer', lineHeight:1 }}
-                      onMouseEnter={() => setHoverStar(s)} onMouseLeave={() => setHoverStar(0)} onClick={() => setEstrellas(s)}
+                <p style={{ fontSize:'0.72rem',color:'var(--ink-3)',fontWeight:600,textTransform:'uppercase',letterSpacing:'0.7px',marginBottom:'10px' }}>Tu calificación *</p>
+                <div style={{ display:'flex',gap:'8px',alignItems:'center' }}>
+                  {[1,2,3,4,5].map(s=>(
+                    <span key={s} className="star" style={{ fontSize:'2rem',color:(hoverStar||estrellas)>=s?'var(--gold)':'var(--ink-3)',cursor:'pointer',lineHeight:1 }}
+                      onMouseEnter={()=>setHoverStar(s)} onMouseLeave={()=>setHoverStar(0)} onClick={()=>setEstrellas(s)}
                     >★</span>
                   ))}
-                  {estrellas > 0 && (
-                    <span style={{ fontSize:'0.78rem', color:'var(--ink-3)', marginLeft:'4px' }}>
-                      {['','Malo 😕','Regular 😐','Bueno 🙂','Muy bueno 😊','¡Excelente! 🤩'][estrellas]}
-                    </span>
-                  )}
+                  {estrellas>0&&<span style={{ fontSize:'0.78rem',color:'var(--ink-3)',marginLeft:'4px' }}>{['','Malo 😕','Regular 😐','Bueno 🙂','Muy bueno 😊','¡Excelente! 🤩'][estrellas]}</span>}
                 </div>
               </div>
-              <div style={{ display:'flex', flexDirection:'column', gap:'14px', marginBottom:'16px' }}>
+              <div style={{ display:'flex',flexDirection:'column',gap:'14px',marginBottom:'16px' }}>
                 <div>
-                  <p style={{ fontSize:'0.72rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.7px', marginBottom:'6px' }}>Tu nombre *</p>
-                  <input className="form-input" placeholder="Ej: María González" value={nombre} onChange={e => setNombre(e.target.value)} />
+                  <p style={{ fontSize:'0.72rem',color:'var(--ink-3)',fontWeight:600,textTransform:'uppercase',letterSpacing:'0.7px',marginBottom:'6px' }}>Tu nombre *</p>
+                  <input className="form-input" placeholder="Ej: María González" value={nombre} onChange={e=>setNombre(e.target.value)}/>
                 </div>
                 <div>
-                  <p style={{ fontSize:'0.72rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.7px', marginBottom:'6px' }}>Producto (opcional)</p>
-                  <input className="form-input" placeholder="Ej: Acuaprime 120ml" value={producto} onChange={e => setProducto(e.target.value)} />
+                  <p style={{ fontSize:'0.72rem',color:'var(--ink-3)',fontWeight:600,textTransform:'uppercase',letterSpacing:'0.7px',marginBottom:'6px' }}>Producto (opcional)</p>
+                  <input className="form-input" placeholder="Ej: Acuaprime 120ml" value={producto} onChange={e=>setProducto(e.target.value)}/>
                 </div>
                 <div>
-                  <p style={{ fontSize:'0.72rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.7px', marginBottom:'6px' }}>Tu comentario *</p>
-                  <textarea className="form-input" placeholder="Cuéntanos tu experiencia con el producto o la tienda..."
-                    value={texto} onChange={e => setTexto(e.target.value)} rows={5}
-                    style={{ resize:'vertical', minHeight:'110px', lineHeight:1.6 }}
-                  />
-                  <p style={{ fontSize:'0.65rem', color: texto.length < 10 && texto.length > 0 ? '#ef4444' : 'var(--ink-3)', marginTop:'4px', textAlign:'right' }}>
-                    {texto.length} / mínimo 10 caracteres
-                  </p>
+                  <p style={{ fontSize:'0.72rem',color:'var(--ink-3)',fontWeight:600,textTransform:'uppercase',letterSpacing:'0.7px',marginBottom:'6px' }}>Tu comentario *</p>
+                  <textarea className="form-input" placeholder="Cuéntanos tu experiencia…" value={texto} onChange={e=>setTexto(e.target.value)} rows={5} style={{ resize:'vertical',minHeight:'110px',lineHeight:1.6 }}/>
+                  <p style={{ fontSize:'0.65rem',color:texto.length<10&&texto.length>0?'#ef4444':'var(--ink-3)',marginTop:'4px',textAlign:'right' }}>{texto.length} / mínimo 10 caracteres</p>
                 </div>
               </div>
-              {error && (
-                <div style={{ background:'rgba(239,68,68,0.1)', border:'1px solid rgba(239,68,68,0.3)', borderRadius:'10px', padding:'10px 14px', marginBottom:'14px', fontSize:'0.82rem', color:'#ef4444' }}>
-                  {error}
-                </div>
-              )}
-              <button className="pill-btn pill-btn--accent" onClick={handleSubmit} style={{ width:'100%', justifyContent:'center', padding:'14px', fontSize:'0.9rem' }}>
-                Publicar reseña
-              </button>
+              {error&&<div style={{ background:'rgba(239,68,68,0.1)',border:'1px solid rgba(239,68,68,0.3)',borderRadius:'10px',padding:'10px 14px',marginBottom:'14px',fontSize:'0.82rem',color:'#ef4444' }}>{error}</div>}
+              <button className="pill-btn pill-btn--accent" onClick={handleSubmit} style={{ width:'100%',justifyContent:'center',padding:'14px',fontSize:'0.9rem' }}>Publicar reseña</button>
             </div>
           )}
         </div>
@@ -919,331 +946,170 @@ const ReviewsPanel = ({ onClose, dark }) => {
 };
 
 /* ─────────────────────────────────────────────
-   ADMIN PANEL (Autenticación segura con JWT)
-───────────────────────────────────────────── */
-/* ─────────────────────────────────────────────
-   ADMIN PANEL (Autenticación segura con JWT)
+   ADMIN PANEL
 ───────────────────────────────────────────── */
 const AdminPanel = ({ onClose, productos, onRefresh }) => {
-  const [auth, setAuth] = useState(false);
-  const [token, setToken] = useState('');
-  const [pass, setPass] = useState('');
-  const [modo, setModo] = useState('lista'); 
-  const [selected, setSelected] = useState(null);
-  const [successMsg, setSuccessMsg] = useState('');
-  const [loginLoading, setLoginLoading] = useState(false);
-  const [busquedaAdmin, setBusquedaAdmin] = useState(''); // 👈 NUEVO
-  
-  const [nombre, setNombre] = useState('');
-  const [desc, setDesc] = useState('');
-  const [precio, setPrecio] = useState('');
-  const [stock, setStock] = useState('0');
-  const [cat, setCat] = useState('1');
-  const [imagen, setImagen] = useState(null);
-  const [error, setError] = useState('');
-  const [cargando, setCargando] = useState(false);
+  const [auth,setAuth]           = useState(false);
+  const [token,setToken]         = useState('');
+  const [pass,setPass]           = useState('');
+  const [modo,setModo]           = useState('lista');
+  const [selected,setSelected]   = useState(null);
+  const [successMsg,setSuccessMsg]= useState('');
+  const [loginLoading,setLoginLoading]= useState(false);
+  const [busquedaAdmin,setBusquedaAdmin]= useState('');
+  const [nombre,setNombre]       = useState('');
+  const [desc,setDesc]           = useState('');
+  const [precio,setPrecio]       = useState('');
+  const [stock,setStock]         = useState('0');
+  const [cat,setCat]             = useState('1');
+  const [imagen,setImagen]       = useState(null);
+  const [error,setError]         = useState('');
+  const [cargando,setCargando]   = useState(false);
 
-  // Restaurar sesión existente al montar
-  useEffect(() => {
+  useEffect(()=>{
     const savedToken = sessionStorage.getItem('admin_token');
-    if (savedToken) {
-      axios.get(`${BACKEND}/api/auth/verify`, {
-        headers: { 'Authorization': `Bearer ${savedToken}` }
-      }).then(() => {
-        setToken(savedToken);
-        setAuth(true);
-      }).catch(() => {
-        sessionStorage.removeItem('admin_token');
-      });
+    if(savedToken){
+      axios.get(`${BACKEND}/api/auth/verify`,{headers:{'Authorization':`Bearer ${savedToken}`}})
+        .then(()=>{ setToken(savedToken); setAuth(true); })
+        .catch(()=>sessionStorage.removeItem('admin_token'));
     }
-  }, []);
+  },[]);
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setLoginLoading(true);
-    setError('');
-    
+  const handleLogin = async(e)=>{
+    e.preventDefault(); setLoginLoading(true); setError('');
     try {
-      const res = await axios.post(`${BACKEND}/api/auth/login`, { password: pass });
+      const res = await axios.post(`${BACKEND}/api/auth/login`,{password:pass});
       const jwt = res.data.token;
-      setToken(jwt);
-      sessionStorage.setItem('admin_token', jwt);
-      setAuth(true);
-      setPass('');
-    } catch (err) {
+      setToken(jwt); sessionStorage.setItem('admin_token',jwt); setAuth(true); setPass('');
+    } catch(err){
       const data = err.response?.data;
-      if (data?.code === 'RATE_LIMITED') {
-        setError('🔒 Demasiados intentos. Intenta de nuevo en 15 minutos.');
-      } else if (err.response?.status === 401) {
-        setError('❌ Contraseña incorrecta.');
-      } else {
-        setError('Error de conexión. Intenta de nuevo.');
-      }
-    } finally {
-      setLoginLoading(false);
-    }
+      if(data?.code==='RATE_LIMITED') setError('🔒 Demasiados intentos. Intenta de nuevo en 15 minutos.');
+      else if(err.response?.status===401) setError('❌ Contraseña incorrecta.');
+      else setError('Error de conexión. Intenta de nuevo.');
+    } finally { setLoginLoading(false); }
   };
 
-  const handleLogout = () => {
-    setAuth(false);
-    setToken('');
-    setPass('');
-    sessionStorage.removeItem('admin_token');
-    setModo('lista');
-  };
-
-  // Helper para headers con JWT
-  const authHeaders = () => ({ 'Authorization': `Bearer ${token}` });
-
-  // Manejar errores de autenticación (sesión expirada, etc.)
-  const handleAuthError = (err) => {
-    if (err.response?.status === 401) {
-      const code = err.response?.data?.code;
-      if (code === 'TOKEN_EXPIRED') {
-        setError('⏰ Tu sesión ha expirado. Inicia sesión nuevamente.');
-      } else {
-        setError('🔒 Sesión inválida. Inicia sesión nuevamente.');
-      }
-      handleLogout();
-      return true;
-    }
+  const handleLogout = ()=>{ setAuth(false); setToken(''); setPass(''); sessionStorage.removeItem('admin_token'); setModo('lista'); };
+  const authHeaders  = ()=>({'Authorization':`Bearer ${token}`});
+  const handleAuthError = (err)=>{
+    if(err.response?.status===401){ setError('🔒 Sesión inválida.'); handleLogout(); return true; }
     return false;
   };
 
-  const handleEdit = (p) => {
-    setSelected(p);
-    setNombre(p.nombre);
-    setDesc(p.descripcion);
-    setPrecio(p.precio);
-    setStock(p.stock !== undefined ? p.stock : 0);
-    setCat(p.categoria_id);
-    setImagen(null);
-    setModo('editar');
-  };
+  const handleEdit = (p)=>{ setSelected(p); setNombre(p.nombre); setDesc(p.descripcion); setPrecio(p.precio); setStock(p.stock!==undefined?p.stock:0); setCat(p.categoria_id); setImagen(null); setModo('editar'); };
+  const handleNew  = ()=>{ setSelected(null); setNombre(''); setDesc(''); setPrecio(''); setStock('0'); setCat('1'); setImagen(null); setModo('nuevo'); };
 
-  const handleNew = () => {
-    setSelected(null);
-    setNombre('');
-    setDesc('');
-    setPrecio('');
-    setStock('0');
-    setCat('1');
-    setImagen(null);
-    setModo('nuevo');
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setCargando(true);
-    setError('');
-    
+  const handleSubmit = async(e)=>{
+    e.preventDefault(); setCargando(true); setError('');
     const formData = new FormData();
-    formData.append('nombre', nombre);
-    formData.append('descripcion', desc);
-    formData.append('precio', precio.toString().replace(',', '.'));
-    formData.append('stock', stock);
-    formData.append('categoria_id', cat);
-    if (imagen) formData.append('imagen', imagen);
-
+    formData.append('nombre',nombre); formData.append('descripcion',desc);
+    formData.append('precio',precio.toString().replace(',','.')); formData.append('stock',stock);
+    formData.append('categoria_id',cat); if(imagen) formData.append('imagen',imagen);
     try {
-      if (modo === 'nuevo') {
-        await axios.post(`${BACKEND}/api/productos`, formData, {
-          headers: authHeaders()
-        });
-        setSuccessMsg('¡Producto creado con éxito!');
-      } else {
-        await axios.put(`${BACKEND}/api/productos/${selected.id}`, formData, {
-          headers: authHeaders()
-        });
-        setSuccessMsg('¡Producto actualizado con éxito!');
-      }
-      onRefresh();
-      setModo('lista');
-      setTimeout(() => setSuccessMsg(''), 4000);
-    } catch (err) {
-      if (!handleAuthError(err)) {
-        setError('Error al guardar el producto');
-      }
-    } finally {
-      setCargando(false);
-    }
+      if(modo==='nuevo'){ await axios.post(`${BACKEND}/api/productos`,formData,{headers:authHeaders()}); setSuccessMsg('¡Producto creado con éxito!'); }
+      else { await axios.put(`${BACKEND}/api/productos/${selected.id}`,formData,{headers:authHeaders()}); setSuccessMsg('¡Producto actualizado!'); }
+      onRefresh(); setModo('lista'); setTimeout(()=>setSuccessMsg(''),4000);
+    } catch(err){ if(!handleAuthError(err)) setError('Error al guardar el producto'); }
+    finally { setCargando(false); }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('¿Seguro que quieres ocultar/eliminar este producto?')) return;
-    try {
-      await axios.delete(`${BACKEND}/api/productos/${id}`, {
-        headers: authHeaders()
-      });
-      onRefresh();
-    } catch (err) {
-      if (!handleAuthError(err)) {
-        alert('Error al eliminar');
-      }
-    }
+  const handleDelete = async(id)=>{
+    if(!window.confirm('¿Seguro que quieres eliminar este producto?')) return;
+    try { await axios.delete(`${BACKEND}/api/productos/${id}`,{headers:authHeaders()}); onRefresh(); }
+    catch(err){ if(!handleAuthError(err)) alert('Error al eliminar'); }
   };
 
-  // 👇 PRODUCTOS FILTRADOS
-  const productosFiltrados = productos.filter(p =>
-    normaliza(p.nombre).includes(normaliza(busquedaAdmin))
-  );
+  const productosFiltrados = productos.filter(p=>normaliza(p.nombre).includes(normaliza(busquedaAdmin)));
 
   return (
     <>
-      <div onClick={onClose} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.5)', zIndex:4000 }} />
-      <div className="panel" style={{ position:'fixed', top:0, right:0, width:'100%', maxWidth:'600px', height:'100%', background:'var(--surface)', zIndex:4001, display:'flex', flexDirection:'column', overflowY:'auto' }}>
-        <div style={{ padding:'24px 28px', borderBottom:'1px solid var(--border)', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-          <h2 style={{ fontFamily:'var(--font-display)', fontSize:'1.4rem', fontWeight:700, color:'var(--ink)' }}>Panel Admin</h2>
-          <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
-            {auth && (
-              <button onClick={handleLogout} className="pill-btn pill-btn--ghost" style={{ padding:'6px 14px', fontSize:'0.7rem', color:'#ef4444' }}>
-                Cerrar sesión
-              </button>
-            )}
-            <button onClick={onClose} style={{ background:'none', border:'none', fontSize:'1.4rem', cursor:'pointer', color:'var(--ink)', padding:'4px' }}>✕</button>
+      <div onClick={onClose} style={{ position:'fixed',inset:0,background:'rgba(0,0,0,0.5)',zIndex:4000 }}/>
+      <div className="panel" style={{ position:'fixed',top:0,right:0,width:'100%',maxWidth:'600px',height:'100%',background:'var(--surface)',zIndex:4001,display:'flex',flexDirection:'column',overflowY:'auto' }}>
+        <div style={{ padding:'24px 28px',borderBottom:'1px solid var(--border)',display:'flex',justifyContent:'space-between',alignItems:'center' }}>
+          <h2 style={{ fontFamily:'var(--font-display)',fontSize:'1.4rem',fontWeight:700,color:'var(--ink)' }}>Panel Admin</h2>
+          <div style={{ display:'flex',alignItems:'center',gap:'10px' }}>
+            {auth&&<button onClick={handleLogout} className="pill-btn pill-btn--ghost" style={{ padding:'6px 14px',fontSize:'0.7rem',color:'#ef4444' }}>Cerrar sesión</button>}
+            <button onClick={onClose} style={{ background:'none',border:'none',fontSize:'1.4rem',cursor:'pointer',color:'var(--ink)',padding:'4px' }}>✕</button>
           </div>
         </div>
-
-        <div style={{ padding:'24px 28px', flex:1 }}>
-          {!auth ? (
-            <form onSubmit={handleLogin} style={{ display:'flex', flexDirection:'column', gap:'16px', maxWidth:'320px', margin:'40px auto' }}>
-              <div style={{ textAlign:'center', marginBottom:'8px' }}>
-                <div style={{ fontSize:'2.5rem', marginBottom:'12px' }}>🔐</div>
-                <h3 style={{ color:'var(--ink)', fontFamily:'var(--font-display)', fontSize:'1.2rem', marginBottom:'4px' }}>Acceso Administrativo</h3>
-                <p style={{ color:'var(--ink-3)', fontSize:'0.78rem' }}>Ingresa tu contraseña para gestionar productos</p>
+        <div style={{ padding:'24px 28px',flex:1 }}>
+          {!auth?(
+            <form onSubmit={handleLogin} style={{ display:'flex',flexDirection:'column',gap:'16px',maxWidth:'320px',margin:'40px auto' }}>
+              <div style={{ textAlign:'center',marginBottom:'8px' }}>
+                <div style={{ fontSize:'2.5rem',marginBottom:'12px' }}>🔐</div>
+                <h3 style={{ color:'var(--ink)',fontFamily:'var(--font-display)',fontSize:'1.2rem',marginBottom:'4px' }}>Acceso Administrativo</h3>
+                <p style={{ color:'var(--ink-3)',fontSize:'0.78rem' }}>Ingresa tu contraseña para gestionar productos</p>
               </div>
-              <input type="password" value={pass} onChange={e=>setPass(e.target.value)} className="form-input" placeholder="Contraseña..." autoComplete="current-password" />
-              {error && (
-                <div style={{ background: error.includes('Demasiados') ? 'rgba(239,68,68,0.08)' : 'rgba(239,68,68,0.06)', border: `1px solid ${error.includes('Demasiados') ? 'rgba(239,68,68,0.3)' : 'rgba(239,68,68,0.15)'}`, borderRadius:'10px', padding:'10px 14px', fontSize:'0.8rem', color:'#ef4444', textAlign:'center' }}>
-                  {error}
-                </div>
-              )}
-              <button type="submit" disabled={loginLoading || !pass.trim()} className="pill-btn pill-btn--accent" style={{ justifyContent:'center', padding:'13px', fontSize:'0.88rem', opacity: loginLoading || !pass.trim() ? 0.6 : 1 }}>
-                {loginLoading ? 'Verificando...' : 'Ingresar'}
+              <input type="password" value={pass} onChange={e=>setPass(e.target.value)} className="form-input" placeholder="Contraseña..." autoComplete="current-password"/>
+              {error&&<div style={{ background:'rgba(239,68,68,0.08)',border:'1px solid rgba(239,68,68,0.3)',borderRadius:'10px',padding:'10px 14px',fontSize:'0.8rem',color:'#ef4444',textAlign:'center' }}>{error}</div>}
+              <button type="submit" disabled={loginLoading||!pass.trim()} className="pill-btn pill-btn--accent" style={{ justifyContent:'center',padding:'13px',fontSize:'0.88rem',opacity:loginLoading||!pass.trim()?0.6:1 }}>
+                {loginLoading?'Verificando...':'Ingresar'}
               </button>
-              <p style={{ fontSize:'0.65rem', color:'var(--ink-3)', textAlign:'center', lineHeight:1.5 }}>
-                🛡️ Conexión segura • Máximo 5 intentos cada 15 min
-              </p>
+              <p style={{ fontSize:'0.65rem',color:'var(--ink-3)',textAlign:'center',lineHeight:1.5 }}>🛡️ Conexión segura • Máximo 5 intentos cada 15 min</p>
             </form>
-          ) : (
-            modo === 'lista' ? (
-              <div>
-                {/* ── HEADER ── */}
-                <div style={{ display:'flex', justifyContent:'space-between', marginBottom:'16px', alignItems:'center' }}>
-                  <h3 style={{ color:'var(--ink)', fontFamily:'var(--font-display)' }}>
-                    Productos ({productosFiltrados.length}{busquedaAdmin ? ` de ${productos.length}` : ''})
-                  </h3>
-                  <button onClick={handleNew} className="pill-btn pill-btn--green">+ Nuevo</button>
-                </div>
-
-                {/* ── BARRA DE BÚSQUEDA ── */}
-                <div style={{ position:'relative', marginBottom:'20px' }}>
-                  <span style={{ position:'absolute', left:'14px', top:'50%', transform:'translateY(-50%)', fontSize:'0.9rem', opacity:0.45, pointerEvents:'none' }}>🔍</span>
-                  <input
-                    className="form-input"
-                    placeholder="Buscar producto..."
-                    value={busquedaAdmin}
-                    onChange={e => setBusquedaAdmin(e.target.value)}
-                    style={{ paddingLeft:'42px' }}
-                  />
-                  {busquedaAdmin && (
-                    <button
-                      onClick={() => setBusquedaAdmin('')}
-                      style={{ position:'absolute', right:'14px', top:'50%', transform:'translateY(-50%)', background:'none', border:'none', cursor:'pointer', fontSize:'1rem', color:'var(--ink-3)', lineHeight:1 }}
-                    >✕</button>
-                  )}
-                </div>
-
-                {successMsg && (
-                  <div style={{ background:'rgba(34,197,94,0.1)', border:'1px solid rgba(34,197,94,0.3)', borderRadius:'12px', padding:'12px 16px', marginBottom:'16px', fontSize:'0.85rem', color:'#16a34a', fontWeight:600 }}>
-                    ✅ {successMsg}
-                  </div>
-                )}
-
-                {/* ── LISTA DE PRODUCTOS ── */}
-                <div style={{ display:'flex', flexDirection:'column', gap:'12px' }}>
-                  {productosFiltrados.length === 0 ? (
-                    <div style={{ textAlign:'center', padding:'40px 20px' }}>
-                      <p style={{ fontSize:'1.8rem', marginBottom:'10px' }}>🔍</p>
-                      <p style={{ color:'var(--ink-3)', fontSize:'0.88rem' }}>
-                        No se encontró ningún producto con "{busquedaAdmin}"
-                      </p>
-                    </div>
-                  ) : (
-                    productosFiltrados.map(p => (
-                      <div key={p.id} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'12px', background: 'var(--card-bg)', borderRadius:'12px', border:'1px solid var(--border)' }}>
-                        <div style={{ display:'flex', alignItems:'center', gap:'12px' }}>
-                          <img src={imgSrc(p.imagen_url)} style={{ width:'40px', height:'40px', objectFit:'cover', borderRadius:'8px' }} />
-                          <div>
-                            <p style={{ fontWeight:600, fontSize:'0.85rem', color:'var(--ink)', maxWidth:'200px', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{p.nombre}</p>
-                            <p style={{ fontSize:'0.75rem', color:'var(--ink-2)' }}>{moneda(p.precio)} • Stock: <span style={{ color: p.stock > 0 ? '#16a34a' : '#ef4444', fontWeight: 'bold' }}>{p.stock}</span></p>
-                          </div>
-                        </div>
-                        <div style={{ display:'flex', gap:'8px' }}>
-                          <button onClick={() => handleEdit(p)} className="pill-btn pill-btn--ghost" style={{ padding:'6px 12px', fontSize:'0.7rem' }}>Editar</button>
-                          <button onClick={() => handleDelete(p.id)} className="pill-btn" style={{ background:'#ef4444', color:'white', padding:'6px 12px', fontSize:'0.7rem' }}>Borrar</button>
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
+          ):modo==='lista'?(
+            <div>
+              <div style={{ display:'flex',justifyContent:'space-between',marginBottom:'16px',alignItems:'center' }}>
+                <h3 style={{ color:'var(--ink)',fontFamily:'var(--font-display)' }}>Productos ({productosFiltrados.length}{busquedaAdmin?` de ${productos.length}`:''})</h3>
+                <button onClick={handleNew} className="pill-btn pill-btn--green">+ Nuevo</button>
               </div>
-            ) : (
-              <form onSubmit={handleSubmit} style={{ display:'flex', flexDirection:'column', gap:'16px' }}>
-                <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'10px' }}>
-                  <h3 style={{ color:'var(--ink)', fontFamily:'var(--font-display)' }}>{modo === 'nuevo' ? 'Nuevo Producto' : 'Editar Producto'}</h3>
-                  <button type="button" onClick={() => setModo('lista')} className="pill-btn pill-btn--ghost">Volver</button>
-                </div>
-                
-                <div>
-                  <label style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--ink-2)', marginBottom: '6px', display: 'block' }}>Nombre del producto</label>
-                  <input required className="form-input" placeholder="Nombre" value={nombre} onChange={e=>setNombre(e.target.value)} />
-                </div>
-                
-                <div>
-                  <label style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--ink-2)', marginBottom: '6px', display: 'block' }}>Descripción / Detalles</label>
-                  <textarea className="form-input" placeholder="Descripción" value={desc} onChange={e=>setDesc(e.target.value)} rows={3} />
-                </div>
-
-                <div style={{ display: 'flex', gap: '10px' }}>
-                  <div style={{ flex: 1 }}>
-                    <label style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--ink-2)', marginBottom: '6px', display: 'block' }}>Precio (COP)</label>
-                    <input required type="number" className="form-input" placeholder="Precio" value={precio} onChange={e=>setPrecio(e.target.value)} />
+              <div style={{ position:'relative',marginBottom:'20px' }}>
+                <span style={{ position:'absolute',left:'14px',top:'50%',transform:'translateY(-50%)',fontSize:'0.9rem',opacity:0.45,pointerEvents:'none' }}>🔍</span>
+                <input className="form-input" placeholder="Buscar producto..." value={busquedaAdmin} onChange={e=>setBusquedaAdmin(e.target.value)} style={{ paddingLeft:'42px' }}/>
+                {busquedaAdmin&&<button onClick={()=>setBusquedaAdmin('')} style={{ position:'absolute',right:'14px',top:'50%',transform:'translateY(-50%)',background:'none',border:'none',cursor:'pointer',fontSize:'1rem',color:'var(--ink-3)',lineHeight:1 }}>✕</button>}
+              </div>
+              {successMsg&&<div style={{ background:'rgba(34,197,94,0.1)',border:'1px solid rgba(34,197,94,0.3)',borderRadius:'12px',padding:'12px 16px',marginBottom:'16px',fontSize:'0.85rem',color:'#16a34a',fontWeight:600 }}>✅ {successMsg}</div>}
+              <div style={{ display:'flex',flexDirection:'column',gap:'12px' }}>
+                {productosFiltrados.length===0?(
+                  <div style={{ textAlign:'center',padding:'40px 20px' }}>
+                    <p style={{ fontSize:'1.8rem',marginBottom:'10px' }}>🔍</p>
+                    <p style={{ color:'var(--ink-3)',fontSize:'0.88rem' }}>No se encontró "{busquedaAdmin}"</p>
                   </div>
-                  <div style={{ flex: 1 }}>
-                    <label style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--ink-2)', marginBottom: '6px', display: 'block' }}>Cantidad (Stock)</label>
-                    <input required type="number" className="form-input" placeholder="Stock" value={stock} onChange={e=>setStock(e.target.value)} />
+                ):productosFiltrados.map(p=>(
+                  <div key={p.id} style={{ display:'flex',justifyContent:'space-between',alignItems:'center',padding:'12px',background:'var(--card-bg)',borderRadius:'12px',border:'1px solid var(--border)' }}>
+                    <div style={{ display:'flex',alignItems:'center',gap:'12px' }}>
+                      <img src={imgSrc(p.imagen_url)} style={{ width:'40px',height:'40px',objectFit:'cover',borderRadius:'8px' }}/>
+                      <div>
+                        <p style={{ fontWeight:600,fontSize:'0.85rem',color:'var(--ink)',maxWidth:'200px',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis' }}>{p.nombre}</p>
+                        <p style={{ fontSize:'0.75rem',color:'var(--ink-2)' }}>{moneda(p.precio)} • Stock: <span style={{ color:p.stock>0?'#16a34a':'#ef4444',fontWeight:'bold' }}>{p.stock}</span></p>
+                      </div>
+                    </div>
+                    <div style={{ display:'flex',gap:'8px' }}>
+                      <button onClick={()=>handleEdit(p)} className="pill-btn pill-btn--ghost" style={{ padding:'6px 12px',fontSize:'0.7rem' }}>Editar</button>
+                      <button onClick={()=>handleDelete(p.id)} className="pill-btn" style={{ background:'#ef4444',color:'white',padding:'6px 12px',fontSize:'0.7rem' }}>Borrar</button>
+                    </div>
                   </div>
-                </div>
-
-                <div>
-                  <label style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--ink-2)', marginBottom: '6px', display: 'block' }}>Categoría</label>
-                  <select className="form-input" value={cat} onChange={e=>setCat(e.target.value)}>
-                    <option value="1">Líquidos Vitales</option>
-                    <option value="2">Alimentos</option>
-                    <option value="3">Equipos</option>
-                    <option value="4">Accesorios</option>
-                    <option value="5">Plantas</option>
-                    <option value="6">Jaulas para Hámster</option>
-                  </select>
-                </div>
-
-                <div style={{ background:'var(--bg)', padding:'16px', borderRadius:'12px', border:'1px dashed var(--border)' }}>
-                  <p style={{ fontSize:'0.8rem', color:'var(--ink-2)', marginBottom:'8px', fontWeight:600 }}>{modo === 'editar' ? 'Cambiar imagen (opcional)' : 'Subir imagen'}</p>
-                  <input type="file" accept="image/*" onChange={e => setImagen(e.target.files[0])} style={{ color:'var(--ink)', fontSize:'0.8rem' }} />
-                </div>
-
-                {error && (
-                  <div style={{ background:'rgba(239,68,68,0.06)', border:'1px solid rgba(239,68,68,0.15)', borderRadius:'10px', padding:'10px 14px', fontSize:'0.8rem', color:'#ef4444', textAlign:'center' }}>
-                    {error}
-                  </div>
-                )}
-
-                <button type="submit" disabled={cargando} className="pill-btn pill-btn--accent" style={{ justifyContent:'center', padding:'14px', marginTop:'10px', fontSize:'0.9rem' }}>
-                  {cargando ? 'Guardando...' : 'Guardar Producto'}
-                </button>
-              </form>
-            )
+                ))}
+              </div>
+            </div>
+          ):(
+            <form onSubmit={handleSubmit} style={{ display:'flex',flexDirection:'column',gap:'16px' }}>
+              <div style={{ display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'10px' }}>
+                <h3 style={{ color:'var(--ink)',fontFamily:'var(--font-display)' }}>{modo==='nuevo'?'Nuevo Producto':'Editar Producto'}</h3>
+                <button type="button" onClick={()=>setModo('lista')} className="pill-btn pill-btn--ghost">Volver</button>
+              </div>
+              <div><label style={{ fontSize:'0.8rem',fontWeight:600,color:'var(--ink-2)',marginBottom:'6px',display:'block' }}>Nombre</label><input required className="form-input" placeholder="Nombre" value={nombre} onChange={e=>setNombre(e.target.value)}/></div>
+              <div><label style={{ fontSize:'0.8rem',fontWeight:600,color:'var(--ink-2)',marginBottom:'6px',display:'block' }}>Descripción</label><textarea className="form-input" placeholder="Descripción" value={desc} onChange={e=>setDesc(e.target.value)} rows={3}/></div>
+              <div style={{ display:'flex',gap:'10px' }}>
+                <div style={{ flex:1 }}><label style={{ fontSize:'0.8rem',fontWeight:600,color:'var(--ink-2)',marginBottom:'6px',display:'block' }}>Precio (COP)</label><input required type="number" className="form-input" placeholder="Precio" value={precio} onChange={e=>setPrecio(e.target.value)}/></div>
+                <div style={{ flex:1 }}><label style={{ fontSize:'0.8rem',fontWeight:600,color:'var(--ink-2)',marginBottom:'6px',display:'block' }}>Stock</label><input required type="number" className="form-input" placeholder="Stock" value={stock} onChange={e=>setStock(e.target.value)}/></div>
+              </div>
+              <div><label style={{ fontSize:'0.8rem',fontWeight:600,color:'var(--ink-2)',marginBottom:'6px',display:'block' }}>Categoría</label>
+                <select className="form-input" value={cat} onChange={e=>setCat(e.target.value)}>
+                  <option value="1">Líquidos Vitales</option><option value="2">Alimentos</option>
+                  <option value="3">Equipos</option><option value="4">Accesorios</option>
+                  <option value="5">Plantas</option><option value="6">Jaulas para Hámster</option>
+                </select>
+              </div>
+              <div style={{ background:'var(--bg)',padding:'16px',borderRadius:'12px',border:'1px dashed var(--border)' }}>
+                <p style={{ fontSize:'0.8rem',color:'var(--ink-2)',marginBottom:'8px',fontWeight:600 }}>{modo==='editar'?'Cambiar imagen (opcional)':'Subir imagen'}</p>
+                <input type="file" accept="image/*" onChange={e=>setImagen(e.target.files[0])} style={{ color:'var(--ink)',fontSize:'0.8rem' }}/>
+              </div>
+              {error&&<div style={{ background:'rgba(239,68,68,0.06)',border:'1px solid rgba(239,68,68,0.15)',borderRadius:'10px',padding:'10px 14px',fontSize:'0.8rem',color:'#ef4444',textAlign:'center' }}>{error}</div>}
+              <button type="submit" disabled={cargando} className="pill-btn pill-btn--accent" style={{ justifyContent:'center',padding:'14px',marginTop:'10px',fontSize:'0.9rem' }}>
+                {cargando?'Guardando...':'Guardar Producto'}
+              </button>
+            </form>
           )}
         </div>
       </div>
@@ -1255,140 +1121,134 @@ const AdminPanel = ({ onClose, productos, onRefresh }) => {
    APP ROOT
 ───────────────────────────────────────────── */
 export default function App() {
-  const [productos, setProductos]       = useState([]);
-  const [carrito, setCarrito]           = useState([]);
-  const [error, setError]               = useState(null);
-  const [cartOpen, setCartOpen]         = useState(false);
-  const [reviewsOpen, setReviewsOpen]   = useState(false);
-  const [adminOpen, setAdminOpen]       = useState(false);
-  const [seleccionado, setSeleccionado] = useState(null);
-  const [busqueda, setBusqueda]         = useState('');
-  const [categoria, setCategoria]       = useState('Todos');
-  const [cargando, setCargando]         = useState(true);
-  const [dark, setDark]                 = useState(false);
-  const [ratings, setRatings]           = useState({});
-  const [scrollY, setScrollY]           = useState(0);
+  const [productos,setProductos]       = useState([]);
+  const [carrito,setCarrito]           = useState([]);
+  const [error,setError]               = useState(null);
+  const [cartOpen,setCartOpen]         = useState(false);
+  const [reviewsOpen,setReviewsOpen]   = useState(false);
+  const [adminOpen,setAdminOpen]       = useState(false);
+  const [seleccionado,setSeleccionado] = useState(null);
+  const [busqueda,setBusqueda]         = useState('');
+  const [categoria,setCategoria]       = useState('Todos');
+  const [cargando,setCargando]         = useState(true);
+  const [dark,setDark]                 = useState(false);
+  const [ratings,setRatings]           = useState({});
+  const [scrollY,setScrollY]           = useState(0);
 
-  useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  useEffect(()=>{
+    const handleScroll=()=>setScrollY(window.scrollY);
+    window.addEventListener('scroll',handleScroll,{passive:true});
+    return()=>window.removeEventListener('scroll',handleScroll);
+  },[]);
 
-  const fetchProductos = () => {
+  const fetchProductos=()=>{
     axios.get(`${BACKEND}/api/productos`)
-      .then(r => setProductos(r.data))
-      .catch(() => setError('No se pudieron cargar los productos.'))
-      .finally(() => setCargando(false));
+      .then(r=>setProductos(r.data))
+      .catch(()=>setError('No se pudieron cargar los productos.'))
+      .finally(()=>setCargando(false));
   };
+  useEffect(()=>{ fetchProductos(); },[]);
 
-  useEffect(() => {
-    fetchProductos();
-  }, []);
+  const addItem = useCallback((p)=>
+    setCarrito(prev=>{
+      if(p.stock<=0) return prev;
+      const colorKey=p.colorSeleccionado||'';
+      const ex=prev.find(i=>i.id===p.id&&(i.colorSeleccionado||'')===colorKey);
+      if(ex&&ex.cantidad>=p.stock) return prev;
+      return ex?prev.map(i=>(i.id===p.id&&(i.colorSeleccionado||'')===colorKey)?{...i,cantidad:i.cantidad+1}:i):[...prev,{...p,cantidad:1}];
+    }),[]);
 
-  const addItem = useCallback((p) =>
-    setCarrito(prev => {
-      if (p.stock <= 0) return prev;
-      const colorKey = p.colorSeleccionado || '';
-      const ex = prev.find(i => i.id === p.id && (i.colorSeleccionado || '') === colorKey);
-      if (ex && ex.cantidad >= p.stock) return prev;
-      return ex 
-        ? prev.map(i => (i.id===p.id && (i.colorSeleccionado || '') === colorKey) ? {...i, cantidad:i.cantidad+1} : i) 
-        : [...prev, {...p, cantidad:1}];
-    }), []);
-
-  const removeOne  = (id, color) => {
-    const colorKey = color || '';
-    setCarrito(prev => prev.map(i => (i.id===id && (i.colorSeleccionado || '') === colorKey) ? {...i, cantidad:i.cantidad-1} : i).filter(i => i.cantidad>0));
+  const removeOne=(id,color)=>{
+    const colorKey=color||'';
+    setCarrito(prev=>prev.map(i=>(i.id===id&&(i.colorSeleccionado||'')===colorKey)?{...i,cantidad:i.cantidad-1}:i).filter(i=>i.cantidad>0));
   };
-  const setQty     = (id, color, v) => {
-    const colorKey = color || '';
-    setCarrito(prev => prev.map(i => {
-      if (i.id === id && (i.colorSeleccionado || '') === colorKey) {
-        const prod = productos.find(p => p.id === id);
-        return {...i, cantidad: prod ? Math.min(v, prod.stock) : v};
+  const setQty=(id,color,v)=>{
+    const colorKey=color||'';
+    setCarrito(prev=>prev.map(i=>{
+      if(i.id===id&&(i.colorSeleccionado||'')===colorKey){
+        const prod=productos.find(p=>p.id===id);
+        return{...i,cantidad:prod?Math.min(v,prod.stock):v};
       }
       return i;
-    }).filter(i => i.cantidad>0));
+    }).filter(i=>i.cantidad>0));
   };
-  const handleRate = (productId, stars) => setRatings(prev => ({...prev, [productId]: stars}));
+  const handleRate=(productId,stars)=>setRatings(prev=>({...prev,[productId]:stars}));
 
-  const totalItems  = carrito.reduce((s,i) => s+i.cantidad, 0);
-  const totalCompra = carrito.reduce((s,i) => s+Math.round(Number(i.precio))*i.cantidad, 0);
+  const totalItems  = carrito.reduce((s,i)=>s+i.cantidad,0);
+  const totalCompra = carrito.reduce((s,i)=>s+Math.round(Number(i.precio))*i.cantidad,0);
 
-  const bestSellers = BEST_SELLER_NAMES.map(name => productos.find(p => p.nombre === name)).filter(Boolean).slice(0, 5);
+  const bestSellers = BEST_SELLER_NAMES.map(name=>productos.find(p=>p.nombre===name)).filter(Boolean).slice(0,5);
 
-  const visibles = productos.filter(p => {
-    const matchBusq = normaliza(p.nombre).includes(normaliza(busqueda));
-    if (categoria === 'Todos') return matchBusq;
-    const cat = normaliza(p.categoria_nombre);
-    const flt = normaliza(categoria);
-    return matchBusq && (cat === flt || cat.includes(flt) || flt.includes(cat));
+  const visibles = productos.filter(p=>{
+    const matchBusq=normaliza(p.nombre).includes(normaliza(busqueda));
+    if(categoria==='Todos') return matchBusq;
+    const cat=normaliza(p.categoria_nombre);
+    const flt=normaliza(categoria);
+    return matchBusq&&(cat===flt||cat.includes(flt)||flt.includes(cat));
   });
 
-  if (cargando) return (<><GlobalStyles dark={dark}/><Loader /></>);
+  if(cargando) return(<><GlobalStyles dark={dark}/><Loader/></>);
 
   return (
     <>
       <GlobalStyles dark={dark}/>
 
+      {/* ── HÁMSTER MASCOTA ── */}
+      <HamsterMascot/>
+
       {/* ── NAVBAR ── */}
-      <nav style={{ position:'sticky', top:0, zIndex:1000, background: dark ? '#111115' : '#ffffff', borderBottom:`1px solid var(--border)`, display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 28px', height:'64px' }}>
-        <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
-          <img src="/Logo.jpeg" alt="Logo" style={{ height:'38px', width:'38px', borderRadius:'10px', objectFit:'cover' }} onError={e => e.target.src='https://via.placeholder.com/38?text=A'} />
+      <nav style={{ position:'sticky',top:0,zIndex:1000,background:dark?'#111115':'#ffffff',borderBottom:`1px solid var(--border)`,display:'flex',alignItems:'center',justifyContent:'space-between',padding:'0 28px',height:'64px' }}>
+        <div style={{ display:'flex',alignItems:'center',gap:'10px' }}>
+          <img src="/Logo.jpeg" alt="Logo" style={{ height:'38px',width:'38px',borderRadius:'10px',objectFit:'cover' }} onError={e=>e.target.src='https://via.placeholder.com/38?text=A'}/>
           <div>
-            <p style={{ fontFamily:'var(--font-display)', fontSize:'0.95rem', fontWeight:700, color:'var(--ink)', lineHeight:1 }}>Distribuciones Ariza</p>
-            <p style={{ fontSize:'0.58rem', color:'var(--accent)', fontWeight:700, letterSpacing:'1.2px', textTransform:'uppercase', marginTop:'2px' }}>Fish Accessories</p>
+            <p style={{ fontFamily:'var(--font-display)',fontSize:'0.95rem',fontWeight:700,color:'var(--ink)',lineHeight:1 }}>Distribuciones Ariza</p>
+            <p style={{ fontSize:'0.58rem',color:'var(--accent)',fontWeight:700,letterSpacing:'1.2px',textTransform:'uppercase',marginTop:'2px' }}>Fish Accessories</p>
           </div>
         </div>
-        <div style={{ display:'flex', alignItems:'center', gap:'16px' }}>
-          <div style={{ display:'flex', alignItems:'center', gap:'8px' }}>
-            <span style={{ fontSize:'0.75rem', color:'var(--ink-3)' }}>{dark ? '🌙' : '☀️'}</span>
-            <button className="dark-toggle" onClick={() => setDark(d => !d)} aria-label="Modo oscuro" />
+        <div style={{ display:'flex',alignItems:'center',gap:'16px' }}>
+          <div style={{ display:'flex',alignItems:'center',gap:'8px' }}>
+            <span style={{ fontSize:'0.75rem',color:'var(--ink-3)' }}>{dark?'🌙':'☀️'}</span>
+            <button className="dark-toggle" onClick={()=>setDark(d=>!d)} aria-label="Modo oscuro"/>
           </div>
-          <button onClick={() => setAdminOpen(true)} style={{ background:'none', border:'none', cursor:'pointer', fontSize:'1.1rem', color:'var(--ink-2)', opacity:0.6 }} title="Panel Admin">
-            🔒
-          </button>
-          <button onClick={() => setCartOpen(true)} style={{ position:'relative', background:'none', border:'none', cursor:'pointer', padding:'8px', borderRadius:'12px' }}>
+          <button onClick={()=>setAdminOpen(true)} style={{ background:'none',border:'none',cursor:'pointer',fontSize:'1.1rem',color:'var(--ink-2)',opacity:0.6 }} title="Panel Admin">🔒</button>
+          <button onClick={()=>setCartOpen(true)} style={{ position:'relative',background:'none',border:'none',cursor:'pointer',padding:'8px',borderRadius:'12px' }}>
             <span style={{ fontSize:'1.25rem' }}>🛒</span>
-            {totalItems > 0 && (
-              <span style={{ position:'absolute', top:'2px', right:'2px', background:'var(--accent)', color:'#fff', fontSize:'0.6rem', fontWeight:700, width:'18px', height:'18px', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', border:`2px solid var(--bg)` }}>
-                {totalItems}
-              </span>
+            {totalItems>0&&(
+              <span style={{ position:'absolute',top:'2px',right:'2px',background:'var(--accent)',color:'#fff',fontSize:'0.6rem',fontWeight:700,width:'18px',height:'18px',borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',border:`2px solid var(--bg)` }}>{totalItems}</span>
             )}
           </button>
         </div>
       </nav>
 
-      {/* ── HERO + MAIN ── */}
+      {/* ── HERO ── */}
       <div style={{ position:'relative' }}>
-        <div style={{ position:'sticky', top:64, zIndex:0, height:440, overflow:'hidden' }}>
-          <AquariumHero busqueda={busqueda} setBusqueda={setBusqueda} scrollY={scrollY} />
+        <div style={{ position:'sticky',top:64,zIndex:0,height:440,overflow:'hidden' }}>
+          <AquariumHero busqueda={busqueda} setBusqueda={setBusqueda} scrollY={scrollY}/>
         </div>
 
-        <main style={{ position:'relative', zIndex:1, background:'var(--bg)', borderRadius:'32px 32px 0 0', marginTop:-16, padding:'56px 24px 120px', boxShadow:'0 -16px 48px rgba(0,0,0,0.18)', maxWidth:'none' }}>
-          <div style={{ maxWidth:1200, margin:'0 auto' }}>
+        <main style={{ position:'relative',zIndex:1,background:'var(--bg)',borderRadius:'32px 32px 0 0',marginTop:-16,padding:'56px 24px 160px',boxShadow:'0 -16px 48px rgba(0,0,0,0.18)',maxWidth:'none' }}>
+          <div style={{ maxWidth:1200,margin:'0 auto' }}>
 
-            {bestSellers.length > 0 && (
+            {bestSellers.length>0&&(
               <section style={{ marginBottom:'48px' }}>
-                <div style={{ display:'flex', alignItems:'center', gap:'10px', marginBottom:'20px' }}>
+                <div style={{ display:'flex',alignItems:'center',gap:'10px',marginBottom:'20px' }}>
                   <span style={{ fontSize:'1.3rem' }}>🔥</span>
-                  <h2 style={{ fontFamily:'var(--font-display)', fontSize:'1.35rem', fontWeight:700, color:'var(--ink)' }}>Más vendidos</h2>
-                  <div style={{ flex:1, height:'1px', background:'var(--border)', marginLeft:'8px' }} />
+                  <h2 style={{ fontFamily:'var(--font-display)',fontSize:'1.35rem',fontWeight:700,color:'var(--ink)' }}>Más vendidos</h2>
+                  <div style={{ flex:1,height:'1px',background:'var(--border)',marginLeft:'8px' }}/>
                 </div>
                 <div className="best-scroll">
-                  {bestSellers.map((p, i) => (
-                    <BestCard key={p.id} p={p} onAdd={addItem} onOpen={setSeleccionado} ratings={ratings} onRate={handleRate} rank={i+1} />
+                  {bestSellers.map((p,i)=>(
+                    <BestCard key={p.id} p={p} onAdd={addItem} onOpen={setSeleccionado} ratings={ratings} onRate={handleRate} rank={i+1}/>
                   ))}
                 </div>
               </section>
             )}
 
             <section style={{ marginBottom:'40px' }}>
-              <div style={{ display:'flex', gap:'8px', overflowX:'auto', paddingBottom:'6px', scrollbarWidth:'none' }}>
-                <button className={`cat-pill ${categoria==='Todos'?'cat-pill--on':'cat-pill--off'}`} onClick={() => { setCategoria('Todos'); setBusqueda(''); }}>Todos</button>
-                {COLECCIONES.map((c) => (
-                  <button key={c.val} className={`cat-pill ${categoria===c.val?'cat-pill--on':'cat-pill--off'}`} onClick={() => setCategoria(c.val)}>
+              <div style={{ display:'flex',gap:'8px',overflowX:'auto',paddingBottom:'6px',scrollbarWidth:'none' }}>
+                <button className={`cat-pill ${categoria==='Todos'?'cat-pill--on':'cat-pill--off'}`} onClick={()=>{setCategoria('Todos');setBusqueda('');}}>Todos</button>
+                {COLECCIONES.map((c)=>(
+                  <button key={c.val} className={`cat-pill ${categoria===c.val?'cat-pill--on':'cat-pill--off'}`} onClick={()=>setCategoria(c.val)}>
                     {c.icon} {c.label}
                   </button>
                 ))}
@@ -1396,62 +1256,51 @@ export default function App() {
             </section>
 
             <section>
-              <div style={{ display:'flex', justifyContent:'space-between', alignItems:'baseline', marginBottom:'24px' }}>
-                <h2 style={{ fontSize:'1rem', fontWeight:600, color:'var(--ink)' }}>{categoria === 'Todos' ? 'Todos los productos' : categoria}</h2>
-                <span style={{ fontSize:'0.8rem', color:'var(--ink-3)' }}>{visibles.length} resultado{visibles.length!==1&&'s'}</span>
+              <div style={{ display:'flex',justifyContent:'space-between',alignItems:'baseline',marginBottom:'24px' }}>
+                <h2 style={{ fontSize:'1rem',fontWeight:600,color:'var(--ink)' }}>{categoria==='Todos'?'Todos los productos':categoria}</h2>
+                <span style={{ fontSize:'0.8rem',color:'var(--ink-3)' }}>{visibles.length} resultado{visibles.length!==1&&'s'}</span>
               </div>
-              {error && <p style={{ color:'#ef4444', textAlign:'center', padding:'40px' }}>{error}</p>}
-              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(230px, 1fr))', gap:'20px' }}>
-                {visibles.map(p => (
-                  <ProductCard key={p.id} p={p} onAdd={addItem} onOpen={setSeleccionado} ratings={ratings} onRate={handleRate} isBestSeller={BEST_SELLER_NAMES.includes(p.nombre)} />
+              {error&&<p style={{ color:'#ef4444',textAlign:'center',padding:'40px' }}>{error}</p>}
+              <div style={{ display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(230px,1fr))',gap:'20px' }}>
+                {visibles.map(p=>(
+                  <ProductCard key={p.id} p={p} onAdd={addItem} onOpen={setSeleccionado} ratings={ratings} onRate={handleRate} isBestSeller={BEST_SELLER_NAMES.includes(p.nombre)}/>
                 ))}
               </div>
-              {visibles.length === 0 && !error && (
-                <div style={{ textAlign:'center', padding:'80px 20px' }}>
-                  <p style={{ fontSize:'2rem', marginBottom:'12px' }}>🔍</p>
+              {visibles.length===0&&!error&&(
+                <div style={{ textAlign:'center',padding:'80px 20px' }}>
+                  <p style={{ fontSize:'2rem',marginBottom:'12px' }}>🔍</p>
                   <p style={{ color:'var(--ink-3)' }}>No se encontraron productos.</p>
                 </div>
               )}
             </section>
-
           </div>
         </main>
       </div>
 
       {/* ── BOTTOM NAV ── */}
-      <div style={{ position:'fixed', bottom:'16px', left:'50%', transform:'translateX(-50%)', background: dark ? '#1a1a1e' : '#ffffff', borderRadius:'99px', padding:'10px 32px', display:'flex', gap:'36px', alignItems:'center', boxShadow:'0 4px 24px rgba(0,0,0,0.15)', zIndex:900, border:`1px solid var(--border)` }}>
-        <button className="nav-tab" onClick={() => { setCategoria('Todos'); setBusqueda(''); }} style={{ background:'none', border:'none', cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', gap:'2px' }}>
+      <div style={{ position:'fixed',bottom:'16px',left:'50%',transform:'translateX(-50%)',background:dark?'#1a1a1e':'#ffffff',borderRadius:'99px',padding:'10px 32px',display:'flex',gap:'36px',alignItems:'center',boxShadow:'0 4px 24px rgba(0,0,0,0.15)',zIndex:900,border:`1px solid var(--border)` }}>
+        <button className="nav-tab" onClick={()=>{setCategoria('Todos');setBusqueda('');}}>
           <span className="nav-tab-icon" style={{ fontSize:'1.2rem' }}>🏪</span>
-          <span style={{ fontSize:'0.58rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.6px', color:categoria==='Todos'?'var(--accent)':'var(--ink-3)' }}>Tienda</span>
+          <span style={{ fontSize:'0.58rem',fontWeight:700,textTransform:'uppercase',letterSpacing:'0.6px',color:categoria==='Todos'?'var(--accent)':'var(--ink-3)' }}>Tienda</span>
         </button>
-        <button className="nav-tab" onClick={() => setReviewsOpen(true)} style={{ background:'none', border:'none', cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', gap:'2px' }}>
+        <button className="nav-tab" onClick={()=>setReviewsOpen(true)}>
           <span className="nav-tab-icon" style={{ fontSize:'1.2rem' }}>💬</span>
-          <span style={{ fontSize:'0.58rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.6px', color: reviewsOpen ? 'var(--accent)' : 'var(--ink-3)' }}>Reseñas</span>
+          <span style={{ fontSize:'0.58rem',fontWeight:700,textTransform:'uppercase',letterSpacing:'0.6px',color:reviewsOpen?'var(--accent)':'var(--ink-3)' }}>Reseñas</span>
         </button>
-        <button className="nav-tab" onClick={() => setCartOpen(true)} style={{ background:'none', border:'none', cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', gap:'2px', position:'relative' }}>
+        <button className="nav-tab" onClick={()=>setCartOpen(true)} style={{ position:'relative' }}>
           <span className="nav-tab-icon" style={{ fontSize:'1.2rem' }}>🛒</span>
-          {totalItems > 0 && (
-            <span className="nav-tab-badge" style={{ position:'absolute', top:'-4px', right:'-10px', background:'#ef4444', color:'#fff', fontSize:'0.58rem', width:'17px', height:'17px', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', fontWeight:700, border:'2px solid var(--surface)' }}>
-              {totalItems}
-            </span>
+          {totalItems>0&&(
+            <span className="nav-tab-badge" style={{ position:'absolute',top:'-4px',right:'-10px',background:'#ef4444',color:'#fff',fontSize:'0.58rem',width:'17px',height:'17px',borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,border:'2px solid var(--surface)' }}>{totalItems}</span>
           )}
-          <span style={{ fontSize:'0.58rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.6px', color:'var(--ink-3)' }}>Carrito</span>
+          <span style={{ fontSize:'0.58rem',fontWeight:700,textTransform:'uppercase',letterSpacing:'0.6px',color:'var(--ink-3)' }}>Carrito</span>
         </button>
       </div>
 
       {/* ── MODALS / PANELS ── */}
-      {seleccionado && (
-        <ProductModal p={seleccionado} onClose={() => setSeleccionado(null)} onAdd={addItem} ratings={ratings} onRate={handleRate} />
-      )}
-      {cartOpen && (
-        <CartPanel carrito={carrito} onClose={() => setCartOpen(false)} onAdd={addItem} onRemove={removeOne} onChangeQty={setQty} totalCompra={totalCompra} totalItems={totalItems} />
-      )}
-      {reviewsOpen && (
-        <ReviewsPanel onClose={() => setReviewsOpen(false)} dark={dark} />
-      )}
-      {adminOpen && (
-        <AdminPanel onClose={() => setAdminOpen(false)} productos={productos} onRefresh={fetchProductos} />
-      )}
+      {seleccionado&&<ProductModal p={seleccionado} onClose={()=>setSeleccionado(null)} onAdd={addItem} ratings={ratings} onRate={handleRate}/>}
+      {cartOpen&&<CartPanel carrito={carrito} onClose={()=>setCartOpen(false)} onAdd={addItem} onRemove={removeOne} onChangeQty={setQty} totalCompra={totalCompra} totalItems={totalItems}/>}
+      {reviewsOpen&&<ReviewsPanel onClose={()=>setReviewsOpen(false)} dark={dark}/>}
+      {adminOpen&&<AdminPanel onClose={()=>setAdminOpen(false)} productos={productos} onRefresh={fetchProductos}/>}
     </>
   );
 }
