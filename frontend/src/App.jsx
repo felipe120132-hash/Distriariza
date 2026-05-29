@@ -726,11 +726,14 @@ const BestCard = memo(({ p, onAdd, onOpen, ratings, onRate, rank }) => (
       </div>
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
         <span style={{ fontSize:'1rem', fontWeight:700, color:'var(--ink)' }}>{moneda(p.precio)}</span>
-        <button className="pill-btn pill-btn--accent" onClick={() => onAdd(p)} disabled={p.stock <= 0} style={{ padding:'6px 10px', fontSize:'0.7rem', opacity: p.stock <= 0 ? 0.5 : 1 }}>
-          {p.stock > 0 ? '+ Añadir' : 'Agotado'}
-        </button>
-      </div>
-    </div>
+        <button className="btn-send" onClick={() => onAdd(p)} disabled={p.stock <= 0}>
+        <div className="svg-wrapper-1"><div className="svg-wrapper">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M1.946 9.315c-.522-.174-.527-.455.01-.634l19.087-6.362c.529-.176.832.12.684.638l-5.454 19.086c-.15.529-.455.547-.679.045L12 14l6-8-8 6-8.054-2.685z"/></svg>
+          </div></div>
+          <span>{p.stock > 0 ? 'Añadir' : 'Agotado'}</span>
+          </button>
+          </div>
+          </div>
   </div>
 ));
 
@@ -762,9 +765,12 @@ const ProductCard = memo(({ p, onAdd, onOpen, ratings, onRate, isBestSeller }) =
       </div>
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', borderTop:'1px solid var(--border)', paddingTop:'14px' }}>
         <span style={{ fontSize:'1.2rem', fontWeight:800, color:'var(--ink)', letterSpacing:'-0.5px' }}>{moneda(p.precio)}</span>
-        <button className="pill-btn pill-btn--accent" onClick={() => onAdd(p)} disabled={p.stock <= 0} style={{ padding:'10px 20px', fontSize:'0.82rem', opacity: p.stock <= 0 ? 0.5 : 1 }}>
-          {p.stock > 0 ? '+ Añadir' : 'Agotado'}
-        </button>
+        <button className="btn-send" onClick={() => onAdd(p)} disabled={p.stock <= 0}>
+        <div className="svg-wrapper-1"><div className="svg-wrapper">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M1.946 9.315c-.522-.174-.527-.455.01-.634l19.087-6.362c.529-.176.832.12.684.638l-5.454 19.086c-.15.529-.455.547-.679.045L12 14l6-8-8 6-8.054-2.685z"/></svg>
+          </div></div>
+          <span>{p.stock > 0 ? 'Añadir' : 'Agotado'}</span>
+          </button>
       </div>
     </div>
   </div>
