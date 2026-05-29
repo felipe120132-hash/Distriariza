@@ -38,20 +38,15 @@ export const HeroAcuario = ({ busqueda, setBusqueda, scrollY = 0 }) => {
         <h1 style={{ fontFamily:'var(--font-display)', fontSize:'clamp(2.2rem,5vw,3.5rem)', fontWeight:700, color:'#fff', lineHeight:1.15, marginBottom:'20px', textShadow:'0 4px 16px rgba(0,0,0,0.4)' }}>
           Todo para tus<br/>peces y hámsters.
         </h1>
-        <div className="form-control" style={{ width: '100%', maxWidth: '320px', margin: '20px 0 0' }}>
-          <input 
-            type="text" 
-            required 
-            value={busqueda} 
-            onChange={e => setBusqueda(e.target.value)} 
+        <div className="inputbox--hero">
+          <input
+            type="text"
+            value={busqueda}
+            onChange={e => setBusqueda(e.target.value)}
+            placeholder=" "
           />
-          <label>
-            {"Buscar productos…".split("").map((char, index) => (
-              <span key={index} style={{ transitionDelay: `${index * 50}ms` }}>
-                {char === " " ? "\u00A0" : char}
-              </span>
-            ))}
-          </label>
+          <span>Buscar productos…</span>
+          <i />
         </div>
       </div>
 

@@ -422,6 +422,64 @@ export const EstilosGlobales = ({ dark }) => (
       border-radius: 8px;
     }
 
+    /* ── INPUTBOX HERO VARIANT (sobre fondo oscuro del video) ── */
+    .inputbox--hero {
+      position: relative;
+      width: 100%;
+      max-width: 320px;
+      margin-top: 20px;
+    }
+    .inputbox--hero input {
+      position: relative;
+      width: 100%;
+      padding: 20px 10px 10px;
+      background: transparent;
+      outline: none;
+      box-shadow: none;
+      border: none;
+      color: #fff;
+      font-family: var(--font-body);
+      font-size: 1.05em;
+      letter-spacing: 0.05em;
+      transition: 0.5s;
+      z-index: 10;
+    }
+    .inputbox--hero span {
+      position: absolute;
+      left: 10px;
+      top: 0;
+      padding: 20px 0 10px;
+      font-size: 1.05em;
+      color: rgba(255,255,255,0.6);
+      letter-spacing: 0.05em;
+      transition: 0.5s;
+      pointer-events: none;
+    }
+    .inputbox--hero input:focus ~ span,
+    .inputbox--hero input:not(:placeholder-shown) ~ span {
+      color: #7dd3fc;
+      transform: translateX(-10px) translateY(-28px);
+      font-size: 0.75em;
+    }
+    .inputbox--hero i {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 2px;
+      background: rgba(255,255,255,0.7);
+      border-radius: 4px;
+      transition: 0.5s;
+      pointer-events: none;
+      z-index: 9;
+    }
+    .inputbox--hero input:focus ~ i,
+    .inputbox--hero input:not(:placeholder-shown) ~ i {
+      height: 44px;
+      background: rgba(255,255,255,0.12);
+      border-radius: 8px;
+    }
+
     /* ── FROM UIVERSE.IO BY NAWSOME – HAMSTER WHEEL ── */
     :root {
       --dur: 1s;
