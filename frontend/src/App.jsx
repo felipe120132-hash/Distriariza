@@ -726,14 +726,11 @@ const BestCard = memo(({ p, onAdd, onOpen, ratings, onRate, rank }) => (
       </div>
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
         <span style={{ fontSize:'1rem', fontWeight:700, color:'var(--ink)' }}>{moneda(p.precio)}</span>
-        <button className="btn-send" onClick={() => onAdd(p)} disabled={p.stock <= 0}>
-        <div className="svg-wrapper-1"><div className="svg-wrapper">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M1.946 9.315c-.522-.174-.527-.455.01-.634l19.087-6.362c.529-.176.832.12.684.638l-5.454 19.086c-.15.529-.455.547-.679.045L12 14l6-8-8 6-8.054-2.685z"/></svg>
-          </div></div>
-          <span>{p.stock > 0 ? 'Añadir' : 'Agotado'}</span>
-          </button>
-          </div>
-          </div>
+        <button className="pill-btn pill-btn--accent" onClick={() => onAdd(p)} disabled={p.stock <= 0} style={{ padding:'6px 10px', fontSize:'0.7rem', opacity: p.stock <= 0 ? 0.5 : 1 }}>
+          {p.stock > 0 ? '+ Añadir' : 'Agotado'}
+        </button>
+      </div>
+    </div>
   </div>
 ));
 
@@ -765,12 +762,9 @@ const ProductCard = memo(({ p, onAdd, onOpen, ratings, onRate, isBestSeller }) =
       </div>
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', borderTop:'1px solid var(--border)', paddingTop:'14px' }}>
         <span style={{ fontSize:'1.2rem', fontWeight:800, color:'var(--ink)', letterSpacing:'-0.5px' }}>{moneda(p.precio)}</span>
-        <button className="btn-send" onClick={() => onAdd(p)} disabled={p.stock <= 0}>
-        <div className="svg-wrapper-1"><div className="svg-wrapper">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M1.946 9.315c-.522-.174-.527-.455.01-.634l19.087-6.362c.529-.176.832.12.684.638l-5.454 19.086c-.15.529-.455.547-.679.045L12 14l6-8-8 6-8.054-2.685z"/></svg>
-          </div></div>
-          <span>{p.stock > 0 ? 'Añadir' : 'Agotado'}</span>
-          </button>
+        <button className="pill-btn pill-btn--accent" onClick={() => onAdd(p)} disabled={p.stock <= 0} style={{ padding:'10px 20px', fontSize:'0.82rem', opacity: p.stock <= 0 ? 0.5 : 1 }}>
+          {p.stock > 0 ? '+ Añadir' : 'Agotado'}
+        </button>
       </div>
     </div>
   </div>
@@ -848,12 +842,9 @@ const ProductModal = ({ p, onClose, onAdd, ratings, onRate }) => {
               <p style={{ fontSize:'0.68rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.6px', marginBottom:'3px' }}>Precio</p>
               <span style={{ fontSize:'1.6rem', fontWeight:600, color:'var(--ink)', letterSpacing:'-0.5px' }}>{moneda(p.precio)}</span>
             </div>
-            <button className="btn-send" onClick={() => { onAdd({...p, colorSeleccionado: colorSel}); onClose(); }} disabled={p.stock <= 0} style={{ padding:'0.75em 1.4em 0.75em 1.1em', fontSize:'0.9rem' }}>
-            <div className="svg-wrapper-1"><div className="svg-wrapper">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M1.946 9.315c-.522-.174-.527-.455.01-.634l19.087-6.362c.529-.176.832.12.684.638l-5.454 19.086c-.15.529-.455.547-.679.045L12 14l6-8-8 6-8.054-2.685z"/></svg>
-              </div></div>
-              <span>{p.stock > 0 ? 'Añadir al carrito' : 'Agotado'}</span>
-              </button>
+            <button className="pill-btn pill-btn--accent" onClick={() => { onAdd({...p, colorSeleccionado: colorSel}); onClose(); }} disabled={p.stock <= 0} style={{ padding:'14px 28px', fontSize:'0.9rem', opacity: p.stock <= 0 ? 0.5 : 1 }}>
+              {p.stock > 0 ? '+ Añadir al carrito' : 'Agotado'}
+            </button>
           </div>
         </div>
       </div>
