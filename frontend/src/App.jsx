@@ -443,16 +443,146 @@ const GlobalStyles = ({ dark }) => (
       animation: dropAndShift 7s ease-in-out infinite;
       z-index: 4;
     }
-    .bubble4 {
-      position: absolute;
-      top: 0;
-      width: 20px;
-      height: 20px;
-      background: radial-gradient(circle at 30% 30%, #ffe3b3, #e68d49, #ffa887);
-      border-radius: 50%;
-      left: 14px;
-      animation: dropAndShift 5.5s ease-in-out infinite;
       z-index: 5;
+    }
+
+    /* ── WHEEL SELECTOR BY BYLLZZ ── */
+    .wheel-selector {
+      position: relative;
+      width: 320px;
+      height: 320px;
+      margin: 20px auto 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border-radius: 50%;
+      background: ${dark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.015)'};
+      border: 2px solid var(--border);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .wheel-selector::after {
+      content: '▼';
+      position: absolute;
+      top: 12px;
+      left: calc(50% - 7px);
+      color: var(--accent);
+      font-size: 0.85rem;
+      z-index: 10;
+      animation: bounceArrow 1.5s ease-in-out infinite;
+      text-shadow: 0 2px 6px rgba(26, 92, 255, 0.3);
+    }
+
+    @keyframes bounceArrow {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(3px); }
+    }
+
+    .hint-pop {
+      position: absolute;
+      top: 36px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.62rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 99px;
+      letter-spacing: 0.8px;
+      box-shadow: 0 4px 12px rgba(26, 92, 255, 0.3);
+      z-index: 10;
+      pointer-events: none;
+      animation: floatHint 2s ease-in-out infinite;
+    }
+
+    @keyframes floatHint {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+
+    .radio-input {
+      position: relative;
+      width: 250px;
+      height: 250px;
+      border-radius: 50%;
+      background: ${dark ? 'rgba(31, 31, 37, 0.96)' : 'rgba(255, 255, 255, 0.96)'};
+      border: 1.5px dashed var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .glass-overlay {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0) 45%, ${dark ? 'rgba(0,0,0,0.35)' : 'rgba(0,0,0,0.04)'} 100%);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .wheel-label {
+      position: absolute;
+      width: 130px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transform-origin: left center;
+      left: 50%;
+      top: calc(50% - 20px);
+      transform: rotate(var(--angle)) translateX(20px);
+      transition: color 0.3s, transform 0.3s, font-weight 0.3s;
+      color: var(--ink-2);
+      user-select: none;
+      z-index: 3;
+    }
+
+    .wheel-label:hover {
+      color: var(--ink);
+    }
+
+    .wheel-label.active {
+      color: var(--accent);
+      font-weight: 700;
+      transform: rotate(var(--angle)) translateX(30px) scale(1.08);
+    }
+
+    .num {
+      font-family: var(--font-display);
+      font-size: 0.68rem;
+      opacity: 0.5;
+    }
+
+    .wheel-label.active .num {
+      opacity: 1;
+      color: var(--accent);
+    }
+
+    .label {
+      font-family: var(--font-body);
+      font-size: 0.75rem;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .center-pointer {
+      position: absolute;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 18px rgba(26, 92, 255, 0.35);
+      z-index: 5;
+      font-size: 0.95rem;
+      pointer-events: none;
     }
   `}</style>
 );
@@ -616,6 +746,15 @@ const COLECCIONES = [
   { label:'Accesorios', val:'Accesorios',               icon:'🎨' },
   { label:'Equipos',    val:'Equipos',                  icon:'⚙️' },
   { label:'Hámsters',   val:'Jaulas para Hámster',      icon:'🐹' },
+];
+
+const CATEGORIAS_WHEEL = [
+  { label: 'Todos', val: 'Todos', num: '01', angle: -75, icon: '🌈' },
+  { label: 'Líquidos', val: 'Líquidos vitales', num: '02', angle: -45, icon: '💧' },
+  { label: 'Comida', val: 'Alimentos', num: '03', angle: -15, icon: '🫙' },
+  { label: 'Accesorios', val: 'Accesorios', num: '04', angle: 15, icon: '🎨' },
+  { label: 'Equipos', val: 'Equipos', num: '05', angle: 45, icon: '⚙️' },
+  { label: 'Hámsters', val: 'Jaulas para Hámster', num: '06', angle: 75, icon: '🐹' }
 ];
 
 const BEST_SELLER_NAMES = [
@@ -1582,15 +1721,37 @@ export default function App() {
               </section>
             )}
 
-            <section style={{ marginBottom:'40px' }}>
-              <div style={{ display:'flex', gap:'8px', overflowX:'auto', paddingBottom:'6px', scrollbarWidth:'none' }}>
-                <button className={`cat-pill ${categoria==='Todos'?'cat-pill--on':'cat-pill--off'}`} onClick={() => { setCategoria('Todos'); setBusqueda(''); }}>Todos</button>
-                {COLECCIONES.map((c) => (
-                  <button key={c.val} className={`cat-pill ${categoria===c.val?'cat-pill--on':'cat-pill--off'}`} onClick={() => setCategoria(c.val)}>
-                    {c.icon} {c.label}
-                  </button>
-                ))}
-              </div>
+            <section style={{ marginBottom:'48px', display:'flex', flexDirection:'column', alignItems:'center' }}>
+              {(() => {
+                const activeIdx = CATEGORIAS_WHEEL.findIndex(c => c.val === categoria);
+                const rotationAngle = activeIdx !== -1 ? -CATEGORIAS_WHEEL[activeIdx].angle - 90 : -90;
+                return (
+                  <div className="wheel-selector">
+                    <div className="hint-pop">CATEGORÍAS</div>
+                    <div 
+                      className="radio-input" 
+                      style={{ transform: `rotate(${rotationAngle}deg)` }}
+                    >
+                      <div className="glass-overlay"></div>
+                      {CATEGORIAS_WHEEL.map((cat) => (
+                        <div 
+                          key={cat.val}
+                          className={`wheel-label ${categoria === cat.val ? 'active' : ''}`}
+                          style={{ '--angle': `${cat.angle}deg` }}
+                          onClick={() => {
+                            setCategoria(cat.val);
+                            if (cat.val === 'Todos') setBusqueda('');
+                          }}
+                        >
+                          <span className="num">{cat.num}</span>
+                          <span className="label">{cat.icon} {cat.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="center-pointer">🧭</div>
+                  </div>
+                );
+              })()}
             </section>
 
             <section>
