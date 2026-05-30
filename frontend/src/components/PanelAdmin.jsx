@@ -189,7 +189,7 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
                 onMouseEnter={e => { e.currentTarget.style.transform='scale(1.05)'; e.currentTarget.style.border='1px solid #333'; }}
                 onMouseLeave={e => { e.currentTarget.style.transform='scale(1)'; e.currentTarget.style.border='1px solid transparent'; }}
               >
-                <p style={{ textAlign:'center', margin:'2em 0 0.5em', color:'#fff', fontSize:'1.2em' }}>🔐 Admin</p>
+                <p style={{ textAlign:'center', margin:'2em 0 0.5em', color:'#fff', fontSize:'1.2em' }}>LOGIN</p>
 
                 <div style={{
                   display:'flex', alignItems:'center', gap:'0.5em',
