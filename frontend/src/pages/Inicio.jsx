@@ -45,7 +45,7 @@ export const Inicio = ({ productos, busqueda, setBusqueda, scrollY, addItem, rat
       <main style={{ position:'relative', zIndex:1, background:'var(--bg)', borderRadius:'32px 32px 0 0', marginTop:-16, padding:'56px 24px 120px', boxShadow:'0 -16px 48px rgba(0,0,0,0.18)', maxWidth:'none' }}>
         <div style={{ maxWidth:1200, margin:'0 auto' }}>
 
-          {bestSellers.length > 0 && (
+          {bestSellers.length > 0 && !busqueda && (
             <section style={{ marginBottom:'48px' }}>
               <div style={{ display:'flex', alignItems:'center', gap:'10px', marginBottom:'20px' }}>
                 <span style={{ fontSize:'1.3rem' }}>🔥</span>
