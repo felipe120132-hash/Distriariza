@@ -38,7 +38,7 @@ export const Inicio = ({ productos, busqueda, setBusqueda, scrollY, addItem, rat
 
   return (
     <div style={{ position:'relative' }}>
-      <div style={{ position:'sticky', top:64, zIndex:0, height:440, overflow:'hidden' }}>
+      <div style={{ position:'sticky', top:64, zIndex:0, height:'clamp(440px, 80svh, 700px)', overflow:'hidden' }}>
         <HeroAcuario busqueda={busqueda} setBusqueda={setBusqueda} scrollY={scrollY} />
       </div>
 
