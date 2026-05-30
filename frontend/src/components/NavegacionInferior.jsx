@@ -26,6 +26,10 @@ export const NavegacionInferior = ({ dark, categoria, setCategoria, setBusqueda,
         )}
         <span style={{ fontSize:'0.58rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.6px', color: cartOpen ? 'var(--accent)' : 'var(--ink-3)' }}>Carrito</span>
       </button>
+      <button className="nav-tab" onClick={() => navigate('/admin')} style={{ background:'none', border:'none', cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', gap:'2px' }}>
+        <span className="nav-tab-icon" style={{ fontSize:'1.2rem' }}>👤</span>
+        <span style={{ fontSize:'0.58rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.6px', color: location.pathname === '/admin' ? 'var(--accent)' : 'var(--ink-3)' }}>Admin</span>
+      </button>
     </div>
   );
 };
