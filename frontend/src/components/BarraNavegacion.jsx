@@ -4,7 +4,8 @@ import { useNavigate } from 'react-router-dom';
 export const BarraNavegacion = ({ dark, setDark, totalItems }) => {
   const navigate = useNavigate();
   return (
-    <nav style={{ position:'sticky', top:0, zIndex:1000, background: dark ? '#111115' : '#ffffff', borderBottom:`1px solid var(--border)`, display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 28px', height:'64px' }}>
+    <nav style={{ position:'sticky', top:0, zIndex:1000, background: dark ? '#111115' : '#ffffff', borderBottom:`1px solid var(--border)`, display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 16px', height:'64px' }}>
+      {/* LOGO */}
       <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
         <img src="/Logo.jpeg" alt="Logo" style={{ height:'38px', width:'38px', borderRadius:'10px', objectFit:'cover' }} onError={e => e.target.src='https://via.placeholder.com/38?text=A'} />
         <div>
@@ -12,18 +13,35 @@ export const BarraNavegacion = ({ dark, setDark, totalItems }) => {
           <p style={{ fontSize:'0.58rem', color:'var(--accent)', fontWeight:700, letterSpacing:'1.2px', textTransform:'uppercase', marginTop:'2px' }}>Fish Accessories</p>
         </div>
       </div>
-      <div style={{ display:'flex', alignItems:'center', gap:'12px' }}>
-        <div style={{ display:'flex', alignItems:'center', gap:'6px' }}>
+
+      {/* ACCIONES */}
+      <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
+        {/* Toggle modo oscuro — siempre visible */}
+        <div style={{ display:'flex', alignItems:'center', gap:'5px' }}>
           <span style={{ fontSize:'0.75rem', color:'var(--ink-3)' }}>{dark ? '🌙' : '☀️'}</span>
           <button className="dark-toggle" onClick={() => setDark(d => !d)} aria-label="Modo oscuro" />
         </div>
-        <button className="pill-btn pill-btn--ghost" onClick={() => navigate('/admin')} style={{ padding: '8px 14px' }}>
-          <span style={{ fontSize: '1.1rem' }}>👤</span> Iniciar Sesión
+
+        {/* En escritorio: botón Iniciar Sesión */}
+        <button className="pill-btn pill-btn--ghost nav-desktop-only" onClick={() => navigate('/admin')} style={{ padding:'8px 14px' }}>
+          <span style={{ fontSize:'1.1rem' }}>👤</span> Iniciar Sesión
         </button>
-        <button className="cart-btn-custom" onClick={() => navigate('/carrito')} style={{ position:'relative' }}>
-          <span style={{ fontSize: '1.1rem' }}>🛒</span> Carrito
+
+        {/* En escritorio: botón Carrito con estilo personalizado */}
+        <button className="cart-btn-custom nav-desktop-only" onClick={() => navigate('/carrito')} style={{ position:'relative' }}>
+          <span style={{ fontSize:'1.1rem' }}>🛒</span> Carrito
           {totalItems > 0 && (
             <span style={{ position:'absolute', top:'-6px', right:'-6px', background:'#ef4444', color:'#fff', fontSize:'0.6rem', fontWeight:700, width:'20px', height:'20px', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', border:`2px solid var(--surface)` }}>
+              {totalItems}
+            </span>
+          )}
+        </button>
+
+        {/* En móvil: solo ícono de carrito compacto */}
+        <button className="nav-mobile-only icon-btn" onClick={() => navigate('/carrito')} style={{ position:'relative', width:'42px', height:'42px', borderRadius:'12px' }}>
+          🛒
+          {totalItems > 0 && (
+            <span style={{ position:'absolute', top:'-4px', right:'-4px', background:'#ef4444', color:'#fff', fontSize:'0.55rem', fontWeight:700, width:'17px', height:'17px', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', border:`2px solid var(--surface)` }}>
               {totalItems}
             </span>
           )}

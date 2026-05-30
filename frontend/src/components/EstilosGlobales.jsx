@@ -802,5 +802,91 @@ export const EstilosGlobales = ({ dark }) => (
         inset -4px -4px 6px 0 rgba(255,255,255,.2),
         inset 4px 4px 6px 0 rgba(0, 0, 0, .4);
     }
+
+    /* ═══════════════════════════════════════
+       RESPONSIVE MÓVIL
+    ═══════════════════════════════════════ */
+
+    /* Modal centrado en escritorio */
+    .modal-sheet {
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 90%;
+      max-width: 480px;
+      max-height: 90vh;
+      border-radius: 28px;
+    }
+
+    /* Ocultar/mostrar según pantalla */
+    .nav-mobile-only { display: none; }
+    .nav-desktop-only { display: inline-flex; }
+
+    /* Padding inferior para que el contenido no quede detrás del BottomNav */
+    main { padding-bottom: 120px !important; }
+
+    /* ── Media queries ── */
+    @media (max-width: 640px) {
+      /* Navbar */
+      .nav-desktop-only { display: none !important; }
+      .nav-mobile-only  { display: flex !important; }
+
+      /* Modal → bottom sheet */
+      .modal-sheet {
+        top: auto !important;
+        left: 0 !important;
+        bottom: 0 !important;
+        transform: none !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        max-height: 92vh !important;
+        border-radius: 28px 28px 0 0 !important;
+      }
+
+      /* Animación slide-up para el bottom sheet */
+      @keyframes slideUp {
+        from { transform: translateY(100%); opacity: 0; }
+        to   { transform: translateY(0);   opacity: 1; }
+      }
+      .modal-sheet { animation: slideUp 0.38s cubic-bezier(0.34,1.2,0.64,1) both !important; }
+
+      /* Indicador de arrastre (pill) en el bottom sheet */
+      .modal-sheet::before {
+        content: '';
+        display: block;
+        width: 40px;
+        height: 4px;
+        border-radius: 99px;
+        background: var(--ink-3);
+        margin: 10px auto 0;
+        opacity: 0.4;
+      }
+
+      /* Paneles laterales ocupan toda la pantalla en móvil */
+      .panel {
+        max-width: 100% !important;
+      }
+
+      /* Hero más compacto */
+      .aquarium-hero {
+        height: 360px !important;
+      }
+      .hero-text {
+        left: 20px !important;
+        bottom: 40px !important;
+      }
+
+      /* Grilla de productos: 2 columnas en móvil */
+      .products-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px !important;
+      }
+
+      /* BottomNav más compacto */
+      .bottom-nav-wrap {
+        padding: 8px 20px !important;
+        gap: 20px !important;
+      }
+    }
   `}</style>
 );

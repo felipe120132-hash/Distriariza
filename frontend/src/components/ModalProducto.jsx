@@ -11,7 +11,7 @@ export const ModalProducto = ({ p, onClose, onAdd, ratings, onRate }) => {
   return (
     <>
       <div className="modal-overlay" onClick={onClose} style={{ position:'fixed', inset:0, background:'rgba(10,10,10,0.6)', backdropFilter:'blur(8px)', WebkitBackdropFilter:'blur(8px)', zIndex:3000 }} />
-      <div className="modal" style={{ position:'fixed', top:'50%', left:'50%', transform:'translate(-50%,-50%)', width:'90%', maxWidth:'480px', maxHeight:'90vh', overflowY:'auto', background:'var(--surface)', zIndex:3001, borderRadius:'28px', boxShadow:'0 32px 80px rgba(0,0,0,0.3)' }}>
+      <div className="modal modal-sheet" style={{ position:'fixed', zIndex:3001, background:'var(--surface)', overflowY:'auto', boxShadow:'0 32px 80px rgba(0,0,0,0.3)' }}>
         <button onClick={onClose} className="close-btn-custom" style={{ position:'absolute', top:'16px', right:'16px', zIndex:10 }}
           aria-label="Cerrar"
         >✕</button>
