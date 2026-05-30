@@ -158,7 +158,7 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
     <>
       <div onClick={onClose} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.5)', zIndex:4000 }} />
       <div className="panel" style={{ position:'fixed', top:0, right:0, width:'100%', maxWidth:'600px', height:'100%', background:'var(--surface)', zIndex:4001, display:'flex', flexDirection:'column', overflowY:'auto' }}>
-        
+
         {/* ── HEADER ── */}
         <div style={{ padding:'24px 28px', borderBottom:'1px solid var(--border)', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
           <h2 style={{ fontFamily:'var(--font-display)', fontSize:'1.4rem', fontWeight:700, color:'var(--ink)' }}>Panel Admin</h2>
@@ -176,29 +176,75 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
 
           {/* ── LOGIN ── */}
           {!auth ? (
-            <form onSubmit={handleLogin} style={{ display:'flex', flexDirection:'column', gap:'16px', maxWidth:'320px', margin:'40px auto' }}>
-              <div style={{ textAlign:'center', marginBottom:'8px' }}>
-                <div style={{ fontSize:'2.5rem', marginBottom:'12px' }}>🔐</div>
-                <h3 style={{ color:'var(--ink)', fontFamily:'var(--font-display)', fontSize:'1.2rem', marginBottom:'4px' }}>Acceso Administrativo</h3>
-                <p style={{ color:'var(--ink-3)', fontSize:'0.78rem' }}>Ingresa tu contraseña para gestionar productos</p>
-              </div>
-              <div className="inputbox">
-                <input type="password" value={pass} onChange={e => setPass(e.target.value)} autoComplete="current-password" required />
-                <span>Contraseña</span>
-                <i />
-              </div>
-              {error && (
-                <div style={{ background: error.includes('Demasiados') ? 'rgba(239,68,68,0.08)' : 'rgba(239,68,68,0.06)', border:`1px solid ${error.includes('Demasiados') ? 'rgba(239,68,68,0.3)' : 'rgba(239,68,68,0.15)'}`, borderRadius:'10px', padding:'10px 14px', fontSize:'0.8rem', color:'#ef4444', textAlign:'center' }}>
-                  {error}
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'center', marginTop:'40px' }}>
+              <form
+                onSubmit={handleLogin}
+                style={{
+                  display:'flex', flexDirection:'column', gap:'10px',
+                  paddingLeft:'2em', paddingRight:'2em', paddingBottom:'1.5em',
+                  backgroundColor:'#171717', borderRadius:'25px',
+                  transition:'.4s ease-in-out', minWidth:'280px',
+                  border:'1px solid transparent',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.transform='scale(1.05)'; e.currentTarget.style.border='1px solid #333'; }}
+                onMouseLeave={e => { e.currentTarget.style.transform='scale(1)'; e.currentTarget.style.border='1px solid transparent'; }}
+              >
+                <p style={{ textAlign:'center', margin:'2em 0 0.5em', color:'#fff', fontSize:'1.2em' }}>🔐 Admin</p>
+
+                <div style={{
+                  display:'flex', alignItems:'center', gap:'0.5em',
+                  borderRadius:'25px', padding:'0.6em',
+                  backgroundColor:'#171717', boxShadow:'inset 2px 5px 10px rgb(5,5,5)',
+                }}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width={16} height={16} fill="white" viewBox="0 0 16 16">
+                    <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z" />
+                  </svg>
+                  <input
+                    placeholder="Contraseña"
+                    type="password"
+                    value={pass}
+                    onChange={e => setPass(e.target.value)}
+                    autoComplete="current-password"
+                    required
+                    style={{
+                      background:'none', border:'none', outline:'none',
+                      width:'100%', color:'#d3d3d3', fontSize:'0.9rem',
+                    }}
+                  />
                 </div>
-              )}
-              <button type="submit" disabled={loginLoading || !pass.trim()} className="pill-btn pill-btn--accent" style={{ justifyContent:'center', padding:'13px', fontSize:'0.88rem', opacity: loginLoading || !pass.trim() ? 0.6 : 1 }}>
-                {loginLoading ? 'Verificando...' : 'Ingresar'}
-              </button>
-              <p style={{ fontSize:'0.65rem', color:'var(--ink-3)', textAlign:'center', lineHeight:1.5 }}>
-                🛡️ Conexión segura • Máximo 5 intentos cada 15 min
-              </p>
-            </form>
+
+                {error && (
+                  <div style={{
+                    background:'rgba(239,68,68,0.1)', border:'1px solid rgba(239,68,68,0.3)',
+                    borderRadius:'10px', padding:'8px 12px', fontSize:'0.78rem',
+                    color:'#ef4444', textAlign:'center',
+                  }}>
+                    {error}
+                  </div>
+                )}
+
+                <div style={{ display:'flex', justifyContent:'center', marginTop:'1.5em' }}>
+                  <button
+                    type="submit"
+                    disabled={loginLoading || !pass.trim()}
+                    style={{
+                      padding:'0.5em 2.5em', borderRadius:'5px', border:'none', outline:'none',
+                      transition:'.4s ease-in-out', backgroundColor:'#252525', color:'white',
+                      cursor: loginLoading || !pass.trim() ? 'not-allowed' : 'pointer',
+                      opacity: loginLoading || !pass.trim() ? 0.6 : 1, fontSize:'0.9rem',
+                    }}
+                    onMouseEnter={e => { if (!loginLoading && pass.trim()) e.currentTarget.style.backgroundColor='black'; }}
+                    onMouseLeave={e => e.currentTarget.style.backgroundColor='#252525'}
+                  >
+                    {loginLoading ? 'Verificando...' : 'Ingresar'}
+                  </button>
+                </div>
+
+                <p style={{ fontSize:'0.65rem', color:'#666', textAlign:'center', marginBottom:'1em', lineHeight:1.5 }}>
+                  🛡️ Máximo 5 intentos cada 15 min
+                </p>
+              </form>
+            </div>
 
           ) : modo === 'lista' ? (
 
@@ -313,8 +359,8 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
                     background:'var(--bg)', borderRadius:'12px',
                     transition:'border-color 0.2s', boxSizing:'border-box',
                   }}
-                  onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--accent)'}
-                  onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}
+                  onMouseEnter={e => e.currentTarget.style.borderColor='var(--accent)'}
+                  onMouseLeave={e => e.currentTarget.style.borderColor='var(--border)'}
                 >
                   {imagen ? (
                     <>
