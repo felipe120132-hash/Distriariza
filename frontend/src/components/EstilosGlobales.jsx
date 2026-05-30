@@ -214,6 +214,83 @@ export const EstilosGlobales = ({ dark }) => (
     .send-btn--lg { font-size: 0.9rem; border-radius: 16px; padding: 0.75em 1.2em 0.75em 1em; }
     .send-btn--lg .plus-icon { font-size: 1.25em; }
 
+    /* ── ADD BUTTON – SLIDING ICON ANIMATION ── */
+    .add-btn {
+      position: relative;
+      width: 130px;
+      height: 38px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      border: 1.5px solid var(--accent-h);
+      background-color: var(--accent);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: all 0.3s;
+      font-family: var(--font-body);
+    }
+    .add-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .add-btn__text, .add-btn__icon {
+      transition: all 0.3s;
+    }
+    .add-btn__text {
+      transform: translateX(22px);
+      color: #fff;
+      font-weight: 600;
+      font-size: 0.82rem;
+      white-space: nowrap;
+    }
+    .add-btn__icon {
+      position: absolute;
+      transform: translateX(96px);
+      height: 100%;
+      width: 36px;
+      background-color: var(--accent-h);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .add-btn__icon svg {
+      width: 20px;
+      stroke: #fff;
+    }
+    .add-btn:hover:not(:disabled) {
+      background: var(--accent-h);
+    }
+    .add-btn:hover:not(:disabled) .add-btn__text {
+      color: transparent;
+    }
+    .add-btn:hover:not(:disabled) .add-btn__icon {
+      width: 128px;
+      transform: translateX(0);
+    }
+    .add-btn:active:not(:disabled) .add-btn__icon {
+      background-color: #0030b0;
+    }
+    .add-btn:active:not(:disabled) {
+      border-color: #0030b0;
+    }
+    /* Variante pequeña para TarjetaDestacado */
+    .add-btn--sm {
+      width: 100px;
+      height: 32px;
+    }
+    .add-btn--sm .add-btn__text {
+      transform: translateX(16px);
+      font-size: 0.75rem;
+    }
+    .add-btn--sm .add-btn__icon {
+      transform: translateX(66px);
+      width: 30px;
+    }
+    .add-btn--sm:hover:not(:disabled) .add-btn__icon {
+      width: 98px;
+      transform: translateX(0);
+    }
+
     .icon-btn {
       width: 36px; height: 36px; border-radius: 10px;
       border: none; background: ${dark ? 'rgba(255,255,255,0.1)' : '#ededea'}; color: var(--ink);

@@ -25,11 +25,13 @@ export const TarjetaProducto = memo(({ p, onAdd, onOpen, ratings, onRate, isBest
       </div>
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', borderTop:'1px solid var(--border)', paddingTop:'14px' }}>
         <span style={{ fontSize:'1.2rem', fontWeight:800, color:'var(--ink)', letterSpacing:'-0.5px' }}>{moneda(p.precio)}</span>
-        <button className="send-btn" onClick={() => onAdd(p)} disabled={p.stock <= 0}>
-          <div className="svg-wrapper-1"><div className="svg-wrapper">
-            <span className="plus-icon">+</span>
-          </div></div>
-          <span className="btn-label">{p.stock > 0 ? 'Añadir' : 'Agotado'}</span>
+        <button className="add-btn" onClick={() => onAdd(p)} disabled={p.stock <= 0}>
+          <span className="add-btn__text">{p.stock > 0 ? 'Añadir' : 'Agotado'}</span>
+          <span className="add-btn__icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width={20} height={20} viewBox="0 0 24 24" strokeWidth={2.5} strokeLinejoin="round" strokeLinecap="round" stroke="currentColor" fill="none">
+              <line x1={12} y1={5} x2={12} y2={19}/><line x1={5} y1={12} x2={19} y2={12}/>
+            </svg>
+          </span>
         </button>
       </div>
     </div>
