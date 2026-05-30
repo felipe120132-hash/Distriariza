@@ -22,7 +22,6 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
   const [error, setError] = useState('');
   const [cargando, setCargando] = useState(false);
 
-  // Restaurar sesión existente al montar
   useEffect(() => {
     const savedToken = sessionStorage.getItem('admin_token');
     if (savedToken) {
@@ -41,7 +40,6 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
     e.preventDefault();
     setLoginLoading(true);
     setError('');
-    
     try {
       const res = await axios.post(`${BACKEND}/api/auth/login`, { password: pass });
       const jwt = res.data.token;
@@ -71,10 +69,8 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
     setModo('lista');
   };
 
-  // Helper para headers con JWT
   const authHeaders = () => ({ 'Authorization': `Bearer ${token}` });
 
-  // Manejar errores de autenticación (sesión expirada, etc.)
   const handleAuthError = (err) => {
     if (err.response?.status === 401) {
       const code = err.response?.data?.code;
@@ -115,7 +111,6 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
     e.preventDefault();
     setCargando(true);
     setError('');
-    
     const formData = new FormData();
     formData.append('nombre', nombre);
     formData.append('descripcion', desc);
@@ -123,17 +118,12 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
     formData.append('stock', stock);
     formData.append('categoria_id', cat);
     if (imagen) formData.append('imagen', imagen);
-
     try {
       if (modo === 'nuevo') {
-        await axios.post(`${BACKEND}/api/productos`, formData, {
-          headers: authHeaders()
-        });
+        await axios.post(`${BACKEND}/api/productos`, formData, { headers: authHeaders() });
         setSuccessMsg('¡Producto creado con éxito!');
       } else {
-        await axios.put(`${BACKEND}/api/productos/${selected.id}`, formData, {
-          headers: authHeaders()
-        });
+        await axios.put(`${BACKEND}/api/productos/${selected.id}`, formData, { headers: authHeaders() });
         setSuccessMsg('¡Producto actualizado con éxito!');
       }
       onRefresh();
@@ -151,9 +141,7 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
   const handleDelete = async (id) => {
     if (!window.confirm('¿Seguro que quieres ocultar/eliminar este producto?')) return;
     try {
-      await axios.delete(`${BACKEND}/api/productos/${id}`, {
-        headers: authHeaders()
-      });
+      await axios.delete(`${BACKEND}/api/productos/${id}`, { headers: authHeaders() });
       onRefresh();
     } catch (err) {
       if (!handleAuthError(err)) {
@@ -162,7 +150,6 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
     }
   };
 
-  // 👇 PRODUCTOS FILTRADOS
   const productosFiltrados = productos.filter(p =>
     normaliza(p.nombre).includes(normaliza(busquedaAdmin))
   );
@@ -171,6 +158,8 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
     <>
       <div onClick={onClose} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.5)', zIndex:4000 }} />
       <div className="panel" style={{ position:'fixed', top:0, right:0, width:'100%', maxWidth:'600px', height:'100%', background:'var(--surface)', zIndex:4001, display:'flex', flexDirection:'column', overflowY:'auto' }}>
+        
+        {/* ── HEADER ── */}
         <div style={{ padding:'24px 28px', borderBottom:'1px solid var(--border)', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
           <h2 style={{ fontFamily:'var(--font-display)', fontSize:'1.4rem', fontWeight:700, color:'var(--ink)' }}>Panel Admin</h2>
           <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
@@ -184,6 +173,8 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
         </div>
 
         <div style={{ padding:'24px 28px', flex:1 }}>
+
+          {/* ── LOGIN ── */}
           {!auth ? (
             <form onSubmit={handleLogin} style={{ display:'flex', flexDirection:'column', gap:'16px', maxWidth:'320px', margin:'40px auto' }}>
               <div style={{ textAlign:'center', marginBottom:'8px' }}>
@@ -197,7 +188,7 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
                 <i />
               </div>
               {error && (
-                <div style={{ background: error.includes('Demasiados') ? 'rgba(239,68,68,0.08)' : 'rgba(239,68,68,0.06)', border: `1px solid ${error.includes('Demasiados') ? 'rgba(239,68,68,0.3)' : 'rgba(239,68,68,0.15)'}`, borderRadius:'10px', padding:'10px 14px', fontSize:'0.8rem', color:'#ef4444', textAlign:'center' }}>
+                <div style={{ background: error.includes('Demasiados') ? 'rgba(239,68,68,0.08)' : 'rgba(239,68,68,0.06)', border:`1px solid ${error.includes('Demasiados') ? 'rgba(239,68,68,0.3)' : 'rgba(239,68,68,0.15)'}`, borderRadius:'10px', padding:'10px 14px', fontSize:'0.8rem', color:'#ef4444', textAlign:'center' }}>
                   {error}
                 </div>
               )}
@@ -208,125 +199,160 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
                 🛡️ Conexión segura • Máximo 5 intentos cada 15 min
               </p>
             </form>
-          ) : (
-            modo === 'lista' ? (
-              <div>
-                {/* ── HEADER ── */}
-                <div style={{ display:'flex', justifyContent:'space-between', marginBottom:'16px', alignItems:'center' }}>
-                  <h3 style={{ color:'var(--ink)', fontFamily:'var(--font-display)' }}>
-                    Productos ({productosFiltrados.length}{busquedaAdmin ? ` de ${productos.length}` : ''})
-                  </h3>
-                  <button onClick={handleNew} className="pill-btn pill-btn--green">+ Nuevo</button>
-                </div>
 
-                {/* ── BARRA DE BÚSQUEDA ── */}
-                <div style={{ position:'relative', marginBottom:'20px' }}>
-                  <span style={{ position:'absolute', left:'14px', top:'50%', transform:'translateY(-50%)', fontSize:'0.9rem', opacity:0.45, pointerEvents:'none' }}>🔍</span>
-                  <input
-                    className="form-input"
-                    placeholder="Buscar producto..."
-                    value={busquedaAdmin}
-                    onChange={e => setBusquedaAdmin(e.target.value)}
-                    style={{ paddingLeft:'42px' }}
-                  />
-                  {busquedaAdmin && (
-                    <button
-                      onClick={() => setBusquedaAdmin('')}
-                      style={{ position:'absolute', right:'14px', top:'50%', transform:'translateY(-50%)', background:'none', border:'none', cursor:'pointer', fontSize:'1rem', color:'var(--ink-3)', lineHeight:1 }}
-                    >✕</button>
-                  )}
-                </div>
+          ) : modo === 'lista' ? (
 
-                {successMsg && (
-                  <div style={{ background:'rgba(34,197,94,0.1)', border:'1px solid rgba(34,197,94,0.3)', borderRadius:'12px', padding:'12px 16px', marginBottom:'16px', fontSize:'0.85rem', color:'#16a34a', fontWeight:600 }}>
-                    ✅ {successMsg}
-                  </div>
+            /* ── LISTA ── */
+            <div>
+              <div style={{ display:'flex', justifyContent:'space-between', marginBottom:'16px', alignItems:'center' }}>
+                <h3 style={{ color:'var(--ink)', fontFamily:'var(--font-display)' }}>
+                  Productos ({productosFiltrados.length}{busquedaAdmin ? ` de ${productos.length}` : ''})
+                </h3>
+                <button onClick={handleNew} className="pill-btn pill-btn--green">+ Nuevo</button>
+              </div>
+
+              <div style={{ position:'relative', marginBottom:'20px' }}>
+                <span style={{ position:'absolute', left:'14px', top:'50%', transform:'translateY(-50%)', fontSize:'0.9rem', opacity:0.45, pointerEvents:'none' }}>🔍</span>
+                <input
+                  className="form-input"
+                  placeholder="Buscar producto..."
+                  value={busquedaAdmin}
+                  onChange={e => setBusquedaAdmin(e.target.value)}
+                  style={{ paddingLeft:'42px' }}
+                />
+                {busquedaAdmin && (
+                  <button onClick={() => setBusquedaAdmin('')} style={{ position:'absolute', right:'14px', top:'50%', transform:'translateY(-50%)', background:'none', border:'none', cursor:'pointer', fontSize:'1rem', color:'var(--ink-3)', lineHeight:1 }}>✕</button>
                 )}
+              </div>
 
-                {/* ── LISTA DE PRODUCTOS ── */}
-                <div style={{ display:'flex', flexDirection:'column', gap:'12px' }}>
-                  {productosFiltrados.length === 0 ? (
-                    <div style={{ textAlign:'center', padding:'40px 20px' }}>
-                      <p style={{ fontSize:'1.8rem', marginBottom:'10px' }}>🔍</p>
-                      <p style={{ color:'var(--ink-3)', fontSize:'0.88rem' }}>
-                        No se encontró ningún producto con "{busquedaAdmin}"
-                      </p>
-                    </div>
-                  ) : (
-                    productosFiltrados.map(p => (
-                      <div key={p.id} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'12px', background: 'var(--card-bg)', borderRadius:'12px', border:'1px solid var(--border)' }}>
-                        <div style={{ display:'flex', alignItems:'center', gap:'12px' }}>
-                          <img src={imgSrc(p.imagen_url)} style={{ width:'40px', height:'40px', objectFit:'cover', borderRadius:'8px' }} />
-                          <div>
-                            <p style={{ fontWeight:600, fontSize:'0.85rem', color:'var(--ink)', maxWidth:'200px', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{p.nombre}</p>
-                            <p style={{ fontSize:'0.75rem', color:'var(--ink-2)' }}>{moneda(p.precio)} • Stock: <span style={{ color: p.stock > 0 ? '#16a34a' : '#ef4444', fontWeight: 'bold' }}>{p.stock}</span></p>
-                          </div>
-                        </div>
-                        <div style={{ display:'flex', gap:'8px' }}>
-                          <button onClick={() => handleEdit(p)} className="pill-btn pill-btn--ghost" style={{ padding:'6px 12px', fontSize:'0.7rem' }}>Editar</button>
-                          <button onClick={() => handleDelete(p.id)} className="pill-btn" style={{ background:'#ef4444', color:'white', padding:'6px 12px', fontSize:'0.7rem' }}>Borrar</button>
+              {successMsg && (
+                <div style={{ background:'rgba(34,197,94,0.1)', border:'1px solid rgba(34,197,94,0.3)', borderRadius:'12px', padding:'12px 16px', marginBottom:'16px', fontSize:'0.85rem', color:'#16a34a', fontWeight:600 }}>
+                  ✅ {successMsg}
+                </div>
+              )}
+
+              <div style={{ display:'flex', flexDirection:'column', gap:'12px' }}>
+                {productosFiltrados.length === 0 ? (
+                  <div style={{ textAlign:'center', padding:'40px 20px' }}>
+                    <p style={{ fontSize:'1.8rem', marginBottom:'10px' }}>🔍</p>
+                    <p style={{ color:'var(--ink-3)', fontSize:'0.88rem' }}>No se encontró ningún producto con "{busquedaAdmin}"</p>
+                  </div>
+                ) : (
+                  productosFiltrados.map(p => (
+                    <div key={p.id} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'12px', background:'var(--card-bg)', borderRadius:'12px', border:'1px solid var(--border)' }}>
+                      <div style={{ display:'flex', alignItems:'center', gap:'12px' }}>
+                        <img src={imgSrc(p.imagen_url)} style={{ width:'40px', height:'40px', objectFit:'cover', borderRadius:'8px' }} />
+                        <div>
+                          <p style={{ fontWeight:600, fontSize:'0.85rem', color:'var(--ink)', maxWidth:'200px', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{p.nombre}</p>
+                          <p style={{ fontSize:'0.75rem', color:'var(--ink-2)' }}>{moneda(p.precio)} • Stock: <span style={{ color: p.stock > 0 ? '#16a34a' : '#ef4444', fontWeight:'bold' }}>{p.stock}</span></p>
                         </div>
                       </div>
-                    ))
-                  )}
+                      <div style={{ display:'flex', gap:'8px' }}>
+                        <button onClick={() => handleEdit(p)} className="pill-btn pill-btn--ghost" style={{ padding:'6px 12px', fontSize:'0.7rem' }}>Editar</button>
+                        <button onClick={() => handleDelete(p.id)} className="pill-btn" style={{ background:'#ef4444', color:'white', padding:'6px 12px', fontSize:'0.7rem' }}>Borrar</button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+
+          ) : (
+
+            /* ── FORMULARIO NUEVO / EDITAR ── */
+            <form onSubmit={handleSubmit} style={{ display:'flex', flexDirection:'column', gap:'16px' }}>
+              <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'10px' }}>
+                <h3 style={{ color:'var(--ink)', fontFamily:'var(--font-display)' }}>{modo === 'nuevo' ? 'Nuevo Producto' : 'Editar Producto'}</h3>
+                <button type="button" onClick={() => setModo('lista')} className="pill-btn pill-btn--ghost">Volver</button>
+              </div>
+
+              <div>
+                <label style={{ fontSize:'0.8rem', fontWeight:600, color:'var(--ink-2)', marginBottom:'6px', display:'block' }}>Nombre del producto</label>
+                <input required className="form-input" placeholder="Nombre" value={nombre} onChange={e => setNombre(e.target.value)} />
+              </div>
+
+              <div>
+                <label style={{ fontSize:'0.8rem', fontWeight:600, color:'var(--ink-2)', marginBottom:'6px', display:'block' }}>Descripción / Detalles</label>
+                <textarea className="form-input" placeholder="Descripción" value={desc} onChange={e => setDesc(e.target.value)} rows={3} />
+              </div>
+
+              <div style={{ display:'flex', gap:'10px' }}>
+                <div style={{ flex:1 }}>
+                  <label style={{ fontSize:'0.8rem', fontWeight:600, color:'var(--ink-2)', marginBottom:'6px', display:'block' }}>Precio (COP)</label>
+                  <input required type="number" className="form-input" placeholder="Precio" value={precio} onChange={e => setPrecio(e.target.value)} />
+                </div>
+                <div style={{ flex:1 }}>
+                  <label style={{ fontSize:'0.8rem', fontWeight:600, color:'var(--ink-2)', marginBottom:'6px', display:'block' }}>Cantidad (Stock)</label>
+                  <input required type="number" className="form-input" placeholder="Stock" value={stock} onChange={e => setStock(e.target.value)} />
                 </div>
               </div>
-            ) : (
-              <form onSubmit={handleSubmit} style={{ display:'flex', flexDirection:'column', gap:'16px' }}>
-                <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'10px' }}>
-                  <h3 style={{ color:'var(--ink)', fontFamily:'var(--font-display)' }}>{modo === 'nuevo' ? 'Nuevo Producto' : 'Editar Producto'}</h3>
-                  <button type="button" onClick={() => setModo('lista')} className="pill-btn pill-btn--ghost">Volver</button>
-                </div>
-                
-                <div>
-                  <label style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--ink-2)', marginBottom: '6px', display: 'block' }}>Nombre del producto</label>
-                  <input required className="form-input" placeholder="Nombre" value={nombre} onChange={e=>setNombre(e.target.value)} />
-                </div>
-                
-                <div>
-                  <label style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--ink-2)', marginBottom: '6px', display: 'block' }}>Descripción / Detalles</label>
-                  <textarea className="form-input" placeholder="Descripción" value={desc} onChange={e=>setDesc(e.target.value)} rows={3} />
-                </div>
 
-                <div style={{ display: 'flex', gap: '10px' }}>
-                  <div style={{ flex: 1 }}>
-                    <label style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--ink-2)', marginBottom: '6px', display: 'block' }}>Precio (COP)</label>
-                    <input required type="number" className="form-input" placeholder="Precio" value={precio} onChange={e=>setPrecio(e.target.value)} />
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <label style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--ink-2)', marginBottom: '6px', display: 'block' }}>Cantidad (Stock)</label>
-                    <input required type="number" className="form-input" placeholder="Stock" value={stock} onChange={e=>setStock(e.target.value)} />
-                  </div>
+              <div>
+                <label style={{ fontSize:'0.8rem', fontWeight:600, color:'var(--ink-2)', marginBottom:'6px', display:'block' }}>Categoría</label>
+                <select className="form-input" value={cat} onChange={e => setCat(e.target.value)}>
+                  <option value="1">Líquidos Vitales</option>
+                  <option value="2">Alimentos</option>
+                  <option value="3">Equipos</option>
+                  <option value="4">Accesorios</option>
+                  <option value="5">Plantas</option>
+                  <option value="6">Jaulas para Hámster</option>
+                </select>
+              </div>
+
+              {/* ── SUBIR IMAGEN ── */}
+              <div>
+                <label style={{ fontSize:'0.8rem', fontWeight:600, color:'var(--ink-2)', marginBottom:'6px', display:'block' }}>
+                  {modo === 'editar' ? 'Cambiar imagen (opcional)' : 'Subir imagen'}
+                </label>
+                <label
+                  htmlFor="file-upload"
+                  style={{
+                    height:'160px', width:'100%', display:'flex', flexDirection:'column',
+                    alignItems:'center', justifyContent:'center', gap:'12px',
+                    cursor:'pointer', border:'2px dashed var(--border)',
+                    background:'var(--bg)', borderRadius:'12px',
+                    transition:'border-color 0.2s', boxSizing:'border-box',
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--accent)'}
+                  onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}
+                >
+                  {imagen ? (
+                    <>
+                      <img
+                        src={URL.createObjectURL(imagen)}
+                        alt="preview"
+                        style={{ maxHeight:'100px', maxWidth:'100%', objectFit:'contain', borderRadius:'8px' }}
+                      />
+                      <span style={{ fontSize:'0.72rem', color:'var(--ink-3)' }}>{imagen.name}</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style={{ width:'40px', height:'40px', color:'var(--ink-3)' }}>
+                        <path fill="currentColor" fillRule="evenodd" clipRule="evenodd" d="M10 1C9.73478 1 9.48043 1.10536 9.29289 1.29289L3.29289 7.29289C3.10536 7.48043 3 7.73478 3 8V20C3 21.6569 4.34315 23 6 23H7C7.55228 23 8 22.5523 8 22C8 21.4477 7.55228 21 7 21H6C5.44772 21 5 20.5523 5 20V9H10C10.5523 9 11 8.55228 11 8V3H18C18.5523 3 19 3.44772 19 4V9C19 9.55228 19.4477 10 20 10C20.5523 10 21 9.55228 21 9V4C21 2.34315 19.6569 1 18 1H10ZM9 7H6.41421L9 4.41421V7ZM14 15.5C14 14.1193 15.1193 13 16.5 13C17.8807 13 19 14.1193 19 15.5V16V17H20C21.1046 17 22 17.8954 22 19C22 20.1046 21.1046 21 20 21H13C11.8954 21 11 20.1046 11 19C11 17.8954 11.8954 17 13 17H14V16V15.5ZM16.5 11C14.142 11 12.2076 12.8136 12.0156 15.122C10.2825 15.5606 9 17.1305 9 19C9 21.2091 10.7909 23 13 23H20C22.2091 23 24 21.2091 24 19C24 17.1305 22.7175 15.5606 20.9844 15.122C20.7924 12.8136 18.858 11 16.5 11Z" />
+                      </svg>
+                      <span style={{ fontSize:'0.78rem', color:'var(--ink-3)', fontWeight:500 }}>Click para subir imagen</span>
+                    </>
+                  )}
+                  <input
+                    id="file-upload"
+                    type="file"
+                    accept="image/*"
+                    onChange={e => setImagen(e.target.files[0])}
+                    style={{ display:'none' }}
+                  />
+                </label>
+              </div>
+
+              {error && (
+                <div style={{ background:'rgba(239,68,68,0.06)', border:'1px solid rgba(239,68,68,0.15)', borderRadius:'10px', padding:'10px 14px', fontSize:'0.8rem', color:'#ef4444', textAlign:'center' }}>
+                  {error}
                 </div>
+              )}
 
-                <div>
-                  <label style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--ink-2)', marginBottom: '6px', display: 'block' }}>Categoría</label>
-                  <select className="form-input" value={cat} onChange={e=>setCat(e.target.value)}>
-                    <option value="1">Líquidos Vitales</option>
-                    <option value="2">Alimentos</option>
-                    <option value="3">Equipos</option>
-                    <option value="4">Accesorios</option>
-                    <option value="5">Plantas</option>
-                    <option value="6">Jaulas para Hámster</option>
-                  </select>
-                </div>
-
-                <div style={{ background:'var(--bg)', padding:'16px', borderRadius:'12px', border:'1px dashed var(--border)' }}>
-                  <p style={{ fontSize:'0.8rem', color:'var(--ink-2)', marginBottom:'8px', fontWeight:600 }}>{modo === 'editar' ? 'Cambiar imagen (opcional)' : 'Subir imagen'}</p>
-                  <input type="file" accept="image/*" onChange={e => setImagen(e.target.files[0])} style={{ color:'var(--ink)', fontSize:'0.8rem' }} />
-                </div>
-
-                {error && (
-                  <div style={{ background:'rgba(239,68,68,0.06)', border:'1px solid rgba(239,68,68,0.15)', borderRadius:'10px', padding:'10px 14px', fontSize:'0.8rem', color:'#ef4444', textAlign:'center' }}>
-                    {error}
-                  </div>
-                )}
-
-                <button type="submit" disabled={cargando} className="pill-btn pill-btn--accent" style={{ justifyContent:'center', padding:'14px', marginTop:'10px', fontSize:'0.9rem' }}>
-                  {cargando ? 'Guardando...' : 'Guardar Producto'}
-                </button>
-              </form>
-            )
+              <button type="submit" disabled={cargando} className="pill-btn pill-btn--accent" style={{ justifyContent:'center', padding:'14px', marginTop:'10px', fontSize:'0.9rem' }}>
+                {cargando ? 'Guardando...' : 'Guardar Producto'}
+              </button>
+            </form>
           )}
         </div>
       </div>
