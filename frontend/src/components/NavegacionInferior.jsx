@@ -94,7 +94,6 @@ export const NavegacionInferior = ({ dark, categoria, setCategoria, setBusqueda,
         border: '1px solid var(--border)',
         zIndex: 900, display: 'flex', alignItems: 'center', gap: '8px',
       }}>
-        {/* Badge del carrito visible cuando está cerrado */}
         {!open && totalItems > 0 && (
           <span style={{
             background: '#ef4444', color: '#fff', fontSize: '0.65rem',
@@ -102,7 +101,7 @@ export const NavegacionInferior = ({ dark, categoria, setCategoria, setBusqueda,
           }}>{totalItems}</span>
         )}
 
-        <label className="burger" htmlFor="burger-menu" style={{ width:36, height:26, position:'relative', cursor:'pointer', display:'block' }}>
+        <label htmlFor="burger-menu" style={{ width:40, height:30, position:'relative', cursor:'pointer', display:'block' }}>
           <input
             type="checkbox"
             id="burger-menu"
@@ -110,35 +109,40 @@ export const NavegacionInferior = ({ dark, categoria, setCategoria, setBusqueda,
             onChange={e => setOpen(e.target.checked)}
             style={{ display:'none' }}
           />
-          {[0,1,2].map(i => (
-            <span key={i} style={{
-              display: 'block', position: 'absolute',
-              height: '3px', width: '100%',
-              background: 'var(--ink)',
-              borderRadius: '9px', left: 0,
-              transition: '.25s ease-in-out',
-              ...(i === 0 ? {
-                top: open ? '0px' : '0px',
-                transformOrigin: 'left center',
-                transform: open ? 'rotate(45deg) translateX(4px)' : 'rotate(0deg)',
-              } : i === 1 ? {
-                top: '50%', transformOrigin: 'left center',
-                transform: open ? 'translateY(-50%) scaleX(0)' : 'translateY(-50%)',
-                opacity: open ? 0 : 1,
-              } : {
-                bottom: 0, transformOrigin: 'left center',
-                transform: open ? 'rotate(-45deg) translateX(4px)' : 'rotate(0deg)',
-              }),
-            }} />
-          ))}
+          {/* Línea 1 */}
+          <span style={{
+            display:'block', position:'absolute',
+            height:'4px', width:'100%',
+            background:'var(--ink)', borderRadius:'9px',
+            transition:'.25s ease-in-out',
+            transformOrigin:'left center',
+            top: open ? '0px' : '0px',
+            left: open ? '5px' : '0',
+            transform: open ? 'rotate(45deg)' : 'rotate(0deg)',
+          }}/>
+          {/* Línea 2 */}
+          <span style={{
+            display:'block', position:'absolute',
+            height:'4px', width: open ? '0%' : '100%',
+            background:'var(--ink)', borderRadius:'9px',
+            transition:'.25s ease-in-out',
+            transformOrigin:'left center',
+            top:'50%', transform:'translateY(-50%)',
+            opacity: open ? 0 : 1,
+          }}/>
+          {/* Línea 3 */}
+          <span style={{
+            display:'block', position:'absolute',
+            height:'4px', width:'100%',
+            background:'var(--ink)', borderRadius:'9px',
+            transition:'.25s ease-in-out',
+            transformOrigin:'left center',
+            top: open ? '28px' : '100%',
+            left: open ? '5px' : '0',
+            transform: open ? 'rotate(-45deg)' : 'translateY(-100%)',
+          }}/>
         </label>
       </div>
-
-      <style>{`
-        @media (min-width: 768px) {
-          /* En desktop podés volver al nav horizontal si querés */
-        }
-      `}</style>
     </>
   );
 };
