@@ -38,11 +38,11 @@ export const Inicio = ({ productos, busqueda, setBusqueda, scrollY, addItem, rat
 
   return (
     <div style={{ position:'relative' }}>
-      <div style={{ position:'sticky', top:64, zIndex:0, height:440, overflow:'hidden' }}>
+      <div style={{ position:'sticky', top:64, zIndex:0, height:'clamp(440px, 80svh, 700px)', overflow:'hidden' }}>
         <HeroAcuario busqueda={busqueda} setBusqueda={setBusqueda} scrollY={scrollY} />
       </div>
 
-      <main style={{ position:'relative', zIndex:1, background:'var(--bg)', borderRadius:'32px 32px 0 0', marginTop:-16, padding:'56px 24px 120px', boxShadow:'0 -16px 48px rgba(0,0,0,0.18)', maxWidth:'none' }}>
+      <main style={{ position:'relative', zIndex:1, background:'var(--bg)', borderRadius:'32px 32px 0 0', marginTop:-32, padding:'56px 24px 120px', boxShadow:'0 -16px 48px rgba(0,0,0,0.18)', maxWidth:'none' }}>
         <div style={{ maxWidth:1200, margin:'0 auto' }}>
 
           {bestSellers.length > 0 && !busqueda && (
