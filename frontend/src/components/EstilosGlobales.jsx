@@ -85,13 +85,11 @@ export const EstilosGlobales = ({ dark }) => (
       transition: background 0.3s ease;
     }
 
-    /* Efecto de mezcla para fondos blancos de JPGs */
     .img-blend {
       mix-blend-mode: multiply;
       filter: contrast(1.05);
     }
 
-    /* Brillo sutil en el contenedor */
     .img-container::after {
       content: '';
       position: absolute;
@@ -149,7 +147,6 @@ export const EstilosGlobales = ({ dark }) => (
     .pill-btn--ghost:hover { background: ${dark ? 'rgba(255,255,255,0.14)' : '#e2e2de'}; }
     .pill-btn--green { background: var(--green); color: #fff; }
 
-    /* ── FROM UIVERSE.IO BY ADAMGIEBL – SEND BUTTON ── */
     @keyframes fly-1 {
       from { transform: translateY(0.1em); }
       to   { transform: translateY(-0.1em); }
@@ -174,7 +171,6 @@ export const EstilosGlobales = ({ dark }) => (
     .send-btn:active { transform: scale(0.95); }
     .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    /* el "+" icóno */
     .send-btn .plus-icon {
       display: inline-flex;
       align-items: center;
@@ -187,7 +183,6 @@ export const EstilosGlobales = ({ dark }) => (
       transition: transform 0.3s ease-in-out;
       flex-shrink: 0;
     }
-    /* el texto */
     .send-btn .btn-label {
       display: block;
       margin-left: 0.35em;
@@ -197,7 +192,6 @@ export const EstilosGlobales = ({ dark }) => (
     .send-btn .svg-wrapper-1 { display: flex; align-items: center; }
     .send-btn .svg-wrapper   { display: flex; align-items: center; }
 
-    /* hover */
     .send-btn:hover:not(:disabled) .svg-wrapper {
       animation: fly-1 0.6s ease-in-out infinite alternate;
     }
@@ -208,13 +202,11 @@ export const EstilosGlobales = ({ dark }) => (
       transform: translateX(5em);
     }
 
-    /* tamaños */
     .send-btn--sm { font-size: 0.72rem; border-radius: 12px; padding: 0.5em 0.9em 0.5em 0.75em; }
     .send-btn--sm .plus-icon { font-size: 1.1em; }
     .send-btn--lg { font-size: 0.9rem; border-radius: 16px; padding: 0.75em 1.2em 0.75em 1em; }
     .send-btn--lg .plus-icon { font-size: 1.25em; }
 
-    /* ── ADD BUTTON – SLIDING ICON ANIMATION ── */
     .add-btn {
       position: relative;
       width: 130px;
@@ -229,13 +221,8 @@ export const EstilosGlobales = ({ dark }) => (
       transition: all 0.3s;
       font-family: var(--font-body);
     }
-    .add-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-    .add-btn__text, .add-btn__icon {
-      transition: all 0.3s;
-    }
+    .add-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .add-btn__text, .add-btn__icon { transition: all 0.3s; }
     .add-btn__text {
       transform: translateX(22px);
       color: #fff;
@@ -253,43 +240,16 @@ export const EstilosGlobales = ({ dark }) => (
       align-items: center;
       justify-content: center;
     }
-    .add-btn__icon svg {
-      width: 20px;
-      stroke: #fff;
-    }
-    .add-btn:hover:not(:disabled) {
-      background: var(--accent-h);
-    }
-    .add-btn:hover:not(:disabled) .add-btn__text {
-      color: transparent;
-    }
-    .add-btn:hover:not(:disabled) .add-btn__icon {
-      width: 128px;
-      transform: translateX(0);
-    }
-    .add-btn:active:not(:disabled) .add-btn__icon {
-      background-color: #0030b0;
-    }
-    .add-btn:active:not(:disabled) {
-      border-color: #0030b0;
-    }
-    /* Variante pequeña para TarjetaDestacado */
-    .add-btn--sm {
-      width: 100px;
-      height: 32px;
-    }
-    .add-btn--sm .add-btn__text {
-      transform: translateX(16px);
-      font-size: 0.75rem;
-    }
-    .add-btn--sm .add-btn__icon {
-      transform: translateX(66px);
-      width: 30px;
-    }
-    .add-btn--sm:hover:not(:disabled) .add-btn__icon {
-      width: 98px;
-      transform: translateX(0);
-    }
+    .add-btn__icon svg { width: 20px; stroke: #fff; }
+    .add-btn:hover:not(:disabled) { background: var(--accent-h); }
+    .add-btn:hover:not(:disabled) .add-btn__text { color: transparent; }
+    .add-btn:hover:not(:disabled) .add-btn__icon { width: 128px; transform: translateX(0); }
+    .add-btn:active:not(:disabled) .add-btn__icon { background-color: #0030b0; }
+    .add-btn:active:not(:disabled) { border-color: #0030b0; }
+    .add-btn--sm { width: 100px; height: 32px; }
+    .add-btn--sm .add-btn__text { transform: translateX(16px); font-size: 0.75rem; }
+    .add-btn--sm .add-btn__icon { transform: translateX(66px); width: 30px; }
+    .add-btn--sm:hover:not(:disabled) .add-btn__icon { width: 98px; transform: translateX(0); }
 
     .icon-btn {
       width: 36px; height: 36px; border-radius: 10px;
@@ -315,60 +275,33 @@ export const EstilosGlobales = ({ dark }) => (
       font-size: 0.78rem; font-weight: 600; border: none; cursor: pointer;
       transition: background 0.25s, color 0.25s, transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.25s;
     }
-    .cat-pill:hover {
-      transform: translateY(-3px) scale(1.05);
-      box-shadow: var(--shadow-md);
-    }
-    .cat-pill:active {
-      transform: scale(0.95);
-    }
+    .cat-pill:hover { transform: translateY(-3px) scale(1.05); box-shadow: var(--shadow-md); }
+    .cat-pill:active { transform: scale(0.95); }
     .cat-pill--off {
       background: ${dark ? 'rgba(255,255,255,0.07)' : 'var(--surface)'};
       color: var(--ink-2);
       box-shadow: var(--shadow-sm);
     }
-    .cat-pill--off:hover {
-      background: ${dark ? 'rgba(255,255,255,0.12)' : '#eaeae6'};
-      color: var(--ink);
-    }
+    .cat-pill--off:hover { background: ${dark ? 'rgba(255,255,255,0.12)' : '#eaeae6'}; color: var(--ink); }
     .cat-pill--on { background: var(--ink); color: ${dark ? '#111' : 'var(--surface)'}; }
 
     .nav-tab {
       background: none; border: none; cursor: pointer;
       display: flex; flex-direction: column; align-items: center; gap: 2px;
-      position: relative;
-      padding: 6px 16px;
-      border-radius: 20px;
+      position: relative; padding: 6px 16px; border-radius: 20px;
       transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.3s, box-shadow 0.3s;
     }
-    .nav-tab:hover {
-      transform: translateY(-5px) scale(1.08);
-      background: ${dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.03)'};
-    }
-    .nav-tab:active {
-      transform: translateY(-2px) scale(0.95);
-    }
-    .nav-tab-icon {
-      display: inline-block;
-      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    .nav-tab:hover .nav-tab-icon {
-      transform: scale(1.22) rotate(6deg);
-    }
-    .nav-tab-badge {
-      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    .nav-tab:hover .nav-tab-badge {
-      transform: scale(1.15) translate(2px, -2px);
-    }
+    .nav-tab:hover { transform: translateY(-5px) scale(1.08); background: ${dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.03)'}; }
+    .nav-tab:active { transform: translateY(-2px) scale(0.95); }
+    .nav-tab-icon { display: inline-block; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    .nav-tab:hover .nav-tab-icon { transform: scale(1.22) rotate(6deg); }
+    .nav-tab-badge { transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    .nav-tab:hover .nav-tab-badge { transform: scale(1.15) translate(2px, -2px); }
 
     .review-tab {
       transition: color 0.25s, border-color 0.25s, transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
     }
-    .review-tab:hover {
-      transform: translateY(-2px);
-      color: var(--accent) !important;
-    }
+    .review-tab:hover { transform: translateY(-2px); color: var(--accent) !important; }
 
     .dark-toggle {
       width: 48px; height: 26px; border-radius: 99px; border: none; cursor: pointer;
@@ -403,94 +336,42 @@ export const EstilosGlobales = ({ dark }) => (
     .caustic-ray, .bubble, .seaweed { transition: none !important; }
     .parallax-layer { transition: none !important; }
 
-    /* ── FROM UIVERSE.IO BY LIYAXU123 ── */
     .form-control {
-      position: relative;
-      margin: 20px 0 40px;
-      width: 190px;
+      position: relative; margin: 20px 0 40px; width: 190px;
     }
     .form-control input {
-      background-color: transparent;
-      border: 0;
-      border-bottom: 2px #fff solid;
-      display: block;
-      width: 100%;
-      padding: 15px 0;
-      font-size: 18px;
-      color: #fff;
+      background-color: transparent; border: 0; border-bottom: 2px #fff solid;
+      display: block; width: 100%; padding: 15px 0; font-size: 18px; color: #fff;
     }
-    .form-control input:focus,
-    .form-control input:valid {
-      outline: 0;
-      border-bottom-color: lightblue;
-    }
-    .form-control label {
-      position: absolute;
-      top: 15px;
-      left: 0;
-      pointer-events: none;
-    }
+    .form-control input:focus, .form-control input:valid { outline: 0; border-bottom-color: lightblue; }
+    .form-control label { position: absolute; top: 15px; left: 0; pointer-events: none; }
     .form-control label span {
-      display: inline-block;
-      font-size: 18px;
-      min-width: 5px;
-      color: #fff;
+      display: inline-block; font-size: 18px; min-width: 5px; color: #fff;
       transition: 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     }
     .form-control input:focus + label span,
-    .form-control input:valid + label span {
-      color: lightblue;
-      transform: translateY(-30px);
-    }
+    .form-control input:valid + label span { color: lightblue; transform: translateY(-30px); }
 
-    /* ── INPUTBOX STYLE (adaptado a la paleta de la página) ── */
-    .inputbox {
-      position: relative;
-      width: 100%;
-    }
+    .inputbox { position: relative; width: 100%; }
     .inputbox input {
-      position: relative;
-      width: 100%;
-      padding: 20px 10px 10px;
-      background: transparent;
-      outline: none;
-      box-shadow: none;
-      border: none;
-      color: var(--ink);
-      font-family: var(--font-body);
-      font-size: 1em;
-      letter-spacing: 0.05em;
-      transition: 0.5s;
-      z-index: 10;
+      position: relative; width: 100%; padding: 20px 10px 10px;
+      background: transparent; outline: none; box-shadow: none; border: none;
+      color: var(--ink); font-family: var(--font-body); font-size: 1em;
+      letter-spacing: 0.05em; transition: 0.5s; z-index: 10;
     }
     .inputbox span {
-      position: absolute;
-      left: 10px;
-      top: 0;
-      padding: 20px 0 10px;
-      font-size: 1em;
-      color: var(--ink-3);
-      letter-spacing: 0.05em;
-      transition: 0.5s;
-      pointer-events: none;
+      position: absolute; left: 10px; top: 0; padding: 20px 0 10px;
+      font-size: 1em; color: var(--ink-3); letter-spacing: 0.05em;
+      transition: 0.5s; pointer-events: none;
     }
     .inputbox input:valid ~ span,
     .inputbox input:focus ~ span {
-      color: var(--accent);
-      transform: translateX(-10px) translateY(-28px);
-      font-size: 0.75em;
+      color: var(--accent); transform: translateX(-10px) translateY(-28px); font-size: 0.75em;
     }
     .inputbox i {
-      position: absolute;
-      left: 0;
-      bottom: 0;
-      width: 100%;
-      height: 2px;
-      background: var(--accent);
-      border-radius: 4px;
-      transition: 0.5s;
-      pointer-events: none;
-      z-index: 9;
+      position: absolute; left: 0; bottom: 0; width: 100%; height: 2px;
+      background: var(--accent); border-radius: 4px; transition: 0.5s;
+      pointer-events: none; z-index: 9;
     }
     .inputbox input:valid ~ i,
     .inputbox input:focus ~ i {
@@ -499,72 +380,33 @@ export const EstilosGlobales = ({ dark }) => (
       border-radius: 8px;
     }
 
-    /* ── INPUTBOX HERO VARIANT (sobre fondo oscuro del video) ── */
-    .inputbox--hero {
-      position: relative;
-      width: 100%;
-      max-width: 320px;
-      margin-top: 20px;
-    }
+    .inputbox--hero { position: relative; width: 100%; max-width: 320px; margin-top: 20px; }
     .inputbox--hero input {
-      position: relative;
-      width: 100%;
-      padding: 20px 10px 10px;
-      background: transparent;
-      outline: none;
-      box-shadow: none;
-      border: none;
-      color: #fff;
-      font-family: var(--font-body);
-      font-size: 1.05em;
-      letter-spacing: 0.05em;
-      transition: 0.5s;
-      z-index: 10;
+      position: relative; width: 100%; padding: 20px 10px 10px;
+      background: transparent; outline: none; box-shadow: none; border: none;
+      color: #fff; font-family: var(--font-body); font-size: 1.05em;
+      letter-spacing: 0.05em; transition: 0.5s; z-index: 10;
     }
     .inputbox--hero span {
-      position: absolute;
-      left: 10px;
-      top: 0;
-      padding: 20px 0 10px;
-      font-size: 1.05em;
-      color: rgba(255,255,255,0.6);
-      letter-spacing: 0.05em;
-      transition: 0.5s;
-      pointer-events: none;
+      position: absolute; left: 10px; top: 0; padding: 20px 0 10px;
+      font-size: 1.05em; color: rgba(255,255,255,0.6); letter-spacing: 0.05em;
+      transition: 0.5s; pointer-events: none;
     }
     .inputbox--hero input:focus ~ span,
     .inputbox--hero input:not(:placeholder-shown) ~ span {
-      color: #7dd3fc;
-      transform: translateX(-10px) translateY(-28px);
-      font-size: 0.75em;
+      color: #7dd3fc; transform: translateX(-10px) translateY(-28px); font-size: 0.75em;
     }
     .inputbox--hero i {
-      position: absolute;
-      left: 0;
-      bottom: 0;
-      width: 100%;
-      height: 2px;
-      background: rgba(255,255,255,0.7);
-      border-radius: 4px;
-      transition: 0.5s;
-      pointer-events: none;
-      z-index: 9;
+      position: absolute; left: 0; bottom: 0; width: 100%; height: 2px;
+      background: rgba(255,255,255,0.7); border-radius: 4px; transition: 0.5s;
+      pointer-events: none; z-index: 9;
     }
     .inputbox--hero input:focus ~ i,
     .inputbox--hero input:not(:placeholder-shown) ~ i {
-      height: 44px;
-      background: rgba(255,255,255,0.12);
-      border-radius: 8px;
+      height: 44px; background: rgba(255,255,255,0.12); border-radius: 8px;
     }
 
-    /* ── FROM UIVERSE.IO BY NAWSOME – HAMSTER WHEEL ── */
-    :root {
-      --dur: 1s;
-      --hamster-color: ${dark ? '#e8a87c' : '#d4834a'};
-      --hamster-accent: ${dark ? '#c97b4b' : '#a85c28'};
-      --wheel-color: ${dark ? '#4a4a5a' : '#3a3a4a'};
-      --spoke-color: ${dark ? '#6a6a7a' : '#555565'};
-    }
+    /* ── HAMSTER WHEEL ── */
     .wheel-and-hamster {
       --dur: 1s;
       position: relative;
@@ -572,20 +414,8 @@ export const EstilosGlobales = ({ dark }) => (
       height: 12em;
       font-size: 14px;
     }
-    .wheel,
-    .hamster,
-    .hamster div,
-    .spoke {
-      position: absolute;
-    }
-    .wheel,
-    .spoke {
-      border-radius: 50%;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-    }
+    .wheel, .hamster, .hamster div, .spoke { position: absolute; }
+    .wheel, .spoke { border-radius: 50%; top: 0; left: 0; width: 100%; height: 100%; }
     .wheel {
       background: radial-gradient(
         100% 100% at center,
@@ -596,24 +426,17 @@ export const EstilosGlobales = ({ dark }) => (
     }
     .hamster {
       animation: hamster var(--dur) ease-in-out infinite;
-      top: 50%;
-      left: calc(50% - 3.5em);
-      width: 7em;
-      height: 3.75em;
+      top: 50%; left: calc(50% - 3.5em);
+      width: 7em; height: 3.75em;
       transform: rotate(4deg) translate(-0.8em,1.85em);
-      transform-origin: 50% 0;
-      z-index: 3;
+      transform-origin: 50% 0; z-index: 3;
     }
     .hamster__head {
       animation: hamsterHead var(--dur) ease-in-out infinite;
       background: ${dark ? '#e8a87c' : '#d4834a'};
       border-radius: 70% 30% 0 100% / 40% 25% 25% 60%;
       box-shadow: 0 -0.25em 0 ${dark ? '#c97b4b' : '#a85c28'};
-      top: 0;
-      left: -2em;
-      width: 2.75em;
-      height: 2.5em;
-      transform-origin: 100% 50%;
+      top: 0; left: -2em; width: 2.75em; height: 2.5em; transform-origin: 100% 50%;
     }
     .hamster__ear {
       animation: hamsterEar var(--dur) ease-in-out infinite;
@@ -621,28 +444,17 @@ export const EstilosGlobales = ({ dark }) => (
       border-radius: 50% 50% 30% 30%;
       box-shadow: -0.25em -0.25em 0 ${dark ? '#c97b4b' : '#a85c28'} inset,
                   0.25em 0.25em 0 ${dark ? '#f5c4a0' : '#e8a080'} inset;
-      top: -0.25em;
-      right: -0.25em;
-      width: 0.75em;
-      height: 0.75em;
-      transform-origin: 50% 30%;
+      top: -0.25em; right: -0.25em; width: 0.75em; height: 0.75em; transform-origin: 50% 30%;
     }
     .hamster__eye {
       animation: hamsterEye var(--dur) ease-in-out infinite;
       background-color: ${dark ? '#1a1a2e' : '#111'};
-      border-radius: 50%;
-      top: 0.375em;
-      left: 1.25em;
-      width: 0.5em;
-      height: 0.5em;
+      border-radius: 50%; top: 0.375em; left: 1.25em; width: 0.5em; height: 0.5em;
     }
     .hamster__nose {
       background: ${dark ? '#e8747c' : '#d46060'};
       border-radius: 35% 65% 85% 15% / 70% 50% 50% 30%;
-      top: 0.75em;
-      left: 0;
-      width: 0.2em;
-      height: 0.25em;
+      top: 0.75em; left: 0; width: 0.2em; height: 0.25em;
     }
     .hamster__body {
       animation: hamsterBody var(--dur) ease-in-out infinite;
@@ -650,28 +462,20 @@ export const EstilosGlobales = ({ dark }) => (
       border-radius: 50% 30% 50% 30% / 20% 60% 35% 75%;
       box-shadow: 0.1em -0.75em 0 ${dark ? '#d4935c' : '#c07840'} inset,
                   0.15em -0.5em 0 ${dark ? '#f5c4a0' : '#e8a080'} inset;
-      top: 0.25em;
-      left: 2em;
-      width: 4.5em;
-      height: 3em;
-      transform-origin: 17% 60%;
+      top: 0.25em; left: 2em; width: 4.5em; height: 3em; transform-origin: 17% 60%;
     }
     .hamster__limb--fr,
     .hamster__limb--fl {
       clip-path: polygon(0 0,100% 0,70% 80%,60% 100%,0% 100%,40% 80%);
-      top: 2em;
-      left: 0.5em;
-      width: 1em;
-      height: 1.5em;
-      transform-origin: 50% 0;
+      top: 2em; left: 0.5em; width: 1em; height: 1.5em; transform-origin: 50% 0;
     }
     .hamster__limb--fr {
-      animation: hamsterFRLimb var(--dur) linear infinite;
+      animation: hamsterFRLimb var(--dur) ease-in-out infinite;
       background: linear-gradient(${dark ? '#d4935c' : '#c07840'} 80%, ${dark ? '#e8a87c' : '#d4834a'} 80%);
       z-index: 1;
     }
     .hamster__limb--fl {
-      animation: hamsterFLLimb var(--dur) linear infinite;
+      animation: hamsterFLLimb var(--dur) ease-in-out infinite;
       background: linear-gradient(${dark ? '#e8a87c' : '#d4834a'} 80%, ${dark ? '#f5c4a0' : '#e8a080'} 80%);
       z-index: 4;
     }
@@ -679,19 +483,15 @@ export const EstilosGlobales = ({ dark }) => (
     .hamster__limb--bl {
       border-radius: 0.75em 0.75em 0 0;
       clip-path: polygon(0 0,100% 0,100% 30%,70% 90%,70% 100%,30% 100%,40% 90%,0% 30%);
-      top: 1em;
-      left: 2.8em;
-      width: 1.5em;
-      height: 2.5em;
-      transform-origin: 50% 30%;
+      top: 1em; left: 2.8em; width: 1.5em; height: 2.5em; transform-origin: 50% 30%;
     }
     .hamster__limb--br {
-      animation: hamsterBRLimb var(--dur) linear infinite;
+      animation: hamsterBRLimb var(--dur) ease-in-out infinite;
       background: linear-gradient(${dark ? '#d4935c' : '#c07840'} 80%, ${dark ? '#e8a87c' : '#d4834a'} 80%);
       z-index: 1;
     }
     .hamster__limb--bl {
-      animation: hamsterBLLimb var(--dur) linear infinite;
+      animation: hamsterBLLimb var(--dur) ease-in-out infinite;
       background: linear-gradient(${dark ? '#e8a87c' : '#d4834a'} 80%, ${dark ? '#f5c4a0' : '#e8a080'} 80%);
       z-index: 4;
     }
@@ -700,11 +500,7 @@ export const EstilosGlobales = ({ dark }) => (
       background: ${dark ? '#d4935c' : '#c07840'};
       border-radius: 0.25em 50% 50% 0.25em;
       box-shadow: 0 -0.2em 0 0.1em ${dark ? '#c07840' : '#a85c28'} inset;
-      top: 1.5em;
-      right: -0.5em;
-      width: 1em;
-      height: 0.5em;
-      transform-origin: 0.25em 0.25em;
+      top: 1.5em; right: -0.5em; width: 1em; height: 0.5em; transform-origin: 0.25em 0.25em;
     }
     .spoke {
       animation: spoke var(--dur) linear infinite;
@@ -721,6 +517,7 @@ export const EstilosGlobales = ({ dark }) => (
       );
       z-index: 1;
     }
+
     @keyframes hamster {
       from, to { transform: rotate(4deg) translate(-0.8em,1.85em); }
       50% { transform: rotate(0) translate(-0.8em,1.85em); }
@@ -742,20 +539,28 @@ export const EstilosGlobales = ({ dark }) => (
       12.5%, 37.5%, 62.5%, 87.5% { transform: rotate(-2deg); }
     }
     @keyframes hamsterFRLimb {
-      from, 25%, 50%, 75%, to { transform: rotate(50deg) translateZ(-1px); }
-      12.5%, 37.5%, 62.5%, 87.5% { transform: rotate(-30deg) translateZ(-1px); }
+      from, to { transform: rotate(70deg) translateZ(-1px); }
+      25%      { transform: rotate(-50deg) translateZ(-1px); }
+      50%      { transform: rotate(70deg) translateZ(-1px); }
+      75%      { transform: rotate(-50deg) translateZ(-1px); }
     }
     @keyframes hamsterFLLimb {
-      from, 25%, 50%, 75%, to { transform: rotate(-30deg); }
-      12.5%, 37.5%, 62.5%, 87.5% { transform: rotate(50deg); }
+      from, to { transform: rotate(-50deg); }
+      25%      { transform: rotate(70deg); }
+      50%      { transform: rotate(-50deg); }
+      75%      { transform: rotate(70deg); }
     }
     @keyframes hamsterBRLimb {
-      from, 25%, 50%, 75%, to { transform: rotate(-60deg) translateZ(-1px); }
-      12.5%, 37.5%, 62.5%, 87.5% { transform: rotate(20deg) translateZ(-1px); }
+      from, to { transform: rotate(-80deg) translateZ(-1px); }
+      25%      { transform: rotate(30deg) translateZ(-1px); }
+      50%      { transform: rotate(-80deg) translateZ(-1px); }
+      75%      { transform: rotate(30deg) translateZ(-1px); }
     }
     @keyframes hamsterBLLimb {
-      from, 25%, 50%, 75%, to { transform: rotate(20deg); }
-      12.5%, 37.5%, 62.5%, 87.5% { transform: rotate(-60deg); }
+      from, to { transform: rotate(30deg); }
+      25%      { transform: rotate(-80deg); }
+      50%      { transform: rotate(30deg); }
+      75%      { transform: rotate(-80deg); }
     }
     @keyframes hamsterTail {
       from, 25%, 50%, 75%, to { transform: rotate(30deg) translateZ(-1px); }
@@ -766,204 +571,102 @@ export const EstilosGlobales = ({ dark }) => (
       to { transform: rotate(-1turn); }
     }
 
-    /* ── CUSTOM CHECKBOX BY WHITENERVOSA ── */
     .customCheckBoxHolder {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      justify-content: center;
-      margin: 24px 0 40px;
+      display: flex; flex-wrap: wrap; gap: 12px;
+      justify-content: center; margin: 24px 0 40px;
     }
-
-    .customCheckBoxInput {
-      display: none;
-    }
-
-    .customCheckBoxWrapper {
-      cursor: pointer;
-      user-select: none;
-    }
-
+    .customCheckBoxInput { display: none; }
+    .customCheckBoxWrapper { cursor: pointer; user-select: none; }
     .customCheckBox {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+      display: inline-flex; align-items: center; justify-content: center;
       padding: 10px 22px;
       background: ${dark ? 'rgba(255,255,255,0.05)' : 'var(--surface)'};
-      border: 1.5px solid var(--border);
-      border-radius: 99px;
-      color: var(--ink-2);
-      font-family: var(--font-body);
-      font-size: 0.85rem;
-      font-weight: 600;
-      box-shadow: var(--shadow-sm);
+      border: 1.5px solid var(--border); border-radius: 99px;
+      color: var(--ink-2); font-family: var(--font-body);
+      font-size: 0.85rem; font-weight: 600; box-shadow: var(--shadow-sm);
       transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     }
-
     .customCheckBox:hover {
       background: ${dark ? 'rgba(255,255,255,0.08)' : '#eaeae6'};
-      color: var(--ink);
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-md);
+      color: var(--ink); transform: translateY(-2px); box-shadow: var(--shadow-md);
     }
-
     .customCheckBoxInput:checked + .customCheckBoxWrapper .customCheckBox {
-      background: var(--ink);
-      border-color: var(--ink);
-      color: ${dark ? '#111' : 'var(--surface)'};
-      box-shadow: var(--shadow-md);
-      transform: scale(1.04);
+      background: var(--ink); border-color: var(--ink);
+      color: ${dark ? '#111' : 'var(--surface)'}; box-shadow: var(--shadow-md); transform: scale(1.04);
     }
-
     .customCheckBoxInput:checked + .customCheckBoxWrapper .customCheckBox:hover {
       transform: translateY(-2px) scale(1.04);
     }
+    .customCheckBox .inner { display: flex; align-items: center; gap: 6px; }
 
-    .customCheckBox .inner {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    /* ── CART BUTTON STYLES FROM USER ── */
     .cart-btn-custom {
-      height: 38px;
-      padding: 0 18px;
-      border: 2px solid #315cfd;
-      border-radius: 99px;
-      transition: all 0.3s;
-      cursor: pointer;
-      background: white;
-      color: #0f0f0f;
-      font-size: 0.9rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
+      height: 38px; padding: 0 18px; border: 2px solid #315cfd; border-radius: 99px;
+      transition: all 0.3s; cursor: pointer; background: white; color: #0f0f0f;
+      font-size: 0.9rem; font-weight: 600; display: flex; align-items: center;
+      justify-content: center; gap: 6px;
     }
+    .cart-btn-custom:hover { background: #315cfd; color: white; transform: scale(1.05); }
 
-    .cart-btn-custom:hover {
-      background: #315cfd;
-      color: white;
-      transform: scale(1.05);
-    }
-
-    /* ── CLOSE BUTTON STYLES FROM USER ── */
     .close-btn-custom {
-      width: 36px;
-      height: 36px;
-      color: #fff;
-      border-radius: 8px;
-      padding: 0;
-      font-weight: 700;
-      background: linear-gradient(0deg, #004dff 0%, #004dff 100%);
-      border: none;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+      width: 36px; height: 36px; color: #fff; border-radius: 8px; padding: 0;
+      font-weight: 700; background: linear-gradient(0deg, #004dff 0%, #004dff 100%);
+      border: none; cursor: pointer; transition: all 0.3s ease;
+      display: inline-flex; align-items: center; justify-content: center;
       box-shadow: inset 2px 2px 2px 0px rgba(255,255,255,.5),
-       7px 7px 20px 0px rgba(0,0,0,.1),
-       4px 4px 5px 0px rgba(0,0,0,.1);
-      outline: none;
-      font-size: 1.1rem;
-      flex-shrink: 0;
-      text-decoration: none;
+       7px 7px 20px 0px rgba(0,0,0,.1), 4px 4px 5px 0px rgba(0,0,0,.1);
+      outline: none; font-size: 1.1rem; flex-shrink: 0; text-decoration: none;
     }
-
     .close-btn-custom:hover {
       box-shadow: 4px 4px 6px 0 rgba(255,255,255,.5),
                   -4px -4px 6px 0 rgba(116, 125, 136, .5), 
-        inset -4px -4px 6px 0 rgba(255,255,255,.2),
-        inset 4px 4px 6px 0 rgba(0, 0, 0, .4);
+                  inset -4px -4px 6px 0 rgba(255,255,255,.2),
+                  inset 4px 4px 6px 0 rgba(0, 0, 0, .4);
     }
 
-    /* ═══════════════════════════════════════
-       RESPONSIVE MÓVIL
-    ═══════════════════════════════════════ */
-
-    /* Modal centrado en escritorio */
     .modal-sheet {
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 90%;
-      max-width: 480px;
-      max-height: 90vh;
-      border-radius: 28px;
+      top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 90%; max-width: 480px; max-height: 90vh; border-radius: 28px;
     }
 
-    /* Ocultar/mostrar según pantalla */
     .nav-mobile-only { display: none; }
     .nav-desktop-only { display: inline-flex; }
 
-    /* Padding inferior para que el contenido no quede detrás del BottomNav */
     main { padding-bottom: 120px !important; }
 
-    /* ── Media queries ── */
     @media (max-width: 640px) {
-      /* Navbar */
       .nav-desktop-only { display: none !important; }
       .nav-mobile-only  { display: flex !important; }
 
-      /* Modal → bottom sheet */
       .modal-sheet {
-        top: auto !important;
-        left: 0 !important;
-        bottom: 0 !important;
-        transform: none !important;
-        width: 100% !important;
-        max-width: 100% !important;
-        max-height: 92vh !important;
+        top: auto !important; left: 0 !important; bottom: 0 !important;
+        transform: none !important; width: 100% !important;
+        max-width: 100% !important; max-height: 92vh !important;
         border-radius: 28px 28px 0 0 !important;
       }
 
-      /* Animación slide-up para el bottom sheet */
       @keyframes slideUp {
         from { transform: translateY(100%); opacity: 0; }
         to   { transform: translateY(0);   opacity: 1; }
       }
       .modal-sheet { animation: slideUp 0.38s cubic-bezier(0.34,1.2,0.64,1) both !important; }
 
-      /* Indicador de arrastre (pill) en el bottom sheet */
       .modal-sheet::before {
-        content: '';
-        display: block;
-        width: 40px;
-        height: 4px;
-        border-radius: 99px;
-        background: var(--ink-3);
-        margin: 10px auto 0;
-        opacity: 0.4;
+        content: ''; display: block; width: 40px; height: 4px;
+        border-radius: 99px; background: var(--ink-3);
+        margin: 10px auto 0; opacity: 0.4;
       }
 
-      /* Paneles laterales ocupan toda la pantalla en móvil */
-      .panel {
-        max-width: 100% !important;
-      }
+      .panel { max-width: 100% !important; }
 
-      /* Hero más compacto */
-      .aquarium-hero {
-        height: 360px !important;
-      }
-      .hero-text {
-        left: 20px !important;
-        bottom: 40px !important;
-      }
+      .aquarium-hero { height: 360px !important; }
+      .hero-text { left: 20px !important; bottom: 40px !important; }
 
-      /* Grilla de productos: 2 columnas en móvil */
       .products-grid {
         grid-template-columns: repeat(2, 1fr) !important;
         gap: 12px !important;
       }
 
-      /* BottomNav más compacto */
-      .bottom-nav-wrap {
-        padding: 8px 20px !important;
-        gap: 20px !important;
-      }
+      .bottom-nav-wrap { padding: 8px 20px !important; gap: 20px !important; }
     }
   `}</style>
 );
