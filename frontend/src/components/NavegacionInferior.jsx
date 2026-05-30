@@ -1,35 +1,144 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 export const NavegacionInferior = ({ dark, categoria, setCategoria, setBusqueda, totalItems }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const cartOpen = location.pathname === '/carrito';
+  const [open, setOpen] = useState(false);
+
+  const cartOpen    = location.pathname === '/carrito';
   const reviewsOpen = location.pathname === '/resenas';
 
+  const navegar = (ruta) => {
+    setOpen(false);
+    if (ruta === '/') { setCategoria('Todos'); setBusqueda(''); }
+    navigate(ruta);
+  };
+
+  const tabs = [
+    { icon: '🏪', label: 'Tienda',  ruta: '/',        activo: categoria === 'Todos' && location.pathname === '/' },
+    { icon: '💬', label: 'Reseñas', ruta: '/resenas', activo: reviewsOpen },
+    { icon: '🛒', label: 'Carrito', ruta: '/carrito', activo: cartOpen, badge: totalItems },
+    { icon: '👤', label: 'Admin',   ruta: '/admin',   activo: location.pathname === '/admin' },
+  ];
+
   return (
-    <div style={{ position:'fixed', bottom:'16px', left:'50%', transform:'translateX(-50%)', background: dark ? '#1a1a1e' : '#ffffff', borderRadius:'99px', padding:'10px 32px', display:'flex', gap:'36px', alignItems:'center', boxShadow:'0 4px 24px rgba(0,0,0,0.15)', zIndex:900, border:`1px solid var(--border)` }}>
-      <button className="nav-tab" onClick={() => { setCategoria('Todos'); setBusqueda(''); navigate('/'); }} style={{ background:'none', border:'none', cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', gap:'2px' }}>
-        <span className="nav-tab-icon" style={{ fontSize:'1.2rem' }}>🏪</span>
-        <span style={{ fontSize:'0.58rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.6px', color:categoria==='Todos' && location.pathname === '/' ?'var(--accent)':'var(--ink-3)' }}>Tienda</span>
-      </button>
-      <button className="nav-tab" onClick={() => navigate('/resenas')} style={{ background:'none', border:'none', cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', gap:'2px' }}>
-        <span className="nav-tab-icon" style={{ fontSize:'1.2rem' }}>💬</span>
-        <span style={{ fontSize:'0.58rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.6px', color: reviewsOpen ? 'var(--accent)' : 'var(--ink-3)' }}>Reseñas</span>
-      </button>
-      <button className="nav-tab" onClick={() => navigate('/carrito')} style={{ background:'none', border:'none', cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', gap:'2px', position:'relative' }}>
-        <span className="nav-tab-icon" style={{ fontSize:'1.2rem' }}>🛒</span>
-        {totalItems > 0 && (
-          <span className="nav-tab-badge" style={{ position:'absolute', top:'-4px', right:'-10px', background:'#ef4444', color:'#fff', fontSize:'0.58rem', width:'17px', height:'17px', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', fontWeight:700, border:'2px solid var(--surface)' }}>
-            {totalItems}
-          </span>
+    <>
+      {/* ── OVERLAY ── */}
+      {open && (
+        <div
+          onClick={() => setOpen(false)}
+          style={{ position:'fixed', inset:0, zIndex:898, background:'rgba(0,0,0,0.3)', backdropFilter:'blur(2px)' }}
+        />
+      )}
+
+      {/* ── MENÚ EXPANDIDO ── */}
+      <div style={{
+        position: 'fixed', bottom: '80px', left: '50%',
+        transform: `translateX(-50%) scaleY(${open ? 1 : 0})`,
+        transformOrigin: 'bottom center',
+        opacity: open ? 1 : 0,
+        transition: 'transform 0.25s ease, opacity 0.2s ease',
+        background: dark ? '#1a1a1e' : '#ffffff',
+        borderRadius: '24px',
+        padding: '12px 8px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '4px',
+        boxShadow: '0 4px 24px rgba(0,0,0,0.2)',
+        border: '1px solid var(--border)',
+        zIndex: 899,
+        minWidth: '180px',
+        pointerEvents: open ? 'all' : 'none',
+      }}>
+        {tabs.map(({ icon, label, ruta, activo, badge }) => (
+          <button
+            key={ruta}
+            onClick={() => navegar(ruta)}
+            style={{
+              background: activo ? 'var(--accent)' : 'none',
+              border: 'none', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', gap: '14px',
+              padding: '12px 20px', borderRadius: '16px',
+              transition: 'background 0.15s',
+              position: 'relative',
+            }}
+          >
+            <span style={{ fontSize: '1.3rem' }}>{icon}</span>
+            <span style={{
+              fontSize: '0.85rem', fontWeight: 700,
+              textTransform: 'uppercase', letterSpacing: '0.6px',
+              color: activo ? '#fff' : 'var(--ink)',
+            }}>{label}</span>
+            {badge > 0 && (
+              <span style={{
+                position: 'absolute', top: '8px', left: '34px',
+                background: '#ef4444', color: '#fff',
+                fontSize: '0.55rem', width: '16px', height: '16px',
+                borderRadius: '50%', display: 'flex', alignItems: 'center',
+                justifyContent: 'center', fontWeight: 700,
+                border: '2px solid var(--surface)',
+              }}>{badge}</span>
+            )}
+          </button>
+        ))}
+      </div>
+
+      {/* ── BOTÓN HAMBURGUESA ── */}
+      <div style={{
+        position: 'fixed', bottom: '16px', left: '50%',
+        transform: 'translateX(-50%)',
+        background: dark ? '#1a1a1e' : '#ffffff',
+        borderRadius: '99px', padding: '12px 28px',
+        boxShadow: '0 4px 24px rgba(0,0,0,0.15)',
+        border: '1px solid var(--border)',
+        zIndex: 900, display: 'flex', alignItems: 'center', gap: '8px',
+      }}>
+        {/* Badge del carrito visible cuando está cerrado */}
+        {!open && totalItems > 0 && (
+          <span style={{
+            background: '#ef4444', color: '#fff', fontSize: '0.65rem',
+            padding: '2px 8px', borderRadius: '99px', fontWeight: 700,
+          }}>{totalItems}</span>
         )}
-        <span style={{ fontSize:'0.58rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.6px', color: cartOpen ? 'var(--accent)' : 'var(--ink-3)' }}>Carrito</span>
-      </button>
-      <button className="nav-tab" onClick={() => navigate('/admin')} style={{ background:'none', border:'none', cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', gap:'2px' }}>
-        <span className="nav-tab-icon" style={{ fontSize:'1.2rem' }}>👤</span>
-        <span style={{ fontSize:'0.58rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.6px', color: location.pathname === '/admin' ? 'var(--accent)' : 'var(--ink-3)' }}>Admin</span>
-      </button>
-    </div>
+
+        <label className="burger" htmlFor="burger-menu" style={{ width:36, height:26, position:'relative', cursor:'pointer', display:'block' }}>
+          <input
+            type="checkbox"
+            id="burger-menu"
+            checked={open}
+            onChange={e => setOpen(e.target.checked)}
+            style={{ display:'none' }}
+          />
+          {[0,1,2].map(i => (
+            <span key={i} style={{
+              display: 'block', position: 'absolute',
+              height: '3px', width: '100%',
+              background: 'var(--ink)',
+              borderRadius: '9px', left: 0,
+              transition: '.25s ease-in-out',
+              ...(i === 0 ? {
+                top: open ? '0px' : '0px',
+                transformOrigin: 'left center',
+                transform: open ? 'rotate(45deg) translateX(4px)' : 'rotate(0deg)',
+              } : i === 1 ? {
+                top: '50%', transformOrigin: 'left center',
+                transform: open ? 'translateY(-50%) scaleX(0)' : 'translateY(-50%)',
+                opacity: open ? 0 : 1,
+              } : {
+                bottom: 0, transformOrigin: 'left center',
+                transform: open ? 'rotate(-45deg) translateX(4px)' : 'rotate(0deg)',
+              }),
+            }} />
+          ))}
+        </label>
+      </div>
+
+      <style>{`
+        @media (min-width: 768px) {
+          /* En desktop podés volver al nav horizontal si querés */
+        }
+      `}</style>
+    </>
   );
 };
