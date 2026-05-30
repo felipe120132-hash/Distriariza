@@ -16,14 +16,88 @@ export const NavegacionInferior = ({ dark, categoria, setCategoria, setBusqueda,
   };
 
   const tabs = [
-    { icon: '🏪', label: 'Tienda',  ruta: '/',        activo: categoria === 'Todos' && location.pathname === '/' },
-    { icon: '💬', label: 'Reseñas', ruta: '/resenas', activo: reviewsOpen },
-    { icon: '🛒', label: 'Carrito', ruta: '/carrito', activo: cartOpen, badge: totalItems },
-    { icon: '👤', label: 'Admin',   ruta: '/admin',   activo: location.pathname === '/admin' },
+    {
+      label: 'Tienda', ruta: '/',
+      activo: categoria === 'Todos' && location.pathname === '/',
+      icon: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    },
+    {
+      label: 'Reseñas', ruta: '/resenas',
+      activo: reviewsOpen,
+      icon: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    },
+    {
+      label: 'Carrito', ruta: '/carrito',
+      activo: cartOpen, badge: totalItems,
+      icon: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+    },
+    {
+      label: 'Admin', ruta: '/admin',
+      activo: location.pathname === '/admin',
+      icon: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    },
   ];
 
   return (
     <>
+      <style>{`
+        .nav-menu-item {
+          background-color: transparent;
+          border: none;
+          padding: 10px 14px;
+          color: var(--ink-3);
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          cursor: pointer;
+          border-radius: 4px;
+          width: 100%;
+          font-size: 0.58rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.6px;
+          position: relative;
+          transition: background 0.15s;
+        }
+        .nav-menu-item:not(:active):hover {
+          background-color: var(--border);
+        }
+        .nav-menu-item:focus, .nav-menu-item:active {
+          background-color: var(--border);
+          outline: none;
+        }
+        .nav-menu-item::before {
+          content: "";
+          position: absolute;
+          top: 5px;
+          left: 0px;
+          width: 4px;
+          height: 80%;
+          background-color: var(--accent);
+          border-radius: 5px;
+          opacity: 0;
+          transition: opacity 0.15s;
+        }
+        .nav-menu-item:focus::before,
+        .nav-menu-item:active::before,
+        .nav-menu-item--active::before {
+          opacity: 1;
+        }
+        .nav-menu-item--active {
+          background-color: var(--border);
+          color: var(--accent);
+        }
+        .nav-menu-item svg {
+          width: 16px;
+          height: 16px;
+          flex-shrink: 0;
+          color: #7D8590;
+        }
+        .nav-menu-item--active svg {
+          color: var(--accent);
+        }
+      `}</style>
+
       {/* ── OVERLAY ── */}
       {open && (
         <div
@@ -34,50 +108,39 @@ export const NavegacionInferior = ({ dark, categoria, setCategoria, setBusqueda,
 
       {/* ── MENÚ EXPANDIDO ── */}
       <div style={{
-        position: 'fixed', bottom: '80px', left: '50%',
+        position: 'fixed', bottom: '74px', left: '50%',
         transform: `translateX(-50%) scaleY(${open ? 1 : 0})`,
         transformOrigin: 'bottom center',
         opacity: open ? 1 : 0,
         transition: 'transform 0.25s ease, opacity 0.2s ease',
-        background: dark ? '#1a1a1e' : '#ffffff',
-        borderRadius: '24px',
-        padding: '12px 8px',
+        background: dark ? '#0D1117' : '#ffffff',
+        borderRadius: '12px',
+        padding: '6px',
         display: 'flex',
         flexDirection: 'column',
-        gap: '4px',
-        boxShadow: '0 4px 24px rgba(0,0,0,0.2)',
+        gap: '2px',
+        boxShadow: '0 4px 24px rgba(0,0,0,0.25)',
         border: '1px solid var(--border)',
         zIndex: 899,
-        minWidth: '180px',
+        minWidth: '200px',
         pointerEvents: open ? 'all' : 'none',
+        overflow: 'hidden',
       }}>
         {tabs.map(({ icon, label, ruta, activo, badge }) => (
           <button
             key={ruta}
             onClick={() => navegar(ruta)}
-            style={{
-              background: activo ? 'var(--accent)' : 'none',
-              border: 'none', cursor: 'pointer',
-              display: 'flex', alignItems: 'center', gap: '14px',
-              padding: '12px 20px', borderRadius: '16px',
-              transition: 'background 0.15s',
-              position: 'relative',
-            }}
+            className={`nav-menu-item${activo ? ' nav-menu-item--active' : ''}`}
           >
-            <span style={{ fontSize: '1.3rem' }}>{icon}</span>
-            <span style={{
-              fontSize: '0.85rem', fontWeight: 700,
-              textTransform: 'uppercase', letterSpacing: '0.6px',
-              color: activo ? '#fff' : 'var(--ink)',
-            }}>{label}</span>
+            {icon}
+            {label}
             {badge > 0 && (
               <span style={{
-                position: 'absolute', top: '8px', left: '34px',
+                marginLeft: 'auto',
                 background: '#ef4444', color: '#fff',
-                fontSize: '0.55rem', width: '16px', height: '16px',
-                borderRadius: '50%', display: 'flex', alignItems: 'center',
-                justifyContent: 'center', fontWeight: 700,
-                border: '2px solid var(--surface)',
+                fontSize: '0.6rem', minWidth: '18px', height: '18px',
+                borderRadius: '99px', display: 'flex', alignItems: 'center',
+                justifyContent: 'center', fontWeight: 700, padding: '0 5px',
               }}>{badge}</span>
             )}
           </button>
@@ -109,34 +172,25 @@ export const NavegacionInferior = ({ dark, categoria, setCategoria, setBusqueda,
             onChange={e => setOpen(e.target.checked)}
             style={{ display:'none' }}
           />
-          {/* Línea 1 */}
           <span style={{
-            display:'block', position:'absolute',
-            height:'4px', width:'100%',
+            display:'block', position:'absolute', height:'4px', width:'100%',
             background:'var(--ink)', borderRadius:'9px',
-            transition:'.25s ease-in-out',
-            transformOrigin:'left center',
-            top: open ? '0px' : '0px',
-            left: open ? '5px' : '0',
+            transition:'.25s ease-in-out', transformOrigin:'left center',
+            top:'0px', left: open ? '5px' : '0',
             transform: open ? 'rotate(45deg)' : 'rotate(0deg)',
           }}/>
-          {/* Línea 2 */}
           <span style={{
-            display:'block', position:'absolute',
-            height:'4px', width: open ? '0%' : '100%',
+            display:'block', position:'absolute', height:'4px',
+            width: open ? '0%' : '100%',
             background:'var(--ink)', borderRadius:'9px',
-            transition:'.25s ease-in-out',
-            transformOrigin:'left center',
+            transition:'.25s ease-in-out', transformOrigin:'left center',
             top:'50%', transform:'translateY(-50%)',
             opacity: open ? 0 : 1,
           }}/>
-          {/* Línea 3 */}
           <span style={{
-            display:'block', position:'absolute',
-            height:'4px', width:'100%',
+            display:'block', position:'absolute', height:'4px', width:'100%',
             background:'var(--ink)', borderRadius:'9px',
-            transition:'.25s ease-in-out',
-            transformOrigin:'left center',
+            transition:'.25s ease-in-out', transformOrigin:'left center',
             top: open ? '28px' : '100%',
             left: open ? '5px' : '0',
             transform: open ? 'rotate(-45deg)' : 'translateY(-100%)',
