@@ -1,7 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const pedidoController = require('../controllers/pedidoController');
+const { crearPedido, getPedidos, actualizarEstado } = require('../controllers/pedidoController');
+const { verifyToken } = require('../middleware/auth');
 
-router.post('/', pedidoController.crearPedido);
+router.post('/', crearPedido);
+router.get('/', verifyToken, getPedidos);
+router.put('/:id/estado', verifyToken, actualizarEstado);
 
 module.exports = router;
