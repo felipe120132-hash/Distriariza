@@ -1,15 +1,21 @@
 import jsPDF from 'jspdf';
 import { moneda } from './helpers.js';
+import logoImg from '/Logo.jpeg';
 
-const getBase64FromUrl = async (url) => {
-  const res = await fetch(url);
-  const blob = await res.blob();
-  return new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result);
-    reader.readAsDataURL(blob);
+const toBase64 = (url) =>
+  new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      canvas.getContext('2d').drawImage(img, 0, 0);
+      resolve(canvas.toDataURL('image/jpeg'));
+    };
+    img.onerror = () => resolve(null);
+    img.src = url;
   });
-};
 
 export const generarPDF = async (datos, items, totalCompra, pedidoId) => {
   const doc = new jsPDF();
@@ -17,17 +23,18 @@ export const generarPDF = async (datos, items, totalCompra, pedidoId) => {
   const gris = [100, 100, 100];
   const negro = [15, 15, 15];
 
-  // ── LOGO ──
-  try {
-    const logoBase64 = await getBase64FromUrl('/Logo.jpeg');
-    doc.addImage(logoBase64, 'JPEG', 160, 6, 36, 26);
-  } catch (e) {
-    console.warn('No se pudo cargar el logo:', e);
-  }
-
   // ── ENCABEZADO ──
   doc.setFillColor(...azul);
   doc.rect(0, 0, 210, 38, 'F');
+
+  // ── LOGO ──
+  try {
+    const base64 = await toBase64(logoImg);
+    if (base64) doc.addImage(base64, 'JPEG', 160, 4, 36, 28);
+  } catch (e) {
+    console.warn('Logo no cargó:', e);
+  }
+
   doc.setTextColor(255, 255, 255);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(20);
