@@ -1,11 +1,29 @@
 import jsPDF from 'jspdf';
 import { moneda } from './helpers.js';
 
-export const generarPDF = (datos, items, totalCompra, pedidoId) => {
+const getBase64FromUrl = async (url) => {
+  const res = await fetch(url);
+  const blob = await res.blob();
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.readAsDataURL(blob);
+  });
+};
+
+export const generarPDF = async (datos, items, totalCompra, pedidoId) => {
   const doc = new jsPDF();
   const azul = [26, 92, 255];
   const gris = [100, 100, 100];
   const negro = [15, 15, 15];
+
+  // ── LOGO ──
+  try {
+    const logoBase64 = await getBase64FromUrl('/Logo.jpeg');
+    doc.addImage(logoBase64, 'JPEG', 160, 6, 36, 26);
+  } catch (e) {
+    console.warn('No se pudo cargar el logo:', e);
+  }
 
   // ── ENCABEZADO ──
   doc.setFillColor(...azul);
@@ -19,7 +37,7 @@ export const generarPDF = (datos, items, totalCompra, pedidoId) => {
   doc.text('FISH ACCESSORIES', 14, 23);
   doc.setFontSize(10);
   doc.text(`Factura #${String(pedidoId).padStart(5, '0')}`, 14, 32);
-  doc.text(`Fecha: ${new Date().toLocaleDateString('es-CO', { day:'2-digit', month:'long', year:'numeric' })}`, 120, 32);
+  doc.text(`Fecha: ${new Date().toLocaleDateString('es-CO', { day:'2-digit', month:'long', year:'numeric' })}`, 100, 32);
 
   // ── DATOS DEL CLIENTE ──
   doc.setTextColor(...negro);
@@ -59,10 +77,10 @@ export const generarPDF = (datos, items, totalCompra, pedidoId) => {
   doc.setFontSize(9);
   doc.setTextColor(...negro);
   doc.setFont('helvetica', 'bold');
-  doc.text('Producto',     16,  119);
-  doc.text('Cant.',       130,  119);
+  doc.text('Producto',      16, 119);
+  doc.text('Cant.',        130, 119);
   doc.text('Precio unit.', 148, 119);
-  doc.text('Subtotal',    176,  119);
+  doc.text('Subtotal',     176, 119);
 
   let y = 130;
   items.forEach((item, i) => {

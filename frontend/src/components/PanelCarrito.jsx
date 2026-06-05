@@ -46,7 +46,8 @@ export const PanelCarrito = ({ carrito, onClose, onAdd, onRemove, onChangeQty, o
 
     // 3. Generar PDF
     try {
-      generarPDF(datos, carrito, totalCompra, pedidoId);
+      await generarPDF(datos, carrito, totalCompra, pedidoId);
+
     } catch (e) {
       console.error('Error al generar PDF:', e);
     }

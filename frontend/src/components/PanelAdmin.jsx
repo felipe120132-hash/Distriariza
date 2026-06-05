@@ -70,6 +70,20 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
     }
   };
 
+  const eliminarPedido = async (id) => {
+    if (!window.confirm('¿Seguro que quieres eliminar este pedido? Esta acción no se puede deshacer.')) return;
+    try {
+      await axios.delete(`${BACKEND}/api/pedidos/${id}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      setPedidos(prev => prev.filter(p => p.id !== id));
+      setPedidoExpandido(null);
+    } catch (e) {
+      console.error('Error al eliminar pedido:', e);
+      alert('No se pudo eliminar el pedido.');
+    }
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoginLoading(true);
@@ -395,14 +409,15 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
 
                                 {/* Cambiar estado */}
                                 <p style={{ fontSize:'0.62rem', fontWeight:700, color:'var(--ink-3)', textTransform:'uppercase', letterSpacing:'0.5px', marginBottom:'8px' }}>Cambiar estado</p>
-                                <div style={{ display:'flex', gap:'6px', flexWrap:'wrap' }}>
+                                <div style={{ display:'flex', gap:'6px', flexWrap:'wrap', marginBottom:'4px' }}>
                                   {['pendiente', 'enviado', 'entregado', 'cancelado'].map(estado => {
                                     const { bg: b, color: c } = colorEstado(estado);
                                     const activo = p.estado === estado;
                                     return (
                                       <button key={estado} onClick={() => actualizarEstado(p.id, estado)}
                                         style={{
-                                          padding:'6px 14px', borderRadius:'99px', border: activo ? 'none' : '1px solid var(--border)',
+                                          padding:'6px 14px', borderRadius:'99px',
+                                          border: activo ? 'none' : '1px solid var(--border)',
                                           cursor:'pointer', fontSize:'0.72rem', fontWeight:700,
                                           textTransform:'uppercase', letterSpacing:'0.5px',
                                           background: activo ? b : 'transparent',
@@ -416,14 +431,23 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
                                   })}
                                 </div>
 
-                                {/* Botón PDF */}
-                                <button
-                                  onClick={() => generarPDF(p, items, p.total, p.id)}
-                                  className="pill-btn pill-btn--ghost"
-                                  style={{ marginTop:'12px', width:'100%', justifyContent:'center', fontSize:'0.8rem' }}
-                                >
-                                  📄 Descargar factura PDF
-                                </button>
+                                {/* ── ACCIONES ── */}
+                                <div style={{ display:'flex', gap:'8px', marginTop:'12px' }}>
+                                  <button
+                                    onClick={async () => await generarPDF(p, items, p.total, p.id)}
+                                    className="pill-btn pill-btn--ghost"
+                                    style={{ flex:1, justifyContent:'center', fontSize:'0.8rem' }}
+                                  >
+                                    📄 Descargar PDF
+                                  </button>
+                                  <button
+                                    onClick={() => eliminarPedido(p.id)}
+                                    className="pill-btn"
+                                    style={{ flex:1, justifyContent:'center', fontSize:'0.8rem', background:'rgba(239,68,68,0.1)', color:'#ef4444', border:'1px solid rgba(239,68,68,0.2)' }}
+                                  >
+                                    🗑️ Eliminar pedido
+                                  </button>
+                                </div>
 
                               </div>
                             )}
