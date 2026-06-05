@@ -19,12 +19,14 @@ const storage = new CloudinaryStorage({
 
 const upload = multer({
     storage,
+    limits: {
+        fileSize: 5 * 1024 * 1024, // 5MB máximo
+    },
     fileFilter: (req, file, cb) => {
         const fileTypes = /jpeg|jpg|png|webp/;
         if (fileTypes.test(file.mimetype)) return cb(null, true);
-        cb(new Error('El archivo debe ser una imagen válida'));
+        cb(new Error('El archivo debe ser una imagen válida (jpg, png, webp).'));
     }
 });
 
-// Exportar también cloudinary para usarlo en el controller (borrar imágenes viejas)
 module.exports = { upload, cloudinary };

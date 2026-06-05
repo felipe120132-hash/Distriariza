@@ -8,6 +8,7 @@ import { BACKEND } from '../constants/index.js';
 export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
   const [auth, setAuth] = useState(false);
   const [token, setToken] = useState('');
+  const [user, setUser] = useState('');
   const [pass, setPass] = useState('');
   const [modo, setModo] = useState('lista');
   const [selected, setSelected] = useState(null);
@@ -116,18 +117,18 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
     setLoginLoading(true);
     setError('');
     try {
-      const res = await axios.post(`${BACKEND}/api/auth/login`, { password: pass });
+      const res = await axios.post(`${BACKEND}/api/auth/login`, { username: user, password: pass });
       const jwt = res.data.token;
       setToken(jwt);
       sessionStorage.setItem('admin_token', jwt);
       setAuth(true);
-      setPass('');
+      setUser(''); setPass('');
     } catch (err) {
       const data = err.response?.data;
       if (data?.code === 'RATE_LIMITED') {
         setError('🔒 Demasiados intentos. Intenta de nuevo en 15 minutos.');
       } else if (err.response?.status === 401) {
-        setError('❌ Contraseña incorrecta.');
+        setError('❌ Credenciales incorrectas.');
       } else {
         setError('Error de conexión. Intenta de nuevo.');
       }
@@ -137,7 +138,7 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
   };
 
   const handleLogout = () => {
-    setAuth(false); setToken(''); setPass('');
+    setAuth(false); setToken(''); setUser(''); setPass('');
     sessionStorage.removeItem('admin_token');
     setModo('lista'); setSeccion('productos');
   };
@@ -255,6 +256,17 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
                 <p style={{ textAlign:'center', margin:'2em 0 0.5em', color:'#fff', fontSize:'1.2em' }}>LOGIN</p>
                 <div style={{ display:'flex', alignItems:'center', gap:'0.5em', borderRadius:'25px', padding:'0.6em', backgroundColor:'#171717', boxShadow:'inset 2px 5px 10px rgb(5,5,5)' }}>
                   <svg xmlns="http://www.w3.org/2000/svg" width={16} height={16} fill="white" viewBox="0 0 16 16">
+                    <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z" />
+                  </svg>
+                  <input
+                    placeholder="Usuario" type="text" value={user}
+                    onChange={e => setUser(e.target.value)}
+                    autoComplete="username" required
+                    style={{ background:'none', border:'none', outline:'none', width:'100%', color:'#d3d3d3', fontSize:'0.9rem' }}
+                  />
+                </div>
+                <div style={{ display:'flex', alignItems:'center', gap:'0.5em', borderRadius:'25px', padding:'0.6em', backgroundColor:'#171717', boxShadow:'inset 2px 5px 10px rgb(5,5,5)' }}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width={16} height={16} fill="white" viewBox="0 0 16 16">
                     <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z" />
                   </svg>
                   <input
@@ -270,9 +282,9 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
                   </div>
                 )}
                 <div style={{ display:'flex', justifyContent:'center', marginTop:'1.5em' }}>
-                  <button type="submit" disabled={loginLoading || !pass.trim()}
-                    style={{ padding:'0.5em 2.5em', borderRadius:'5px', border:'none', outline:'none', transition:'.4s ease-in-out', backgroundColor:'#252525', color:'white', cursor: loginLoading || !pass.trim() ? 'not-allowed' : 'pointer', opacity: loginLoading || !pass.trim() ? 0.6 : 1, fontSize:'0.9rem' }}
-                    onMouseEnter={e => { if (!loginLoading && pass.trim()) e.currentTarget.style.backgroundColor='black'; }}
+                  <button type="submit" disabled={loginLoading || !pass.trim() || !user.trim()}
+                    style={{ padding:'0.5em 2.5em', borderRadius:'5px', border:'none', outline:'none', transition:'.4s ease-in-out', backgroundColor:'#252525', color:'white', cursor: loginLoading || !pass.trim() || !user.trim() ? 'not-allowed' : 'pointer', opacity: loginLoading || !pass.trim() || !user.trim() ? 0.6 : 1, fontSize:'0.9rem' }}
+                    onMouseEnter={e => { if (!loginLoading && pass.trim() && user.trim()) e.currentTarget.style.backgroundColor='black'; }}
                     onMouseLeave={e => e.currentTarget.style.backgroundColor='#252525'}
                   >
                     {loginLoading ? 'Verificando...' : 'Ingresar'}

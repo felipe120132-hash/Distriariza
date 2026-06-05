@@ -3,7 +3,10 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const morgan = require('morgan');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const db = require('./config/db');
+const { verifyToken } = require('./middleware/auth');
 
 // ── Rutas existentes ──────────────────────────────────────────────────────────
 const productoRoutes = require('./routes/productoRoutes');
@@ -12,7 +15,23 @@ const resenaRoutes = require('./routes/resenaRoutes');
 const authRoutes = require('./routes/authRoutes');
 
 const app = express();
-app.set('trust proxy', 1); // Necesario para rate limiting detrás de proxies (Render)
+app.set('trust proxy', 1);
+
+// ── Seguridad: Cabeceras HTTP ─────────────────────────────────────────────────
+app.use(helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+    contentSecurityPolicy: false, // Deshabilitado para permitir carga de imágenes externas
+}));
+
+// ── Rate Limiting Global ──────────────────────────────────────────────────────
+const globalLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutos
+    max: 300,                  // 300 peticiones por ventana
+    message: { error: 'Demasiadas solicitudes. Intenta de nuevo más tarde.' },
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+app.use(globalLimiter);
 
 // ── Middlewares ───────────────────────────────────────────────────────────────
 app.use(cors({
@@ -22,10 +41,11 @@ app.use(cors({
         'http://localhost:3000'
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
 }));
-app.use(express.json());
-app.use(morgan('dev'));
+app.use(express.json({ limit: '1mb' }));
+app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 
 // ── Archivos estáticos ────────────────────────────────────────────────────────
 app.use('/productos', express.static(path.join(__dirname, 'public/productos')));
@@ -54,8 +74,8 @@ const crearTablaResenas = async () => {
 
 crearTablaResenas();
 
-// ── Ruta de emergencia para cargar catálogo ───────────────────────────────────
-app.get('/api/load-catalog', async (req, res) => {
+// ── Ruta de emergencia para cargar catálogo (PROTEGIDA) ───────────────────────
+app.get('/api/load-catalog', verifyToken, async (req, res) => {
     try {
         console.log('Iniciando sembrado de base de datos...');
 
@@ -176,18 +196,18 @@ app.get('/api/load-catalog', async (req, res) => {
         const valores = productos.map(p => [p.nombre, p.desc, p.precio, p.cat, p.img, 1000]);
         await db.query('INSERT INTO productos (nombre, descripcion, precio, categoria_id, imagen_url, stock) VALUES ?', [valores]);
 
-        res.send(`<h1>✅ ¡Catálogo cargado!</h1><p>${productos.length} productos insertados.</p>`);
+        res.json({ message: `Catálogo cargado: ${productos.length} productos insertados.` });
     } catch (error) {
         console.error('Error en el cargador:', error);
-        res.status(500).send('Error: ' + error.message);
+        res.status(500).json({ error: 'Error al cargar el catálogo' });
     }
 });
 
 // ── Rutas de la API ───────────────────────────────────────────────────────────
 app.use('/api/productos', productoRoutes);
 app.use('/api/pedidos', pedidoRoutes);
-app.use('/api/resenas', resenaRoutes);       // ← NUEVO
-app.use('/api/auth', authRoutes);             // ← AUTENTICACIÓN
+app.use('/api/resenas', resenaRoutes);
+app.use('/api/auth', authRoutes);
 
 // ── 404 ───────────────────────────────────────────────────────────────────────
 app.use((req, res) => {

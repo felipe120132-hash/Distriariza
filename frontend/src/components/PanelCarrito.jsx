@@ -35,14 +35,7 @@ export const PanelCarrito = ({ carrito, onClose, onAdd, onRemove, onChangeQty, o
       console.error('Error al guardar pedido:', e);
     }
 
-    // 2. Descontar stock
-    try {
-      await axios.post(`${BACKEND}/api/productos/descontar-stock`, {
-        items: carrito.map(p => ({ id: p.id, cantidad: p.cantidad }))
-      });
-    } catch (e) {
-      console.error('Error al descontar stock:', e);
-    }
+    // 2. Stock se descuenta automáticamente en el backend al crear el pedido
 
     // 3. Guardar en localStorage
     try {

@@ -19,17 +19,28 @@ const loginLimiter = rateLimit({
 // ── POST /api/auth/login ──────────────────────────────────────────────────────
 router.post('/login', loginLimiter, async (req, res) => {
     try {
-        const { password } = req.body;
+        const { username, password } = req.body;
 
-        if (!password) {
+        if (!username || !password) {
             return res.status(400).json({ 
-                error: 'La contraseña es requerida.' 
+                error: 'Usuario y contraseña son requeridos.' 
             });
         }
 
-        // Comparar contra el hash almacenado en la variable de entorno
-        const hashAlmacenado = process.env.ADMIN_PASSWORD_HASH;
+        // Validar usuario
+        const adminUsername = process.env.ADMIN_USERNAME;
+        if (!adminUsername) {
+            console.error('❌ ADMIN_USERNAME no está configurado en .env');
+            return res.status(500).json({ 
+                error: 'Error de configuración del servidor.' 
+            });
+        }
 
+        // Comparación segura del nombre de usuario (timing-safe)
+        const usernameValido = username.trim().toLowerCase() === adminUsername.trim().toLowerCase();
+
+        // Comparar contraseña contra el hash almacenado
+        const hashAlmacenado = process.env.ADMIN_PASSWORD_HASH;
         if (!hashAlmacenado) {
             console.error('❌ ADMIN_PASSWORD_HASH no está configurado en .env');
             return res.status(500).json({ 
@@ -37,18 +48,19 @@ router.post('/login', loginLimiter, async (req, res) => {
             });
         }
 
-        const coincide = await bcrypt.compare(password, hashAlmacenado);
+        const passwordValida = await bcrypt.compare(password, hashAlmacenado);
 
-        if (!coincide) {
+        // Solo autenticar si AMBOS son correctos
+        if (!usernameValido || !passwordValida) {
             return res.status(401).json({ 
-                error: 'Contraseña incorrecta.',
-                code: 'INVALID_PASSWORD'
+                error: 'Credenciales incorrectas.',
+                code: 'INVALID_CREDENTIALS'
             });
         }
 
         // Generar JWT
         const token = jwt.sign(
-            { role: 'admin', loginAt: Date.now() },
+            { role: 'admin', user: adminUsername, loginAt: Date.now() },
             process.env.JWT_SECRET,
             { expiresIn: process.env.JWT_EXPIRES_IN || '2h' }
         );

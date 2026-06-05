@@ -1,22 +1,28 @@
 const mysql = require('mysql2/promise');
 
+// ── Validar que las variables de entorno están configuradas ────────────────────
+const requiredEnvVars = ['DB_HOST', 'DB_PORT', 'DB_USER', 'DB_PASSWORD', 'DB_NAME'];
+const missing = requiredEnvVars.filter(v => !process.env[v]);
+if (missing.length > 0) {
+    console.error(`❌ Faltan variables de entorno de base de datos: ${missing.join(', ')}`);
+    console.error('   Asegúrate de tener un archivo .env correctamente configurado.');
+    process.exit(1);
+}
+
 const pool = mysql.createPool({
-  host: process.env.DB_HOST || 'mysql-14c7894e-distriariza.d.aivencloud.com',
-  port: parseInt(process.env.DB_PORT) || 28140,
-  user: process.env.DB_USER || 'avnadmin',
-  password: process.env.DB_PASSWORD || 'AVNS_EbW_oAxV0nWCU-TNYKW',
-  database: process.env.DB_NAME || 'defaultdb',
+  host: process.env.DB_HOST,
+  port: parseInt(process.env.DB_PORT),
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
   ssl: {
-    // Esto evita el HANDSHAKE_SSL_ERROR al no validar certificados locales
     rejectUnauthorized: false,
-    // Forzamos el protocolo TLS que Aiven exige
     minVersion: 'TLSv1.2'
   },
-  // Configuraciones de estabilidad para conexiones a la nube
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
-  connectTimeout: 20000, // Aumentado a 20s para evitar el ECONNRESET inicial
+  connectTimeout: 20000,
   enableKeepAlive: true,
   keepAliveInitialDelay: 0
 });

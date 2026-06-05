@@ -1,5 +1,6 @@
 const db = require('../config/db');
 const { cloudinary } = require('./uploadController');
+const { sanitizeString, isPositiveInt, isPositiveNumber } = require('../middleware/sanitize');
 
 const getProductos = async (req, res) => {
     try {
@@ -14,17 +15,19 @@ const getProductos = async (req, res) => {
         let params = [];
 
         if (categoria_id) {
+            if (!isPositiveInt(categoria_id)) {
+                return res.status(400).json({ error: 'ID de categoría inválido.' });
+            }
             query += ' AND p.categoria_id = ?';
-            params.push(categoria_id);
+            params.push(Number(categoria_id));
         }
         if (q) {
+            const busqueda = sanitizeString(q, 100);
             query += ' AND (p.nombre LIKE ? OR p.descripcion LIKE ?)';
-            params.push(`%${q}%`, `%${q}%`);
+            params.push(`%${busqueda}%`, `%${busqueda}%`);
         }
 
         const [rows] = await db.query(query, params);
-
-        // ── La imagen_url ya es una URL completa de Cloudinary, no la transformamos ──
         res.json(rows);
 
     } catch (error) {
@@ -37,12 +40,23 @@ const createProducto = async (req, res) => {
     try {
         const { nombre, descripcion, precio, categoria_id, stock } = req.body;
 
-        // req.file.path = URL completa de Cloudinary (ej: https://res.cloudinary.com/...)
+        // Validaciones
+        if (!nombre || typeof nombre !== 'string' || nombre.trim().length < 2) {
+            return res.status(400).json({ error: 'El nombre es requerido (mínimo 2 caracteres).' });
+        }
+        if (!precio || !isPositiveNumber(precio)) {
+            return res.status(400).json({ error: 'El precio debe ser un número positivo.' });
+        }
+        if (!categoria_id || !isPositiveInt(categoria_id)) {
+            return res.status(400).json({ error: 'Categoría inválida.' });
+        }
+
         const imagen_url = req.file ? req.file.path : null;
+        const stockValue = stock && isPositiveInt(stock) ? Number(stock) : 1000;
 
         const [result] = await db.query(
             'INSERT INTO productos (nombre, descripcion, precio, categoria_id, imagen_url, activo, stock) VALUES (?, ?, ?, ?, ?, 1, ?)',
-            [nombre, descripcion || '', precio, categoria_id, imagen_url, stock || 1000]
+            [sanitizeString(nombre, 255), sanitizeString(descripcion || '', 2000), Number(precio), Number(categoria_id), imagen_url, stockValue]
         );
 
         res.status(201).json({ id: result.insertId, message: 'Producto creado exitosamente' });
@@ -57,12 +71,21 @@ const updateProducto = async (req, res) => {
         const { id } = req.params;
         const { nombre, descripcion, precio, categoria_id, stock } = req.body;
 
+        if (!isPositiveInt(id)) {
+            return res.status(400).json({ error: 'ID de producto inválido.' });
+        }
+
         let query = 'UPDATE productos SET nombre = ?, descripcion = ?, precio = ?, categoria_id = ?, stock = ?';
-        let params = [nombre, descripcion, precio, categoria_id, stock || 0];
+        let params = [
+            sanitizeString(nombre, 255),
+            sanitizeString(descripcion, 2000),
+            Number(precio),
+            Number(categoria_id),
+            Number(stock) >= 0 ? Number(stock) : 0
+        ];
 
         if (req.file) {
-            // Si subió imagen nueva, borrar la vieja de Cloudinary
-            const [rows] = await db.query('SELECT imagen_url FROM productos WHERE id = ?', [id]);
+            const [rows] = await db.query('SELECT imagen_url FROM productos WHERE id = ?', [Number(id)]);
             const urlVieja = rows[0]?.imagen_url;
             if (urlVieja && urlVieja.includes('cloudinary')) {
                 const partes = urlVieja.split('/');
@@ -71,11 +94,11 @@ const updateProducto = async (req, res) => {
                 await cloudinary.uploader.destroy(publicId);
             }
             query += ', imagen_url = ?';
-            params.push(req.file.path); // URL completa de Cloudinary
+            params.push(req.file.path);
         }
 
         query += ' WHERE id = ?';
-        params.push(id);
+        params.push(Number(id));
 
         await db.query(query, params);
         res.json({ message: 'Producto actualizado exitosamente' });
@@ -88,7 +111,10 @@ const updateProducto = async (req, res) => {
 const deleteProducto = async (req, res) => {
     try {
         const { id } = req.params;
-        await db.query('UPDATE productos SET activo = 0 WHERE id = ?', [id]);
+        if (!isPositiveInt(id)) {
+            return res.status(400).json({ error: 'ID de producto inválido.' });
+        }
+        await db.query('UPDATE productos SET activo = 0 WHERE id = ?', [Number(id)]);
         res.json({ message: 'Producto eliminado exitosamente' });
     } catch (error) {
         console.error(error);
@@ -96,26 +122,4 @@ const deleteProducto = async (req, res) => {
     }
 };
 
-const descontarStock = async (req, res) => {
-    try {
-        const { items } = req.body;
-        if (!Array.isArray(items) || items.length === 0)
-            return res.status(400).json({ error: 'No se enviaron productos' });
-
-        await Promise.all(
-            items.map(({ id, cantidad }) =>
-                db.query(
-                    'UPDATE productos SET stock = GREATEST(stock - ?, 0) WHERE id = ?',
-                    [cantidad, id]
-                )
-            )
-        );
-
-        res.json({ message: 'Stock actualizado' });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Error al actualizar el stock' });
-    }
-};
-
-module.exports = { getProductos, createProducto, updateProducto, deleteProducto, descontarStock };
+module.exports = { getProductos, createProducto, updateProducto, deleteProducto };
