@@ -10,14 +10,6 @@ export const PanelHistorial = ({ onClose }) => {
     setPedidos(guardados.reverse());
   }, []);
 
-  const colorEstado = (estado) => {
-    if (estado === 'pendiente')  return { bg: 'rgba(245,158,11,0.12)', color: '#d97706' };
-    if (estado === 'enviado')    return { bg: 'rgba(26,92,255,0.12)',  color: '#1a5cff' };
-    if (estado === 'entregado')  return { bg: 'rgba(34,197,94,0.12)',  color: '#16a34a' };
-    if (estado === 'cancelado')  return { bg: 'rgba(239,68,68,0.12)',  color: '#ef4444' };
-    return { bg: 'var(--border)', color: 'var(--ink-3)' };
-  };
-
   return (
     <>
       <div onClick={onClose} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.3)', zIndex:1500 }} />
@@ -42,7 +34,6 @@ export const PanelHistorial = ({ onClose }) => {
           ) : (
             <div style={{ display:'flex', flexDirection:'column', gap:'12px' }}>
               {pedidos.map((p, i) => {
-                const { bg, color } = colorEstado(p.estado);
                 const isOpen = expandido === i;
                 return (
                   <div key={i} style={{ background:'var(--card-bg)', borderRadius:'14px', border:'1px solid var(--border)', overflow:'hidden' }}>
@@ -62,9 +53,6 @@ export const PanelHistorial = ({ onClose }) => {
                       </div>
                       <div style={{ display:'flex', alignItems:'center', gap:'8px' }}>
                         <span style={{ fontWeight:700, fontSize:'0.88rem', color:'var(--ink)' }}>{moneda(p.total)}</span>
-                        <span style={{ background:bg, color, fontSize:'0.62rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.5px', padding:'4px 10px', borderRadius:'99px' }}>
-                          {p.estado}
-                        </span>
                         <span style={{ color:'var(--ink-3)', fontSize:'0.75rem' }}>{isOpen ? '▲' : '▼'}</span>
                       </div>
                     </div>
