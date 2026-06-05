@@ -1,4 +1,5 @@
 import { generarPDF } from '../utils/generarPDF.js';
+import * as XLSX from 'xlsx';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { imgSrc, moneda, normaliza } from '../utils/helpers.js';
@@ -57,6 +58,32 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
     } finally {
       setCargandoPedidos(false);
     }
+  };
+
+  const exportarExcel = () => {
+    const filas = pedidos.map(p => {
+      const items = typeof p.items === 'string' ? JSON.parse(p.items) : p.items;
+      return {
+        'Pedido #': String(p.id).padStart(5, '0'),
+        'Fecha': new Date(p.creado_en).toLocaleDateString('es-CO', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' }),
+        'Cliente': p.cliente_nombre,
+        'Teléfono': p.cliente_telefono || '-',
+        'Ciudad': p.cliente_ciudad || '-',
+        'Dirección': p.cliente_direccion || '-',
+        'Productos': items.map(i => `${i.nombre} x${i.cantidad}`).join(' | '),
+        'Total': p.total,
+        'Estado': p.estado,
+      };
+    });
+
+    const hoja = XLSX.utils.json_to_sheet(filas);
+    hoja['!cols'] = [
+      { wch: 10 }, { wch: 18 }, { wch: 20 }, { wch: 14 },
+      { wch: 14 }, { wch: 24 }, { wch: 50 }, { wch: 12 }, { wch: 12 },
+    ];
+    const libro = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(libro, hoja, 'Pedidos');
+    XLSX.writeFile(libro, `pedidos-ariza-${new Date().toLocaleDateString('es-CO').replace(/\//g,'-')}.xlsx`);
   };
 
   const actualizarEstado = async (id, estado) => {
@@ -330,9 +357,19 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
                     <h3 style={{ color:'var(--ink)', fontFamily:'var(--font-display)' }}>
                       Pedidos ({pedidos.length})
                     </h3>
-                    <button onClick={fetchPedidos} className="pill-btn pill-btn--ghost" style={{ padding:'6px 14px', fontSize:'0.7rem' }}>
-                      🔄 Actualizar
-                    </button>
+                    <div style={{ display:'flex', gap:'8px' }}>
+                      <button onClick={fetchPedidos} className="pill-btn pill-btn--ghost" style={{ padding:'6px 14px', fontSize:'0.7rem' }}>
+                        🔄 Actualizar
+                      </button>
+                      <button
+                        onClick={exportarExcel}
+                        disabled={pedidos.length === 0}
+                        className="pill-btn pill-btn--green"
+                        style={{ padding:'6px 14px', fontSize:'0.7rem', opacity: pedidos.length === 0 ? 0.5 : 1 }}
+                      >
+                        📊 Excel
+                      </button>
+                    </div>
                   </div>
 
                   {cargandoPedidos ? (
@@ -378,8 +415,6 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
                             {/* ── DETALLE EXPANDIDO ── */}
                             {expandido && (
                               <div style={{ padding:'0 16px 16px', borderTop:'1px solid var(--border)' }}>
-
-                                {/* Info cliente */}
                                 <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px', marginTop:'14px', marginBottom:'16px' }}>
                                   {[
                                     ['📞 Teléfono', p.cliente_telefono],
@@ -392,8 +427,6 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
                                     </div>
                                   ))}
                                 </div>
-
-                                {/* Productos */}
                                 <p style={{ fontSize:'0.62rem', fontWeight:700, color:'var(--ink-3)', textTransform:'uppercase', letterSpacing:'0.5px', marginBottom:'8px' }}>Productos</p>
                                 <div style={{ display:'flex', flexDirection:'column', gap:'6px', marginBottom:'16px' }}>
                                   {items.map((item, i) => (
@@ -406,8 +439,6 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
                                     <span style={{ fontSize:'0.88rem', fontWeight:700, color:'var(--ink)' }}>Total: {moneda(p.total)}</span>
                                   </div>
                                 </div>
-
-                                {/* Cambiar estado */}
                                 <p style={{ fontSize:'0.62rem', fontWeight:700, color:'var(--ink-3)', textTransform:'uppercase', letterSpacing:'0.5px', marginBottom:'8px' }}>Cambiar estado</p>
                                 <div style={{ display:'flex', gap:'6px', flexWrap:'wrap', marginBottom:'4px' }}>
                                   {['pendiente', 'enviado', 'entregado', 'cancelado'].map(estado => {
@@ -430,8 +461,6 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
                                     );
                                   })}
                                 </div>
-
-                                {/* ── ACCIONES ── */}
                                 <div style={{ display:'flex', gap:'8px', marginTop:'12px' }}>
                                   <button
                                     onClick={async () => await generarPDF(p, items, p.total, p.id)}
@@ -448,7 +477,6 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
                                     🗑️ Eliminar pedido
                                   </button>
                                 </div>
-
                               </div>
                             )}
                           </div>
