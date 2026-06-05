@@ -1,5 +1,15 @@
 const db = require('../config/db');
 const { sanitizeString, isPositiveNumber, isPositiveInt, isValidPhone, isValidEstado } = require('../middleware/sanitize');
+const nodemailer = require('nodemailer');
+
+// Configuración de Nodemailer (usa variables de entorno o valores por defecto para evitar crashes si no están configuradas)
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.EMAIL_USER || 'felipe120132@gmail.com', // El correo que autoriza el envío
+        pass: process.env.EMAIL_PASS || '' // La contraseña de aplicación
+    }
+});
 
 const crearPedido = async (req, res) => {
     const { cliente_nombre, cliente_telefono, cliente_direccion, cliente_ciudad, total, items } = req.body;
@@ -55,6 +65,25 @@ const crearPedido = async (req, res) => {
                 )
             )
         );
+
+        // Enviar notificación por correo
+        if (process.env.EMAIL_PASS) {
+            const mailOptions = {
+                from: process.env.EMAIL_USER || 'felipe120132@gmail.com',
+                to: 'felipe120132@gmail.com', // Correo destino del admin
+                subject: `🛒 Nuevo pedido #${result.insertId} de ${nombreLimpio}`,
+                html: `
+                    <h2>¡Tienes un nuevo pedido!</h2>
+                    <p><strong>Cliente:</strong> ${nombreLimpio}</p>
+                    <p><strong>Teléfono:</strong> ${telefonoLimpio}</p>
+                    <p><strong>Ciudad:</strong> ${ciudadLimpia}</p>
+                    <p><strong>Total:</strong> $${Number(total).toLocaleString('es-CO')}</p>
+                    <hr/>
+                    <p><a href="https://distriariza.vercel.app/admin">Ingresa al Panel Admin</a> para ver los detalles y actualizar el estado.</p>
+                `
+            };
+            transporter.sendMail(mailOptions).catch(err => console.error('Error enviando correo:', err));
+        }
 
         res.status(201).json({ message: 'Pedido registrado', pedidoId: result.insertId });
     } catch (error) {

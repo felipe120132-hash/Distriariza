@@ -13,6 +13,7 @@ const productoRoutes = require('./routes/productoRoutes');
 const pedidoRoutes = require('./routes/pedidoRoutes');
 const resenaRoutes = require('./routes/resenaRoutes');
 const authRoutes = require('./routes/authRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
 
 const app = express();
 app.set('trust proxy', 1);
@@ -208,9 +209,10 @@ app.use('/api/productos', productoRoutes);
 app.use('/api/pedidos', pedidoRoutes);
 app.use('/api/resenas', resenaRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
-// ── 404 ───────────────────────────────────────────────────────────────────────
-app.use((req, res) => {
+// ── Fallback para React Router ────────────────────────────────────────────────
+app.get('*', (req, res) => {
     res.status(404).json({ message: 'Ruta no encontrada' });
 });
 

@@ -19,6 +19,8 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
   const [pedidos, setPedidos] = useState([]);
   const [pedidoExpandido, setPedidoExpandido] = useState(null);
   const [cargandoPedidos, setCargandoPedidos] = useState(false);
+  const [stats, setStats] = useState(null);
+  const [cargandoStats, setCargandoStats] = useState(false);
 
   const [nombre, setNombre] = useState('');
   const [desc, setDesc] = useState('');
@@ -45,7 +47,22 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
 
   useEffect(() => {
     if (auth && seccion === 'pedidos') fetchPedidos();
+    if (auth && seccion === 'dashboard') fetchStats();
   }, [auth, seccion]);
+
+  const fetchStats = async () => {
+    setCargandoStats(true);
+    try {
+      const res = await axios.get(`${BACKEND}/api/dashboard`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      setStats(res.data);
+    } catch (e) {
+      console.error('Error al cargar stats:', e);
+    } finally {
+      setCargandoStats(false);
+    }
+  };
 
   const fetchPedidos = async () => {
     setCargandoPedidos(true);
@@ -140,7 +157,7 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
   const handleLogout = () => {
     setAuth(false); setToken(''); setUser(''); setPass('');
     sessionStorage.removeItem('admin_token');
-    setModo('lista'); setSeccion('productos');
+    setModo('lista'); setSeccion('dashboard');
   };
 
   const authHeaders = () => ({ 'Authorization': `Bearer ${token}` });
@@ -301,6 +318,11 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
               {/* ── TABS ── */}
               {modo === 'lista' && (
                 <div style={{ display:'flex', gap:'8px', marginBottom:'24px' }}>
+                  <button onClick={() => setSeccion('dashboard')}
+                    className={`pill-btn ${seccion === 'dashboard' ? 'pill-btn--accent' : 'pill-btn--ghost'}`}
+                    style={{ padding:'8px 20px', fontSize:'0.8rem' }}>
+                    📊 Dashboard
+                  </button>
                   <button onClick={() => setSeccion('productos')}
                     className={`pill-btn ${seccion === 'productos' ? 'pill-btn--accent' : 'pill-btn--ghost'}`}
                     style={{ padding:'8px 20px', fontSize:'0.8rem' }}>
@@ -311,6 +333,63 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
                     style={{ padding:'8px 20px', fontSize:'0.8rem' }}>
                     🧾 Pedidos {pedidos.length > 0 && `(${pedidos.length})`}
                   </button>
+                </div>
+              )}
+
+              {/* ── SECCIÓN DASHBOARD ── */}
+              {seccion === 'dashboard' && modo === 'lista' && (
+                <div>
+                  <h3 style={{ color:'var(--ink)', fontFamily:'var(--font-display)', marginBottom:'16px' }}>
+                    Resumen de Actividad
+                  </h3>
+                  
+                  {cargandoStats ? (
+                    <div style={{ textAlign:'center', padding:'40px' }}>
+                      <p style={{ color:'var(--ink-3)', fontSize:'0.9rem' }}>Cargando estadísticas...</p>
+                    </div>
+                  ) : stats ? (
+                    <div style={{ display:'flex', flexDirection:'column', gap:'20px' }}>
+                      
+                      {/* TARJETAS DE MÉTRICAS */}
+                      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px' }}>
+                        <div style={{ background:'var(--card-bg)', border:'1px solid var(--border)', borderRadius:'14px', padding:'20px' }}>
+                          <p style={{ fontSize:'0.75rem', fontWeight:700, color:'var(--ink-3)', textTransform:'uppercase', letterSpacing:'0.5px', marginBottom:'8px' }}>Ventas de Hoy</p>
+                          <p style={{ fontSize:'1.8rem', fontWeight:800, color:'var(--ink)' }}>{moneda(stats.ventas_dia)}</p>
+                        </div>
+                        <div style={{ background:'var(--card-bg)', border:'1px solid var(--border)', borderRadius:'14px', padding:'20px' }}>
+                          <p style={{ fontSize:'0.75rem', fontWeight:700, color:'var(--ink-3)', textTransform:'uppercase', letterSpacing:'0.5px', marginBottom:'8px' }}>Ingresos del Mes</p>
+                          <p style={{ fontSize:'1.8rem', fontWeight:800, color:'var(--ink)' }}>{moneda(stats.ventas_mes)}</p>
+                        </div>
+                      </div>
+
+                      {/* PRODUCTOS MÁS VENDIDOS */}
+                      <div style={{ background:'var(--card-bg)', border:'1px solid var(--border)', borderRadius:'14px', padding:'20px' }}>
+                        <p style={{ fontSize:'0.85rem', fontWeight:700, color:'var(--ink)', marginBottom:'16px' }}>🔥 Top Productos Más Vendidos</p>
+                        {stats.productos_top && stats.productos_top.length > 0 ? (
+                          <div style={{ display:'flex', flexDirection:'column', gap:'12px' }}>
+                            {stats.productos_top.map((prod, idx) => (
+                              <div key={prod.id} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', paddingBottom:'12px', borderBottom: idx < stats.productos_top.length - 1 ? '1px solid var(--border)' : 'none' }}>
+                                <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
+                                  <span style={{ fontWeight:800, color:'var(--ink-3)', fontSize:'0.9rem' }}>#{idx + 1}</span>
+                                  <span style={{ fontWeight:600, color:'var(--ink)', fontSize:'0.85rem' }}>{prod.nombre}</span>
+                                </div>
+                                <span style={{ background:'rgba(34,197,94,0.12)', color:'#16a34a', padding:'4px 10px', borderRadius:'99px', fontSize:'0.75rem', fontWeight:700 }}>
+                                  {prod.cantidad_vendida} ud.
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p style={{ fontSize:'0.8rem', color:'var(--ink-3)' }}>No hay suficientes datos de ventas aún.</p>
+                        )}
+                      </div>
+
+                    </div>
+                  ) : (
+                    <div style={{ textAlign:'center', padding:'40px' }}>
+                      <p style={{ color:'var(--ink-3)', fontSize:'0.9rem' }}>No se pudieron cargar las estadísticas.</p>
+                    </div>
+                  )}
                 </div>
               )}
 
