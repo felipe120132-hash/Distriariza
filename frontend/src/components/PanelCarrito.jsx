@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import jsPDF from 'jspdf';
 import { imgSrc, moneda } from '../utils/helpers.js';
 import { BACKEND } from '../constants/index.js';
 import { Contador } from './Contador.jsx';
 import { generarPDF } from '../utils/generarPDF.js';
+
 export const PanelCarrito = ({ carrito, onClose, onAdd, onRemove, onChangeQty, onClear, totalCompra, totalItems }) => {
   const [paso, setPaso] = useState('lista');
   const [datos, setDatos] = useState({ nombre:'', direccion:'', ciudad:'', telefono:'' });
@@ -12,7 +12,7 @@ export const PanelCarrito = ({ carrito, onClose, onAdd, onRemove, onChangeQty, o
 
   const enviarPedido = async () => {
     setEnviando(true);
-    let pedidoId = Date.now(); // fallback si falla la BD
+    let pedidoId = Date.now();
 
     // 1. Guardar en BD
     try {
@@ -44,15 +44,38 @@ export const PanelCarrito = ({ carrito, onClose, onAdd, onRemove, onChangeQty, o
       console.error('Error al descontar stock:', e);
     }
 
-    // 3. Generar PDF
+    // 3. Guardar en localStorage
+    try {
+      const historial = JSON.parse(localStorage.getItem('mis_pedidos') || '[]');
+      historial.push({
+        pedidoId,
+        fecha: new Date().toISOString(),
+        nombre: datos.nombre,
+        telefono: datos.telefono,
+        direccion: datos.direccion,
+        ciudad: datos.ciudad,
+        total: totalCompra,
+        estado: 'pendiente',
+        items: carrito.map(p => ({
+          nombre: p.nombre,
+          cantidad: p.cantidad,
+          precio: p.precio,
+          color: p.colorSeleccionado || null,
+        })),
+      });
+      localStorage.setItem('mis_pedidos', JSON.stringify(historial));
+    } catch (e) {
+      console.error('Error guardando historial:', e);
+    }
+
+    // 4. Generar PDF
     try {
       await generarPDF(datos, carrito, totalCompra, pedidoId);
-
     } catch (e) {
       console.error('Error al generar PDF:', e);
     }
 
-    // 4. Abrir WhatsApp
+    // 5. Abrir WhatsApp
     const lista = carrito.map(p =>
       `• ${p.nombre}${p.colorSeleccionado ? ` [Color: ${p.colorSeleccionado}]` : ''} (x${p.cantidad})`
     ).join('\n');
@@ -67,7 +90,7 @@ export const PanelCarrito = ({ carrito, onClose, onAdd, onRemove, onChangeQty, o
     <>
       <div onClick={() => { onClose(); setPaso('lista'); }} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.3)', zIndex:1500 }} />
       <div className="panel" style={{ position:'fixed', top:0, right:0, width:'100%', maxWidth:'400px', height:'100%', background:'var(--surface)', zIndex:2000, display:'flex', flexDirection:'column' }}>
-        
+
         {/* ── HEADER ── */}
         <div style={{ display:'flex', alignItems:'center', padding:'24px 28px', borderBottom:'1px solid var(--border)' }}>
           {paso === 'envio' && (

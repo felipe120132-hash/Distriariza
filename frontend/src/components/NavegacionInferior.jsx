@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { PanelHistorial } from './PanelHistorial.jsx';
 
 export const NavegacionInferior = ({ dark, categoria, setCategoria, setBusqueda, totalItems }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [open, setOpen] = useState(false);
+  const [historialOpen, setHistorialOpen] = useState(false);
 
   const cartOpen    = location.pathname === '/carrito';
   const reviewsOpen = location.pathname === '/resenas';
@@ -20,6 +22,11 @@ export const NavegacionInferior = ({ dark, categoria, setCategoria, setBusqueda,
       label: 'Tienda', ruta: '/',
       activo: categoria === 'Todos' && location.pathname === '/',
       icon: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    },
+    {
+      label: 'Mis Pedidos', ruta: null,
+      activo: false,
+      icon: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
     },
     {
       label: 'Reseñas', ruta: '/resenas',
@@ -59,13 +66,8 @@ export const NavegacionInferior = ({ dark, categoria, setCategoria, setBusqueda,
           position: relative;
           transition: background 0.15s;
         }
-        .nav-menu-item:not(:active):hover {
-          background-color: var(--border);
-        }
-        .nav-menu-item:focus, .nav-menu-item:active {
-          background-color: var(--border);
-          outline: none;
-        }
+        .nav-menu-item:not(:active):hover { background-color: var(--border); }
+        .nav-menu-item:focus, .nav-menu-item:active { background-color: var(--border); outline: none; }
         .nav-menu-item::before {
           content: "";
           position: absolute;
@@ -80,23 +82,14 @@ export const NavegacionInferior = ({ dark, categoria, setCategoria, setBusqueda,
         }
         .nav-menu-item:focus::before,
         .nav-menu-item:active::before,
-        .nav-menu-item--active::before {
-          opacity: 1;
-        }
-        .nav-menu-item--active {
-          background-color: var(--border);
-          color: var(--accent);
-        }
-        .nav-menu-item svg {
-          width: 16px;
-          height: 16px;
-          flex-shrink: 0;
-          color: #7D8590;
-        }
-        .nav-menu-item--active svg {
-          color: var(--accent);
-        }
+        .nav-menu-item--active::before { opacity: 1; }
+        .nav-menu-item--active { background-color: var(--border); color: var(--accent); }
+        .nav-menu-item svg { width: 16px; height: 16px; flex-shrink: 0; color: #7D8590; }
+        .nav-menu-item--active svg { color: var(--accent); }
       `}</style>
+
+      {/* ── PANEL HISTORIAL ── */}
+      {historialOpen && <PanelHistorial onClose={() => setHistorialOpen(false)} />}
 
       {/* ── OVERLAY ── */}
       {open && (
@@ -128,8 +121,15 @@ export const NavegacionInferior = ({ dark, categoria, setCategoria, setBusqueda,
       }}>
         {tabs.map(({ icon, label, ruta, activo, badge }) => (
           <button
-            key={ruta}
-            onClick={() => navegar(ruta)}
+            key={label}
+            onClick={() => {
+              if (ruta === null) {
+                setOpen(false);
+                setHistorialOpen(true);
+              } else {
+                navegar(ruta);
+              }
+            }}
             className={`nav-menu-item${activo ? ' nav-menu-item--active' : ''}`}
           >
             {icon}
