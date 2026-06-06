@@ -18,12 +18,18 @@ export const BarraNavegacion = ({ dark, setDark, totalItems, categoria, setCateg
   };
 
   const links = [
-    { label: 'Inicio', ruta: '/', activo: location.pathname === '/' },
-    { label: 'Productos', ruta: '/', activo: false },
-    { label: 'Pedidos', ruta: null, activo: false },
-    { label: 'Reseñas', ruta: '/resenas', activo: location.pathname === '/resenas' },
-    { label: 'Admin', ruta: '/admin', activo: location.pathname === '/admin' },
+    { label: 'Tienda',      ruta: '/',        activo: location.pathname === '/' },
+    { label: 'Mis Pedidos', ruta: null,        activo: false },
+    { label: 'Reseñas',     ruta: '/resenas',  activo: location.pathname === '/resenas' },
+    { label: 'Admin',       ruta: '/admin',    activo: location.pathname === '/admin' },
   ];
+
+  const iconos = {
+    'Tienda':      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
+    'Mis Pedidos': <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>,
+    'Reseñas':     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>,
+    'Admin':       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+  };
 
   return (
     <>
@@ -89,6 +95,15 @@ export const BarraNavegacion = ({ dark, setDark, totalItems, categoria, setCateg
           background: var(--accent);
           border-radius: 0 4px 4px 0;
         }
+        .mobile-menu-item svg {
+          width: 18px;
+          height: 18px;
+          flex-shrink: 0;
+          color: #7D8590;
+        }
+        .mobile-menu-item--active svg {
+          color: var(--accent);
+        }
       `}</style>
 
       {/* ── HISTORIAL PANEL ── */}
@@ -124,9 +139,7 @@ export const BarraNavegacion = ({ dark, setDark, totalItems, categoria, setCateg
               }}
               className={`mobile-menu-item${activo ? ' mobile-menu-item--active' : ''}`}
             >
-              <span style={{ fontSize:'1.1rem' }}>
-                {label === 'Inicio' ? '🏪' : label === 'Productos' ? '📦' : label === 'Pedidos' ? '🧾' : label === 'Reseñas' ? '💬' : '👤'}
-              </span>
+              {iconos[label]}
               {label}
             </button>
           ))}
@@ -151,7 +164,6 @@ export const BarraNavegacion = ({ dark, setDark, totalItems, categoria, setCateg
 
         {/* ── IZQUIERDA: Hamburguesa (móvil) + Logo ── */}
         <div style={{ display:'flex', alignItems:'center', gap:'12px' }}>
-          {/* Botón hamburguesa — solo móvil */}
           <button
             className="nav-mobile-only"
             onClick={() => setMenuOpen(o => !o)}
@@ -196,13 +208,11 @@ export const BarraNavegacion = ({ dark, setDark, totalItems, categoria, setCateg
 
         {/* ── DERECHA: Toggle + Carrito ── */}
         <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
-          {/* Toggle modo oscuro — solo desktop */}
           <div className="nav-desktop-only" style={{ display:'flex', alignItems:'center', gap:'5px' }}>
             <span style={{ fontSize:'0.75rem', color:'var(--ink-3)' }}>{dark ? '🌙' : '☀️'}</span>
             <button className="dark-toggle" onClick={() => setDark(d => !d)} />
           </div>
 
-          {/* Carrito */}
           <button
             onClick={() => navigate('/carrito')}
             style={{
