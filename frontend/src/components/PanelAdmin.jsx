@@ -210,31 +210,44 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
     if (estado === 'cancelado')  return { bg: 'rgba(239,68,68,0.12)',   color: '#ef4444' };
     return { bg: 'var(--border)', color: 'var(--ink-3)' };
   };
-
-  const Variacion = ({ valor }) => {
-    if (valor === null || valor === undefined) return null;
-    const positivo = valor >= 0;
-    return (
+  const Variacion = ({ valor, montoComparacion, labelComparacion }) => {
+    if (valor !== null && valor !== undefined) {
+      const positivo = valor >= 0;
+      return (
       <span style={{
         display: 'inline-flex', alignItems: 'center', gap: '3px',
         background: positivo ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)',
         color: positivo ? '#16a34a' : '#ef4444',
         fontSize: '0.7rem', fontWeight: 700, padding: '3px 8px',
         borderRadius: '99px', marginTop: '8px'
-      }}>
-        {positivo ? '↑' : '↓'} {Math.abs(valor)}%
-      </span>
-    );
-  };
-
-  return (
-    <>
-      <div onClick={onClose} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.5)', zIndex:4000 }} />
-      <div className="panel panel-admin" style={{
-        position:'fixed', top:0, right:0, width:'100%', maxWidth:'min(600px, 100vw)',
-        height:'100%', background:'var(--bg)', zIndex:4001,
-        display:'flex', flexDirection:'column', overflow:'hidden'
-      }}>
+        }}>
+          {positivo ? '↑' : '↓'} {Math.abs(valor)}% vs. {labelComparacion}
+          </span>
+          );
+        }
+        if (montoComparacion > 0) {
+          return (
+          <span style={{
+            display: 'inline-flex', alignItems: 'center', gap: '3px',
+            background: 'rgba(255,255,255,0.06)',
+            color: 'var(--ink-3)',
+            fontSize: '0.7rem', fontWeight: 600, padding: '3px 8px',
+            borderRadius: '99px', marginTop: '8px'
+            }}>
+              {labelComparacion}: {moneda(montoComparacion)}
+              </span>
+              );
+            }
+            return null;
+          };
+          return (
+          <>
+          <div onClick={onClose} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.5)', zIndex:4000 }} />
+          <div className="panel panel-admin" style={{
+            position:'fixed', top:0, right:0, width:'100%', maxWidth:'min(600px, 100vw)',
+            height:'100%', background:'var(--bg)', zIndex:4001,
+            display:'flex', flexDirection:'column', overflow:'hidden'
+            }}>
 
         {/* ── HEADER ── */}
         <div style={{
@@ -318,29 +331,20 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
                   ) : stats ? (
                     <>
                       {/* MÉTRICAS */}
+                      {/* MÉTRICAS */}
                       <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px' }}>
                         <div style={{ background:'var(--surface)', border:'1px solid var(--border)', borderRadius:'16px', padding:'18px' }}>
                           <p style={{ fontSize:'0.68rem', fontWeight:700, color:'var(--ink-3)', textTransform:'uppercase', letterSpacing:'0.6px' }}>Ventas de Hoy</p>
                           <p style={{ fontSize:'1.6rem', fontWeight:800, color:'var(--ink)', marginTop:'6px', lineHeight:1 }}>{moneda(stats.ventas_dia)}</p>
-                          <div style={{ display:'flex', alignItems:'center', gap:'6px', marginTop:'8px' }}>
-                            <Variacion valor={stats.variacion_dia} />
-                            {stats.variacion_dia !== null && (
-                              <span style={{ fontSize:'0.65rem', color:'var(--ink-3)' }}>vs. ayer</span>
-                            )}
+                          <Variacion valor={stats.variacion_dia} montoComparacion={stats.ventas_ayer} labelComparacion="ayer" />
                           </div>
+                          <div style={{ background:'var(--surface)', border:'1px solid var(--border)', borderRadius:'16px', padding:'18px' }}>
+                            <p style={{ fontSize:'0.68rem', fontWeight:700, color:'var(--ink-3)', textTransform:'uppercase', letterSpacing:'0.6px' }}>Ingresos del Mes</p>
+                            <p style={{ fontSize:'1.6rem', fontWeight:800, color:'var(--ink)', marginTop:'6px', lineHeight:1 }}>{moneda(stats.ventas_mes)}</p>
+                            <Variacion valor={stats.variacion_mes} montoComparacion={stats.ventas_mes_anterior} labelComparacion="mes ant." />
+                            </div>
                         </div>
-                        <div style={{ background:'var(--surface)', border:'1px solid var(--border)', borderRadius:'16px', padding:'18px' }}>
-                          <p style={{ fontSize:'0.68rem', fontWeight:700, color:'var(--ink-3)', textTransform:'uppercase', letterSpacing:'0.6px' }}>Ingresos del Mes</p>
-                          <p style={{ fontSize:'1.6rem', fontWeight:800, color:'var(--ink)', marginTop:'6px', lineHeight:1 }}>{moneda(stats.ventas_mes)}</p>
-                          <div style={{ display:'flex', alignItems:'center', gap:'6px', marginTop:'8px' }}>
-                            <Variacion valor={stats.variacion_mes} />
-                            {stats.variacion_mes !== null && (
-                              <span style={{ fontSize:'0.65rem', color:'var(--ink-3)' }}>vs. mes ant.</span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-
+                        
                       {/* PEDIDOS PENDIENTES */}
                       {stats.pedidos_pendientes > 0 && (
                         <div style={{
