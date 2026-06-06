@@ -631,7 +631,7 @@ export const EstilosGlobales = ({ dark }) => (
     .nav-mobile-only { display: none; }
     .nav-desktop-only { display: inline-flex; }
 
-    main { padding-bottom: 120px !important; }
+    main { padding-bottom: 40px !important; }
 
     @media (min-width: 641px) {
       .panel-admin {
