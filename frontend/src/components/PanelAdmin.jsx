@@ -15,7 +15,7 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
   const [successMsg, setSuccessMsg] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
   const [busquedaAdmin, setBusquedaAdmin] = useState('');
-  const [seccion, setSeccion] = useState('productos');
+  const [seccion, setSeccion] = useState('dashboard');
   const [pedidos, setPedidos] = useState([]);
   const [pedidoExpandido, setPedidoExpandido] = useState(null);
   const [cargandoPedidos, setCargandoPedidos] = useState(false);
@@ -93,12 +93,8 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
         'Estado': p.estado,
       };
     });
-
     const hoja = XLSX.utils.json_to_sheet(filas);
-    hoja['!cols'] = [
-      { wch: 10 }, { wch: 18 }, { wch: 20 }, { wch: 14 },
-      { wch: 14 }, { wch: 24 }, { wch: 50 }, { wch: 12 }, { wch: 12 },
-    ];
+    hoja['!cols'] = [{ wch:10 },{ wch:18 },{ wch:20 },{ wch:14 },{ wch:14 },{ wch:24 },{ wch:50 },{ wch:12 },{ wch:12 }];
     const libro = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(libro, hoja, 'Pedidos');
     XLSX.writeFile(libro, `pedidos-ariza-${new Date().toLocaleDateString('es-CO').replace(/\//g,'-')}.xlsx`);
@@ -110,29 +106,21 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       setPedidos(prev => prev.map(p => p.id === id ? { ...p, estado } : p));
-    } catch (e) {
-      console.error('Error al actualizar estado:', e);
-    }
+    } catch (e) { console.error('Error al actualizar estado:', e); }
   };
 
   const eliminarPedido = async (id) => {
-    if (!window.confirm('¿Seguro que quieres eliminar este pedido? Esta acción no se puede deshacer.')) return;
+    if (!window.confirm('¿Seguro que quieres eliminar este pedido?')) return;
     try {
-      await axios.delete(`${BACKEND}/api/pedidos/${id}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      await axios.delete(`${BACKEND}/api/pedidos/${id}`, { headers: { 'Authorization': `Bearer ${token}` } });
       setPedidos(prev => prev.filter(p => p.id !== id));
       setPedidoExpandido(null);
-    } catch (e) {
-      console.error('Error al eliminar pedido:', e);
-      alert('No se pudo eliminar el pedido.');
-    }
+    } catch (e) { alert('No se pudo eliminar el pedido.'); }
   };
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setLoginLoading(true);
-    setError('');
+    setLoginLoading(true); setError('');
     try {
       const res = await axios.post(`${BACKEND}/api/auth/login`, { username: user, password: pass });
       const jwt = res.data.token;
@@ -142,16 +130,10 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
       setUser(''); setPass('');
     } catch (err) {
       const data = err.response?.data;
-      if (data?.code === 'RATE_LIMITED') {
-        setError('🔒 Demasiados intentos. Intenta de nuevo en 15 minutos.');
-      } else if (err.response?.status === 401) {
-        setError('❌ Credenciales incorrectas.');
-      } else {
-        setError('Error de conexión. Intenta de nuevo.');
-      }
-    } finally {
-      setLoginLoading(false);
-    }
+      if (data?.code === 'RATE_LIMITED') setError('🔒 Demasiados intentos. Intenta de nuevo en 15 minutos.');
+      else if (err.response?.status === 401) setError('❌ Credenciales incorrectas.');
+      else setError('Error de conexión. Intenta de nuevo.');
+    } finally { setLoginLoading(false); }
   };
 
   const handleLogout = () => {
@@ -165,12 +147,8 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
   const handleAuthError = (err) => {
     if (err.response?.status === 401) {
       const code = err.response?.data?.code;
-      setError(code === 'TOKEN_EXPIRED'
-        ? '⏰ Tu sesión ha expirado. Inicia sesión nuevamente.'
-        : '🔒 Sesión inválida. Inicia sesión nuevamente.'
-      );
-      handleLogout();
-      return true;
+      setError(code === 'TOKEN_EXPIRED' ? '⏰ Tu sesión ha expirado.' : '🔒 Sesión inválida.');
+      handleLogout(); return true;
     }
     return false;
   };
@@ -208,13 +186,11 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
       setTimeout(() => setSuccessMsg(''), 4000);
     } catch (err) {
       if (!handleAuthError(err)) setError('Error al guardar el producto');
-    } finally {
-      setCargando(false);
-    }
+    } finally { setCargando(false); }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('¿Seguro que quieres ocultar/eliminar este producto?')) return;
+    if (!window.confirm('¿Seguro que quieres eliminar este producto?')) return;
     try {
       await axios.delete(`${BACKEND}/api/productos/${id}`, { headers: authHeaders() });
       onRefresh();
@@ -235,14 +211,41 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
     return { bg: 'var(--border)', color: 'var(--ink-3)' };
   };
 
+  const Variacion = ({ valor }) => {
+    if (valor === null || valor === undefined) return null;
+    const positivo = valor >= 0;
+    return (
+      <span style={{
+        display: 'inline-flex', alignItems: 'center', gap: '3px',
+        background: positivo ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)',
+        color: positivo ? '#16a34a' : '#ef4444',
+        fontSize: '0.7rem', fontWeight: 700, padding: '3px 8px',
+        borderRadius: '99px', marginTop: '8px'
+      }}>
+        {positivo ? '↑' : '↓'} {Math.abs(valor)}%
+      </span>
+    );
+  };
+
   return (
     <>
       <div onClick={onClose} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.5)', zIndex:4000 }} />
-      <div className="panel panel-admin" style={{ position:'fixed', top:0, right:0, width:'100%', maxWidth:'min(600px, 100vw)', height:'100%', background:'var(--surface)', zIndex:4001, display:'flex', flexDirection:'column', overflowY:'auto' }}>
+      <div className="panel panel-admin" style={{
+        position:'fixed', top:0, right:0, width:'100%', maxWidth:'min(600px, 100vw)',
+        height:'100%', background:'var(--bg)', zIndex:4001,
+        display:'flex', flexDirection:'column', overflow:'hidden'
+      }}>
 
         {/* ── HEADER ── */}
-        <div style={{ padding:'24px 28px', borderBottom:'1px solid var(--border)', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-          <h2 style={{ fontFamily:'var(--font-display)', fontSize:'1.4rem', fontWeight:700, color:'var(--ink)' }}>Panel Admin</h2>
+        <div style={{
+          padding:'20px 24px', background:'var(--surface)',
+          borderBottom:'1px solid var(--border)',
+          display:'flex', justifyContent:'space-between', alignItems:'center',
+          flexShrink: 0,
+        }}>
+          <h2 style={{ fontFamily:'var(--font-display)', fontSize:'1.3rem', fontWeight:700, color:'var(--ink)' }}>
+            Panel Admin
+          </h2>
           <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
             {auth && (
               <button onClick={handleLogout} className="pill-btn pill-btn--ghost" style={{ padding:'6px 14px', fontSize:'0.7rem', color:'#ef4444' }}>
@@ -253,20 +256,18 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
           </div>
         </div>
 
-        <div style={{ padding:'24px 28px', flex:1 }}>
+        {/* ── CONTENIDO ── */}
+        <div style={{ flex:1, overflowY:'auto', padding:'24px', paddingBottom: auth ? '80px' : '24px' }}>
 
           {/* ── LOGIN ── */}
           {!auth ? (
             <div style={{ display:'flex', alignItems:'center', justifyContent:'center', marginTop:'40px' }}>
-              <form
-                onSubmit={handleLogin}
-                style={{
-                  display:'flex', flexDirection:'column', gap:'10px',
-                  paddingLeft:'2em', paddingRight:'2em', paddingBottom:'1.5em',
-                  backgroundColor:'#171717', borderRadius:'25px',
-                  transition:'.4s ease-in-out', minWidth:'280px',
-                  border:'1px solid transparent',
-                }}
+              <form onSubmit={handleLogin} style={{
+                display:'flex', flexDirection:'column', gap:'10px',
+                paddingLeft:'2em', paddingRight:'2em', paddingBottom:'1.5em',
+                backgroundColor:'#171717', borderRadius:'25px',
+                transition:'.4s ease-in-out', minWidth:'280px', border:'1px solid transparent',
+              }}
                 onMouseEnter={e => { e.currentTarget.style.transform='scale(1.05)'; e.currentTarget.style.border='1px solid #333'; }}
                 onMouseLeave={e => { e.currentTarget.style.transform='scale(1)'; e.currentTarget.style.border='1px solid transparent'; }}
               >
@@ -275,23 +276,15 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
                   <svg xmlns="http://www.w3.org/2000/svg" width={16} height={16} fill="white" viewBox="0 0 16 16">
                     <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z" />
                   </svg>
-                  <input
-                    placeholder="Usuario" type="text" value={user}
-                    onChange={e => setUser(e.target.value)}
-                    autoComplete="username" required
-                    style={{ background:'none', border:'none', outline:'none', width:'100%', color:'#d3d3d3', fontSize:'0.9rem' }}
-                  />
+                  <input placeholder="Usuario" type="text" value={user} onChange={e => setUser(e.target.value)} autoComplete="username" required
+                    style={{ background:'none', border:'none', outline:'none', width:'100%', color:'#d3d3d3', fontSize:'0.9rem' }} />
                 </div>
                 <div style={{ display:'flex', alignItems:'center', gap:'0.5em', borderRadius:'25px', padding:'0.6em', backgroundColor:'#171717', boxShadow:'inset 2px 5px 10px rgb(5,5,5)' }}>
                   <svg xmlns="http://www.w3.org/2000/svg" width={16} height={16} fill="white" viewBox="0 0 16 16">
                     <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z" />
                   </svg>
-                  <input
-                    placeholder="Contraseña" type="password" value={pass}
-                    onChange={e => setPass(e.target.value)}
-                    autoComplete="current-password" required
-                    style={{ background:'none', border:'none', outline:'none', width:'100%', color:'#d3d3d3', fontSize:'0.9rem' }}
-                  />
+                  <input placeholder="Contraseña" type="password" value={pass} onChange={e => setPass(e.target.value)} autoComplete="current-password" required
+                    style={{ background:'none', border:'none', outline:'none', width:'100%', color:'#d3d3d3', fontSize:'0.9rem' }} />
                 </div>
                 {error && (
                   <div style={{ background:'rgba(239,68,68,0.1)', border:'1px solid rgba(239,68,68,0.3)', borderRadius:'10px', padding:'8px 12px', fontSize:'0.78rem', color:'#ef4444', textAlign:'center' }}>
@@ -307,84 +300,99 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
                     {loginLoading ? 'Verificando...' : 'Ingresar'}
                   </button>
                 </div>
-                <p style={{ fontSize:'0.65rem', color:'#666', textAlign:'center', marginBottom:'1em', lineHeight:1.5 }}>
-                  🛡️ Máximo 5 intentos cada 15 min
-                </p>
+                <p style={{ fontSize:'0.65rem', color:'#666', textAlign:'center', marginBottom:'1em', lineHeight:1.5 }}>🛡️ Máximo 5 intentos cada 15 min</p>
               </form>
             </div>
 
           ) : (
             <>
-              {/* ── TABS ── */}
-              {modo === 'lista' && (
-                <div style={{ display:'flex', gap:'8px', marginBottom:'24px' }}>
-                  <button onClick={() => setSeccion('dashboard')}
-                    className={`pill-btn ${seccion === 'dashboard' ? 'pill-btn--accent' : 'pill-btn--ghost'}`}
-                    style={{ padding:'8px 20px', fontSize:'0.8rem' }}>
-                    📊 Dashboard
-                  </button>
-                  <button onClick={() => setSeccion('productos')}
-                    className={`pill-btn ${seccion === 'productos' ? 'pill-btn--accent' : 'pill-btn--ghost'}`}
-                    style={{ padding:'8px 20px', fontSize:'0.8rem' }}>
-                    📦 Productos
-                  </button>
-                  <button onClick={() => setSeccion('pedidos')}
-                    className={`pill-btn ${seccion === 'pedidos' ? 'pill-btn--accent' : 'pill-btn--ghost'}`}
-                    style={{ padding:'8px 20px', fontSize:'0.8rem' }}>
-                    🧾 Pedidos {pedidos.length > 0 && `(${pedidos.length})`}
-                  </button>
-                </div>
-              )}
-
-              {/* ── SECCIÓN DASHBOARD ── */}
+              {/* ── DASHBOARD ── */}
               {seccion === 'dashboard' && modo === 'lista' && (
-                <div>
-                  <h3 style={{ color:'var(--ink)', fontFamily:'var(--font-display)', marginBottom:'16px' }}>
-                    Resumen de Actividad
-                  </h3>
-                  
+                <div style={{ display:'flex', flexDirection:'column', gap:'16px' }}>
+                  <h3 style={{ fontFamily:'var(--font-display)', fontSize:'1.1rem', fontWeight:700, color:'var(--ink)' }}>Resumen de Actividad</h3>
+
                   {cargandoStats ? (
                     <div style={{ textAlign:'center', padding:'40px' }}>
                       <p style={{ color:'var(--ink-3)', fontSize:'0.9rem' }}>Cargando estadísticas...</p>
                     </div>
                   ) : stats ? (
-                    <div style={{ display:'flex', flexDirection:'column', gap:'20px' }}>
-                      
-                      {/* TARJETAS DE MÉTRICAS */}
+                    <>
+                      {/* MÉTRICAS */}
                       <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px' }}>
-                        <div style={{ background:'var(--card-bg)', border:'1px solid var(--border)', borderRadius:'14px', padding:'20px' }}>
-                          <p style={{ fontSize:'0.75rem', fontWeight:700, color:'var(--ink-3)', textTransform:'uppercase', letterSpacing:'0.5px', marginBottom:'8px' }}>Ventas de Hoy</p>
-                          <p style={{ fontSize:'1.8rem', fontWeight:800, color:'var(--ink)' }}>{moneda(stats.ventas_dia)}</p>
+                        <div style={{ background:'var(--surface)', border:'1px solid var(--border)', borderRadius:'16px', padding:'18px' }}>
+                          <p style={{ fontSize:'0.68rem', fontWeight:700, color:'var(--ink-3)', textTransform:'uppercase', letterSpacing:'0.6px' }}>Ventas de Hoy</p>
+                          <p style={{ fontSize:'1.6rem', fontWeight:800, color:'var(--ink)', marginTop:'6px', lineHeight:1 }}>{moneda(stats.ventas_dia)}</p>
+                          <div style={{ display:'flex', alignItems:'center', gap:'6px', marginTop:'8px' }}>
+                            <Variacion valor={stats.variacion_dia} />
+                            {stats.variacion_dia !== null && (
+                              <span style={{ fontSize:'0.65rem', color:'var(--ink-3)' }}>vs. ayer</span>
+                            )}
+                          </div>
                         </div>
-                        <div style={{ background:'var(--card-bg)', border:'1px solid var(--border)', borderRadius:'14px', padding:'20px' }}>
-                          <p style={{ fontSize:'0.75rem', fontWeight:700, color:'var(--ink-3)', textTransform:'uppercase', letterSpacing:'0.5px', marginBottom:'8px' }}>Ingresos del Mes</p>
-                          <p style={{ fontSize:'1.8rem', fontWeight:800, color:'var(--ink)' }}>{moneda(stats.ventas_mes)}</p>
+                        <div style={{ background:'var(--surface)', border:'1px solid var(--border)', borderRadius:'16px', padding:'18px' }}>
+                          <p style={{ fontSize:'0.68rem', fontWeight:700, color:'var(--ink-3)', textTransform:'uppercase', letterSpacing:'0.6px' }}>Ingresos del Mes</p>
+                          <p style={{ fontSize:'1.6rem', fontWeight:800, color:'var(--ink)', marginTop:'6px', lineHeight:1 }}>{moneda(stats.ventas_mes)}</p>
+                          <div style={{ display:'flex', alignItems:'center', gap:'6px', marginTop:'8px' }}>
+                            <Variacion valor={stats.variacion_mes} />
+                            {stats.variacion_mes !== null && (
+                              <span style={{ fontSize:'0.65rem', color:'var(--ink-3)' }}>vs. mes ant.</span>
+                            )}
+                          </div>
                         </div>
                       </div>
 
-                      {/* PRODUCTOS MÁS VENDIDOS */}
-                      <div style={{ background:'var(--card-bg)', border:'1px solid var(--border)', borderRadius:'14px', padding:'20px' }}>
-                        <p style={{ fontSize:'0.85rem', fontWeight:700, color:'var(--ink)', marginBottom:'16px' }}>🔥 Top Productos Más Vendidos</p>
+                      {/* PEDIDOS PENDIENTES */}
+                      {stats.pedidos_pendientes > 0 && (
+                        <div style={{
+                          background:'rgba(245,158,11,0.08)', border:'1px solid rgba(245,158,11,0.2)',
+                          borderRadius:'14px', padding:'14px 18px',
+                          display:'flex', alignItems:'center', justifyContent:'space-between'
+                        }}>
+                          <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
+                            <span style={{ fontSize:'1.2rem' }}>⏳</span>
+                            <div>
+                              <p style={{ fontSize:'0.82rem', fontWeight:700, color:'#d97706' }}>Pedidos pendientes</p>
+                              <p style={{ fontSize:'0.72rem', color:'var(--ink-3)' }}>Requieren atención</p>
+                            </div>
+                          </div>
+                          <span style={{ background:'rgba(245,158,11,0.2)', color:'#d97706', fontWeight:800, fontSize:'1.1rem', padding:'4px 14px', borderRadius:'99px' }}>
+                            {stats.pedidos_pendientes}
+                          </span>
+                        </div>
+                      )}
+
+                      {/* TOP PRODUCTOS */}
+                      <div style={{ background:'var(--surface)', border:'1px solid var(--border)', borderRadius:'16px', padding:'18px' }}>
+                        <p style={{ fontSize:'0.85rem', fontWeight:700, color:'var(--ink)', marginBottom:'14px' }}>🔥 Top Productos Más Vendidos</p>
                         {stats.productos_top && stats.productos_top.length > 0 ? (
-                          <div style={{ display:'flex', flexDirection:'column', gap:'12px' }}>
-                            {stats.productos_top.map((prod, idx) => (
-                              <div key={prod.id} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', paddingBottom:'12px', borderBottom: idx < stats.productos_top.length - 1 ? '1px solid var(--border)' : 'none' }}>
-                                <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
-                                  <span style={{ fontWeight:800, color:'var(--ink-3)', fontSize:'0.9rem' }}>#{idx + 1}</span>
-                                  <span style={{ fontWeight:600, color:'var(--ink)', fontSize:'0.85rem' }}>{prod.nombre}</span>
+                          <div style={{ display:'flex', flexDirection:'column', gap:'0' }}>
+                            {stats.productos_top.map((prod, idx) => {
+                              const prodData = productos.find(p => String(p.id) === String(prod.id));
+                              return (
+                                <div key={prod.id} style={{
+                                  display:'flex', alignItems:'center', gap:'12px',
+                                  padding:'10px 0',
+                                  borderBottom: idx < stats.productos_top.length - 1 ? '1px solid var(--border)' : 'none'
+                                }}>
+                                  <span style={{ fontSize:'0.75rem', fontWeight:800, color:'var(--ink-3)', minWidth:'24px' }}>#{idx+1}</span>
+                                  {prodData && (
+                                    <img src={imgSrc(prodData.imagen_url)} style={{ width:'36px', height:'36px', objectFit:'cover', borderRadius:'8px', flexShrink:0 }} />
+                                  )}
+                                  <span style={{ fontSize:'0.82rem', fontWeight:600, color:'var(--ink)', flex:1, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+                                    {prod.nombre}
+                                  </span>
+                                  <span style={{ background:'rgba(34,197,94,0.12)', color:'#16a34a', padding:'3px 10px', borderRadius:'99px', fontSize:'0.72rem', fontWeight:700, flexShrink:0 }}>
+                                    {prod.cantidad_vendida} ud.
+                                  </span>
                                 </div>
-                                <span style={{ background:'rgba(37, 201, 97, 0.12)', color:'#16a34a', padding:'4px 10px', borderRadius:'99px', fontSize:'0.75rem', fontWeight:700 }}>
-                                  {prod.cantidad_vendida} ud.
-                                </span>
-                              </div>
-                            ))}
+                              );
+                            })}
                           </div>
                         ) : (
-                          <p style={{ fontSize:'0.8rem', color:'var(--ink-3)' }}>No hay suficientes datos de ventas aún.</p>
+                          <p style={{ fontSize:'0.8rem', color:'var(--ink-3)' }}>No hay datos de ventas aún.</p>
                         )}
                       </div>
-
-                    </div>
+                    </>
                   ) : (
                     <div style={{ textAlign:'center', padding:'40px' }}>
                       <p style={{ color:'var(--ink-3)', fontSize:'0.9rem' }}>No se pudieron cargar las estadísticas.</p>
@@ -393,11 +401,11 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
                 </div>
               )}
 
-              {/* ── SECCIÓN PRODUCTOS ── */}
+              {/* ── PRODUCTOS ── */}
               {seccion === 'productos' && modo === 'lista' && (
                 <div>
                   <div style={{ display:'flex', justifyContent:'space-between', marginBottom:'16px', alignItems:'center' }}>
-                    <h3 style={{ color:'var(--ink)', fontFamily:'var(--font-display)' }}>
+                    <h3 style={{ fontFamily:'var(--font-display)', fontSize:'1.1rem', fontWeight:700, color:'var(--ink)' }}>
                       Productos ({productosFiltrados.length}{busquedaAdmin ? ` de ${productos.length}` : ''})
                     </h3>
                     <button onClick={handleNew} className="pill-btn pill-btn--green">+ Nuevo</button>
@@ -414,15 +422,15 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
                       ✅ {successMsg}
                     </div>
                   )}
-                  <div style={{ display:'flex', flexDirection:'column', gap:'12px' }}>
+                  <div style={{ display:'flex', flexDirection:'column', gap:'10px' }}>
                     {productosFiltrados.length === 0 ? (
                       <div style={{ textAlign:'center', padding:'40px 20px' }}>
                         <p style={{ fontSize:'1.8rem', marginBottom:'10px' }}>🔍</p>
-                        <p style={{ color:'var(--ink-3)', fontSize:'0.88rem' }}>No se encontró ningún producto con "{busquedaAdmin}"</p>
+                        <p style={{ color:'var(--ink-3)', fontSize:'0.88rem' }}>No se encontró "{busquedaAdmin}"</p>
                       </div>
                     ) : (
                       productosFiltrados.map(p => (
-                        <div key={p.id} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'12px', background:'var(--card-bg)', borderRadius:'12px', border:'1px solid var(--border)' }}>
+                        <div key={p.id} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'12px', background:'var(--surface)', borderRadius:'12px', border:'1px solid var(--border)' }}>
                           <div style={{ display:'flex', alignItems:'center', gap:'12px' }}>
                             <img src={imgSrc(p.imagen_url)} style={{ width:'40px', height:'40px', objectFit:'cover', borderRadius:'8px' }} />
                             <div>
@@ -441,25 +449,16 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
                 </div>
               )}
 
-              {/* ── SECCIÓN PEDIDOS ── */}
+              {/* ── PEDIDOS ── */}
               {seccion === 'pedidos' && modo === 'lista' && (
                 <div>
                   <div style={{ display:'flex', justifyContent:'space-between', marginBottom:'16px', alignItems:'center' }}>
-                    <h3 style={{ color:'var(--ink)', fontFamily:'var(--font-display)' }}>
+                    <h3 style={{ fontFamily:'var(--font-display)', fontSize:'1.1rem', fontWeight:700, color:'var(--ink)' }}>
                       Pedidos ({pedidos.length})
                     </h3>
                     <div style={{ display:'flex', gap:'8px' }}>
-                      <button onClick={fetchPedidos} className="pill-btn pill-btn--ghost" style={{ padding:'6px 14px', fontSize:'0.7rem' }}>
-                        🔄 Actualizar
-                      </button>
-                      <button
-                        onClick={exportarExcel}
-                        disabled={pedidos.length === 0}
-                        className="pill-btn pill-btn--green"
-                        style={{ padding:'6px 14px', fontSize:'0.7rem', opacity: pedidos.length === 0 ? 0.5 : 1 }}
-                      >
-                        📊 Excel
-                      </button>
+                      <button onClick={fetchPedidos} className="pill-btn pill-btn--ghost" style={{ padding:'6px 14px', fontSize:'0.7rem' }}>🔄</button>
+                      <button onClick={exportarExcel} disabled={pedidos.length === 0} className="pill-btn pill-btn--green" style={{ padding:'6px 14px', fontSize:'0.7rem', opacity: pedidos.length === 0 ? 0.5 : 1 }}>📊 Excel</button>
                     </div>
                   </div>
 
@@ -473,19 +472,15 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
                       <p style={{ color:'var(--ink-3)', fontSize:'0.88rem' }}>No hay pedidos aún.</p>
                     </div>
                   ) : (
-                    <div style={{ display:'flex', flexDirection:'column', gap:'12px' }}>
+                    <div style={{ display:'flex', flexDirection:'column', gap:'10px' }}>
                       {pedidos.map(p => {
                         const items = typeof p.items === 'string' ? JSON.parse(p.items) : p.items;
                         const { bg, color } = colorEstado(p.estado);
                         const expandido = pedidoExpandido === p.id;
                         return (
-                          <div key={p.id} style={{ background:'var(--card-bg)', borderRadius:'14px', border:'1px solid var(--border)', overflow:'hidden' }}>
-
-                            {/* ── CABECERA ── */}
-                            <div
-                              onClick={() => setPedidoExpandido(expandido ? null : p.id)}
-                              style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'14px 16px', cursor:'pointer' }}
-                            >
+                          <div key={p.id} style={{ background:'var(--surface)', borderRadius:'14px', border:'1px solid var(--border)', overflow:'hidden' }}>
+                            <div onClick={() => setPedidoExpandido(expandido ? null : p.id)}
+                              style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'14px 16px', cursor:'pointer' }}>
                               <div>
                                 <p style={{ fontWeight:700, fontSize:'0.88rem', color:'var(--ink)', marginBottom:'2px' }}>
                                   #{String(p.id).padStart(5,'0')} — {p.cliente_nombre}
@@ -496,22 +491,14 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
                               </div>
                               <div style={{ display:'flex', alignItems:'center', gap:'8px' }}>
                                 <span style={{ fontWeight:700, fontSize:'0.88rem', color:'var(--ink)' }}>{moneda(p.total)}</span>
-                                <span style={{ background:bg, color, fontSize:'0.62rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.5px', padding:'4px 10px', borderRadius:'99px', whiteSpace:'nowrap' }}>
-                                  {p.estado}
-                                </span>
+                                <span style={{ background:bg, color, fontSize:'0.62rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.5px', padding:'4px 10px', borderRadius:'99px', whiteSpace:'nowrap' }}>{p.estado}</span>
                                 <span style={{ color:'var(--ink-3)', fontSize:'0.75rem' }}>{expandido ? '▲' : '▼'}</span>
                               </div>
                             </div>
-
-                            {/* ── DETALLE EXPANDIDO ── */}
                             {expandido && (
                               <div style={{ padding:'0 16px 16px', borderTop:'1px solid var(--border)' }}>
                                 <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px', marginTop:'14px', marginBottom:'16px' }}>
-                                  {[
-                                    ['📞 Teléfono', p.cliente_telefono],
-                                    ['🏙️ Ciudad', p.cliente_ciudad],
-                                    ['📍 Dirección', p.cliente_direccion],
-                                  ].map(([label, val]) => (
+                                  {[['📞 Teléfono', p.cliente_telefono], ['🏙️ Ciudad', p.cliente_ciudad], ['📍 Dirección', p.cliente_direccion]].map(([label, val]) => (
                                     <div key={label}>
                                       <p style={{ fontSize:'0.62rem', color:'var(--ink-3)', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.5px', marginBottom:'2px' }}>{label}</p>
                                       <p style={{ fontSize:'0.82rem', color:'var(--ink)' }}>{val || '-'}</p>
@@ -537,35 +524,18 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
                                     const activo = p.estado === estado;
                                     return (
                                       <button key={estado} onClick={() => actualizarEstado(p.id, estado)}
-                                        style={{
-                                          padding:'6px 14px', borderRadius:'99px',
-                                          border: activo ? 'none' : '1px solid var(--border)',
-                                          cursor:'pointer', fontSize:'0.72rem', fontWeight:700,
-                                          textTransform:'uppercase', letterSpacing:'0.5px',
-                                          background: activo ? b : 'transparent',
-                                          color: activo ? c : 'var(--ink-3)',
-                                          transition:'all 0.2s',
-                                        }}
-                                      >
+                                        style={{ padding:'6px 14px', borderRadius:'99px', border: activo ? 'none' : '1px solid var(--border)', cursor:'pointer', fontSize:'0.72rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.5px', background: activo ? b : 'transparent', color: activo ? c : 'var(--ink-3)', transition:'all 0.2s' }}>
                                         {estado}
                                       </button>
                                     );
                                   })}
                                 </div>
                                 <div style={{ display:'flex', gap:'8px', marginTop:'12px' }}>
-                                  <button
-                                    onClick={async () => await generarPDF(p, items, p.total, p.id)}
-                                    className="pill-btn pill-btn--ghost"
-                                    style={{ flex:1, justifyContent:'center', fontSize:'0.8rem' }}
-                                  >
+                                  <button onClick={async () => await generarPDF(p, items, p.total, p.id)} className="pill-btn pill-btn--ghost" style={{ flex:1, justifyContent:'center', fontSize:'0.8rem' }}>
                                     📄 Descargar PDF
                                   </button>
-                                  <button
-                                    onClick={() => eliminarPedido(p.id)}
-                                    className="pill-btn"
-                                    style={{ flex:1, justifyContent:'center', fontSize:'0.8rem', background:'rgba(239,68,68,0.1)', color:'#ef4444', border:'1px solid rgba(239,68,68,0.2)' }}
-                                  >
-                                    🗑️ Eliminar pedido
+                                  <button onClick={() => eliminarPedido(p.id)} className="pill-btn" style={{ flex:1, justifyContent:'center', fontSize:'0.8rem', background:'rgba(239,68,68,0.1)', color:'#ef4444', border:'1px solid rgba(239,68,68,0.2)' }}>
+                                    🗑️ Eliminar
                                   </button>
                                 </div>
                               </div>
@@ -582,7 +552,7 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
               {(modo === 'nuevo' || modo === 'editar') && (
                 <form onSubmit={handleSubmit} style={{ display:'flex', flexDirection:'column', gap:'16px' }}>
                   <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'10px' }}>
-                    <h3 style={{ color:'var(--ink)', fontFamily:'var(--font-display)' }}>{modo === 'nuevo' ? 'Nuevo Producto' : 'Editar Producto'}</h3>
+                    <h3 style={{ fontFamily:'var(--font-display)', fontSize:'1.1rem', fontWeight:700, color:'var(--ink)' }}>{modo === 'nuevo' ? 'Nuevo Producto' : 'Editar Producto'}</h3>
                     <button type="button" onClick={() => setModo('lista')} className="pill-btn pill-btn--ghost">Volver</button>
                   </div>
                   <div>
@@ -599,7 +569,7 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
                       <input required type="number" className="form-input" placeholder="Precio" value={precio} onChange={e => setPrecio(e.target.value)} />
                     </div>
                     <div style={{ flex:1 }}>
-                      <label style={{ fontSize:'0.8rem', fontWeight:600, color:'var(--ink-2)', marginBottom:'6px', display:'block' }}>Cantidad (Stock)</label>
+                      <label style={{ fontSize:'0.8rem', fontWeight:600, color:'var(--ink-2)', marginBottom:'6px', display:'block' }}>Stock</label>
                       <input required type="number" className="form-input" placeholder="Stock" value={stock} onChange={e => setStock(e.target.value)} />
                     </div>
                   </div>
@@ -652,6 +622,47 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
             </>
           )}
         </div>
+
+        {/* ── BARRA INFERIOR ── */}
+        {auth && modo === 'lista' && (
+          <div style={{
+            position:'absolute', bottom:0, left:0, right:0,
+            background:'var(--surface)', borderTop:'1px solid var(--border)',
+            display:'flex', padding:'8px 16px 12px',
+            gap:'4px',
+          }}>
+            {[
+              { key:'dashboard', label:'Dashboard', icon:(
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
+                </svg>
+              )},
+              { key:'productos', label:'Productos', icon:(
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                </svg>
+              )},
+              { key:'pedidos', label:`Pedidos${pedidos.length > 0 ? ` (${pedidos.length})` : ''}`, icon:(
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                </svg>
+              )},
+            ].map(tab => (
+              <button key={tab.key} onClick={() => setSeccion(tab.key)}
+                style={{
+                  flex:1, display:'flex', flexDirection:'column', alignItems:'center', gap:'4px',
+                  padding:'8px 4px', border:'none', cursor:'pointer', borderRadius:'12px',
+                  background: seccion === tab.key ? 'rgba(26,92,255,0.1)' : 'transparent',
+                  color: seccion === tab.key ? 'var(--accent)' : 'var(--ink-3)',
+                  transition:'all 0.2s',
+                }}>
+                {tab.icon}
+                <span style={{ fontSize:'0.62rem', fontWeight:600 }}>{tab.label}</span>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </>
   );
