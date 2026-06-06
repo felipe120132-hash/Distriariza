@@ -4,13 +4,11 @@ import axios from 'axios';
 
 // Utils & Constants
 import { BACKEND } from './constants/index.js';
-import { normaliza } from './utils/helpers.js';
 
 // Global Styles & Layout
 import { EstilosGlobales } from './components/EstilosGlobales.jsx';
 import { Cargador } from './components/Cargador.jsx';
 import { BarraNavegacion } from './components/BarraNavegacion.jsx';
-import { NavegacionInferior } from './components/NavegacionInferior.jsx';
 
 // Pages
 import { Inicio } from './pages/Inicio.jsx';
@@ -25,15 +23,15 @@ export default function App() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [productos, setProductos]       = useState([]);
-  const [carrito, setCarrito]           = useState([]);
-  const [error, setError]               = useState(null);
-  const [busqueda, setBusqueda]         = useState('');
-  const [categoria, setCategoria]       = useState('Todos'); // Para compatibilidad con BottomNav
-  const [cargando, setCargando]         = useState(true);
-  const [dark, setDark]                 = useState(() => { const h = new Date().getHours(); return h >= 18 || h < 6; });
-  const [ratings, setRatings]           = useState({});
-  const [scrollY, setScrollY]           = useState(0);
+  const [productos, setProductos]   = useState([]);
+  const [carrito, setCarrito]       = useState([]);
+  const [error, setError]           = useState(null);
+  const [busqueda, setBusqueda]     = useState('');
+  const [categoria, setCategoria]   = useState('Todos');
+  const [cargando, setCargando]     = useState(true);
+  const [dark, setDark]             = useState(() => { const h = new Date().getHours(); return h >= 18 || h < 6; });
+  const [ratings, setRatings]       = useState({});
+  const [scrollY, setScrollY]       = useState(0);
 
   const cartOpen      = location.pathname === '/carrito';
   const reviewsOpen   = location.pathname === '/resenas';
@@ -53,9 +51,7 @@ export default function App() {
       .finally(() => setCargando(false));
   };
 
-  useEffect(() => {
-    fetchProductos();
-  }, []);
+  useEffect(() => { fetchProductos(); }, []);
 
   const addItem = useCallback((p) =>
     setCarrito(prev => {
@@ -63,17 +59,17 @@ export default function App() {
       const colorKey = p.colorSeleccionado || '';
       const ex = prev.find(i => i.id === p.id && (i.colorSeleccionado || '') === colorKey);
       if (ex && ex.cantidad >= p.stock) return prev;
-      return ex 
-        ? prev.map(i => (i.id===p.id && (i.colorSeleccionado || '') === colorKey) ? {...i, cantidad:i.cantidad+1} : i) 
+      return ex
+        ? prev.map(i => (i.id===p.id && (i.colorSeleccionado || '') === colorKey) ? {...i, cantidad:i.cantidad+1} : i)
         : [...prev, {...p, cantidad:1}];
     }), []);
 
-  const removeOne  = (id, color) => {
+  const removeOne = (id, color) => {
     const colorKey = color || '';
     setCarrito(prev => prev.map(i => (i.id===id && (i.colorSeleccionado || '') === colorKey) ? {...i, cantidad:i.cantidad-1} : i).filter(i => i.cantidad>0));
   };
 
-  const setQty     = (id, color, v) => {
+  const setQty = (id, color, v) => {
     const colorKey = color || '';
     setCarrito(prev => prev.map(i => {
       if (i.id === id && (i.colorSeleccionado || '') === colorKey) {
@@ -95,16 +91,20 @@ export default function App() {
     <>
       <EstilosGlobales dark={dark}/>
 
-      <BarraNavegacion dark={dark} setDark={setDark} totalItems={totalItems} />
+      <BarraNavegacion
+        dark={dark}
+        setDark={setDark}
+        totalItems={totalItems}
+        categoria={categoria}
+        setCategoria={setCategoria}
+        setBusqueda={setBusqueda}
+      />
 
       <Routes>
         <Route path="/" element={<Inicio productos={productos} busqueda={busqueda} setBusqueda={setBusqueda} scrollY={scrollY} addItem={addItem} ratings={ratings} handleRate={handleRate} />} />
         <Route path="/categoria/:cat" element={<Inicio productos={productos} busqueda={busqueda} setBusqueda={setBusqueda} scrollY={scrollY} addItem={addItem} ratings={ratings} handleRate={handleRate} />} />
-        {/* Las demás rutas se manejan con los modales superpuestos para mantener el layout (por petición anterior) */}
         <Route path="*" element={<Inicio productos={productos} busqueda={busqueda} setBusqueda={setBusqueda} scrollY={scrollY} addItem={addItem} ratings={ratings} handleRate={handleRate} />} />
       </Routes>
-
-      <NavegacionInferior dark={dark} categoria={categoria} setCategoria={setCategoria} setBusqueda={setBusqueda} totalItems={totalItems} />
 
       {/* ── MODALS / PANELS ── */}
       {productoRoute && (() => {

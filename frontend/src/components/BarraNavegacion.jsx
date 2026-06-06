@@ -1,52 +1,234 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { PanelHistorial } from './PanelHistorial.jsx';
 
-export const BarraNavegacion = ({ dark, setDark, totalItems }) => {
+export const BarraNavegacion = ({ dark, setDark, totalItems, categoria, setCategoria, setBusqueda }) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [historialOpen, setHistorialOpen] = useState(false);
+
+  const navegar = (ruta) => {
+    setMenuOpen(false);
+    if (ruta === '/' && setCategoria && setBusqueda) {
+      setCategoria('Todos');
+      setBusqueda('');
+    }
+    navigate(ruta);
+  };
+
+  const links = [
+    { label: 'Inicio', ruta: '/', activo: location.pathname === '/' },
+    { label: 'Productos', ruta: '/', activo: false },
+    { label: 'Pedidos', ruta: null, activo: false },
+    { label: 'Reseñas', ruta: '/resenas', activo: location.pathname === '/resenas' },
+    { label: 'Admin', ruta: '/admin', activo: location.pathname === '/admin' },
+  ];
+
   return (
-    <nav style={{ position:'sticky', top:0, zIndex:1000, background: dark ? '#111115' : '#ffffff', borderBottom:`1px solid var(--border)`, display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 16px', height:'64px' }}>
-      {/* LOGO */}
-      <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
-        <img src="/Logo.jpeg" alt="Logo" style={{ height:'38px', width:'38px', borderRadius:'10px', objectFit:'cover' }} onError={e => e.target.src='https://via.placeholder.com/38?text=A'} />
-        <div>
-          <p style={{ fontFamily:'var(--font-display)', fontSize:'0.95rem', fontWeight:700, color:'var(--ink)', lineHeight:1 }}>Distribuciones Ariza</p>
-          <p style={{ fontSize:'0.58rem', color:'var(--accent)', fontWeight:700, letterSpacing:'1.2px', textTransform:'uppercase', marginTop:'2px' }}>Fish Accessories</p>
+    <>
+      <style>{`
+        .nav-link {
+          background: none;
+          border: none;
+          cursor: pointer;
+          font-family: var(--font-body);
+          font-size: 0.88rem;
+          font-weight: 600;
+          color: var(--ink-2);
+          padding: 6px 12px;
+          border-radius: 8px;
+          transition: color 0.2s, background 0.2s;
+        }
+        .nav-link:hover { color: var(--ink); background: var(--border); }
+        .nav-link--active { color: var(--accent); }
+
+        .mobile-menu {
+          position: fixed;
+          top: 0; left: 0;
+          width: 280px;
+          height: 100%;
+          background: var(--surface);
+          z-index: 1100;
+          display: flex;
+          flex-direction: column;
+          box-shadow: 4px 0 24px rgba(0,0,0,0.18);
+          transform: translateX(-100%);
+          transition: transform 0.3s cubic-bezier(0.22,1,0.36,1);
+        }
+        .mobile-menu--open { transform: translateX(0); }
+
+        .mobile-menu-item {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          padding: 16px 24px;
+          background: none;
+          border: none;
+          cursor: pointer;
+          font-family: var(--font-body);
+          font-size: 0.95rem;
+          font-weight: 600;
+          color: var(--ink);
+          text-align: left;
+          width: 100%;
+          border-radius: 0;
+          transition: background 0.15s;
+          position: relative;
+        }
+        .mobile-menu-item:hover { background: var(--border); }
+        .mobile-menu-item--active {
+          color: var(--accent);
+          background: rgba(26,92,255,0.06);
+        }
+        .mobile-menu-item--active::before {
+          content: '';
+          position: absolute;
+          left: 0; top: 8px; bottom: 8px;
+          width: 4px;
+          background: var(--accent);
+          border-radius: 0 4px 4px 0;
+        }
+      `}</style>
+
+      {/* ── HISTORIAL PANEL ── */}
+      {historialOpen && <PanelHistorial onClose={() => setHistorialOpen(false)} />}
+
+      {/* ── OVERLAY MENÚ MÓVIL ── */}
+      {menuOpen && (
+        <div
+          onClick={() => setMenuOpen(false)}
+          style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.4)', zIndex:1099, backdropFilter:'blur(2px)' }}
+        />
+      )}
+
+      {/* ── MENÚ LATERAL MÓVIL ── */}
+      <div className={`mobile-menu${menuOpen ? ' mobile-menu--open' : ''}`}>
+        {/* Header del menú */}
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'20px 24px', borderBottom:'1px solid var(--border)' }}>
+          <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
+            <img src="/Logo.jpeg" alt="Logo" style={{ height:'32px', width:'32px', borderRadius:'8px', objectFit:'cover' }} />
+            <p style={{ fontFamily:'var(--font-display)', fontSize:'0.88rem', fontWeight:700, color:'var(--ink)' }}>Distribuciones Ariza</p>
+          </div>
+          <button onClick={() => setMenuOpen(false)} style={{ background:'none', border:'none', cursor:'pointer', fontSize:'1.2rem', color:'var(--ink-2)', padding:'4px' }}>✕</button>
+        </div>
+
+        {/* Links */}
+        <div style={{ flex:1, overflowY:'auto', paddingTop:'8px' }}>
+          {links.map(({ label, ruta, activo }) => (
+            <button
+              key={label}
+              onClick={() => {
+                if (ruta === null) { setMenuOpen(false); setHistorialOpen(true); }
+                else navegar(ruta);
+              }}
+              className={`mobile-menu-item${activo ? ' mobile-menu-item--active' : ''}`}
+            >
+              <span style={{ fontSize:'1.1rem' }}>
+                {label === 'Inicio' ? '🏪' : label === 'Productos' ? '📦' : label === 'Pedidos' ? '🧾' : label === 'Reseñas' ? '💬' : '👤'}
+              </span>
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {/* Footer del menú */}
+        <div style={{ padding:'20px 24px', borderTop:'1px solid var(--border)', display:'flex', alignItems:'center', gap:'10px' }}>
+          <span style={{ fontSize:'0.85rem', color:'var(--ink-3)' }}>{dark ? '🌙 Modo oscuro' : '☀️ Modo claro'}</span>
+          <button className="dark-toggle" onClick={() => setDark(d => !d)} style={{ marginLeft:'auto' }} />
         </div>
       </div>
 
-      {/* ACCIONES */}
-      <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
-        {/* Toggle modo oscuro — siempre visible */}
-        <div style={{ display:'flex', alignItems:'center', gap:'5px' }}>
-          <span style={{ fontSize:'0.75rem', color:'var(--ink-3)' }}>{dark ? '🌙' : '☀️'}</span>
-          <button className="dark-toggle" onClick={() => setDark(d => !d)} aria-label="Modo oscuro" />
+      {/* ── NAVBAR PRINCIPAL ── */}
+      <nav style={{
+        position:'sticky', top:0, zIndex:1000,
+        background: dark ? '#111115' : '#ffffff',
+        borderBottom:'1px solid var(--border)',
+        display:'flex', alignItems:'center',
+        justifyContent:'space-between',
+        padding:'0 20px', height:'64px',
+      }}>
+
+        {/* ── IZQUIERDA: Hamburguesa (móvil) + Logo ── */}
+        <div style={{ display:'flex', alignItems:'center', gap:'12px' }}>
+          {/* Botón hamburguesa — solo móvil */}
+          <button
+            className="nav-mobile-only"
+            onClick={() => setMenuOpen(o => !o)}
+            style={{
+              background:'none', border:'none', cursor:'pointer',
+              width:'36px', height:'36px', display:'flex',
+              flexDirection:'column', justifyContent:'center',
+              alignItems:'center', gap:'5px', padding:'4px',
+              borderRadius:'8px',
+            }}
+          >
+            <span style={{ display:'block', width:'22px', height:'2.5px', background:'var(--ink)', borderRadius:'4px', transition:'all 0.25s', transform: menuOpen ? 'rotate(45deg) translate(5px,5px)' : 'none' }}/>
+            <span style={{ display:'block', width:'22px', height:'2.5px', background:'var(--ink)', borderRadius:'4px', transition:'all 0.25s', opacity: menuOpen ? 0 : 1 }}/>
+            <span style={{ display:'block', width:'22px', height:'2.5px', background:'var(--ink)', borderRadius:'4px', transition:'all 0.25s', transform: menuOpen ? 'rotate(-45deg) translate(5px,-5px)' : 'none' }}/>
+          </button>
+
+          {/* Logo */}
+          <div style={{ display:'flex', alignItems:'center', gap:'10px', cursor:'pointer' }} onClick={() => navegar('/')}>
+            <img src="/Logo.jpeg" alt="Logo" style={{ height:'38px', width:'38px', borderRadius:'10px', objectFit:'cover' }} onError={e => e.target.src='https://via.placeholder.com/38?text=A'} />
+            <div>
+              <p style={{ fontFamily:'var(--font-display)', fontSize:'0.95rem', fontWeight:700, color:'var(--ink)', lineHeight:1 }}>Distribuciones Ariza</p>
+              <p style={{ fontSize:'0.58rem', color:'var(--accent)', fontWeight:700, letterSpacing:'1.2px', textTransform:'uppercase', marginTop:'2px' }}>Fish Accessories</p>
+            </div>
+          </div>
         </div>
 
-        {/* En escritorio: botón Iniciar Sesión */}
-        <button className="pill-btn pill-btn--ghost nav-desktop-only" onClick={() => navigate('/admin')} style={{ padding:'8px 14px' }}>
-          <span style={{ fontSize:'1.1rem' }}>👤</span> Iniciar Sesión
-        </button>
+        {/* ── CENTRO: Links desktop ── */}
+        <div className="nav-desktop-only" style={{ display:'flex', alignItems:'center', gap:'4px' }}>
+          {links.map(({ label, ruta, activo }) => (
+            <button
+              key={label}
+              onClick={() => {
+                if (ruta === null) setHistorialOpen(true);
+                else navegar(ruta);
+              }}
+              className={`nav-link${activo ? ' nav-link--active' : ''}`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
 
-        {/* En escritorio: botón Carrito con estilo personalizado */}
-        <button className="cart-btn-custom nav-desktop-only" onClick={() => navigate('/carrito')} style={{ position:'relative' }}>
-          <span style={{ fontSize:'1.1rem' }}>🛒</span> Carrito
-          {totalItems > 0 && (
-            <span style={{ position:'absolute', top:'-6px', right:'-6px', background:'#ef4444', color:'#fff', fontSize:'0.6rem', fontWeight:700, width:'20px', height:'20px', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', border:`2px solid var(--surface)` }}>
-              {totalItems}
-            </span>
-          )}
-        </button>
+        {/* ── DERECHA: Toggle + Carrito ── */}
+        <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
+          {/* Toggle modo oscuro — solo desktop */}
+          <div className="nav-desktop-only" style={{ display:'flex', alignItems:'center', gap:'5px' }}>
+            <span style={{ fontSize:'0.75rem', color:'var(--ink-3)' }}>{dark ? '🌙' : '☀️'}</span>
+            <button className="dark-toggle" onClick={() => setDark(d => !d)} />
+          </div>
 
-        {/* En móvil: solo ícono de carrito compacto */}
-        <button className="nav-mobile-only icon-btn" onClick={() => navigate('/carrito')} style={{ position:'relative', width:'42px', height:'42px', borderRadius:'12px' }}>
-          🛒
-          {totalItems > 0 && (
-            <span style={{ position:'absolute', top:'-4px', right:'-4px', background:'#ef4444', color:'#fff', fontSize:'0.55rem', fontWeight:700, width:'17px', height:'17px', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', border:`2px solid var(--surface)` }}>
-              {totalItems}
-            </span>
-          )}
-        </button>
-      </div>
-    </nav>
+          {/* Carrito */}
+          <button
+            onClick={() => navigate('/carrito')}
+            style={{
+              background:'none', border:'2px solid var(--border)',
+              cursor:'pointer', position:'relative',
+              width:'42px', height:'42px', borderRadius:'12px',
+              display:'flex', alignItems:'center', justifyContent:'center',
+              fontSize:'1.1rem', transition:'border-color 0.2s',
+            }}
+            onMouseEnter={e => e.currentTarget.style.borderColor='var(--accent)'}
+            onMouseLeave={e => e.currentTarget.style.borderColor='var(--border)'}
+          >
+            🛒
+            {totalItems > 0 && (
+              <span style={{
+                position:'absolute', top:'-6px', right:'-6px',
+                background:'#ef4444', color:'#fff',
+                fontSize:'0.55rem', fontWeight:700,
+                width:'18px', height:'18px', borderRadius:'50%',
+                display:'flex', alignItems:'center', justifyContent:'center',
+                border:'2px solid var(--surface)',
+              }}>{totalItems}</span>
+            )}
+          </button>
+        </div>
+      </nav>
+    </>
   );
 };
