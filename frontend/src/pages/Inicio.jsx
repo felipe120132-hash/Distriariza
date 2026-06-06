@@ -59,7 +59,7 @@ export const Inicio = ({ productos, busqueda, setBusqueda, scrollY, addItem, rat
 
           <section style={{ marginBottom:'48px', display:'flex', flexDirection:'column', alignItems:'center', overflow:'visible' }}>
             {/* ── CATEGORÍA FILTER ── */}
-            <div style={{ display:'flex', gap:'8px', overflowX:'auto', paddingBottom:'6px', paddingTop:'8px', scrollbarWidth:'none', justifyContent:'center', flexWrap:'wrap' }}>
+            <div style={{ display:'flex', gap:'8px', overflowX:'auto', paddingBottom:'6px', paddingTop:'8px', paddingLeft:'12px', paddingRight:'12px', scrollbarWidth:'none', justifyContent:'center', flexWrap:'wrap' }}>
               <button
                 className={`cat-pill ${categoriaActual === 'Todos' ? 'cat-pill--on' : 'cat-pill--off'}`}
                 onClick={() => handleCategoriaClick('Todos')}
