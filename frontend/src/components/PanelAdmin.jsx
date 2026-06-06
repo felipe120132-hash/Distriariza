@@ -373,7 +373,7 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
                                   <span style={{ fontWeight:800, color:'var(--ink-3)', fontSize:'0.9rem' }}>#{idx + 1}</span>
                                   <span style={{ fontWeight:600, color:'var(--ink)', fontSize:'0.85rem' }}>{prod.nombre}</span>
                                 </div>
-                                <span style={{ background:'rgba(34,197,94,0.12)', color:'#16a34a', padding:'4px 10px', borderRadius:'99px', fontSize:'0.75rem', fontWeight:700 }}>
+                                <span style={{ background:'rgba(37, 201, 97, 0.12)', color:'#16a34a', padding:'4px 10px', borderRadius:'99px', fontSize:'0.75rem', fontWeight:700 }}>
                                   {prod.cantidad_vendida} ud.
                                 </span>
                               </div>
