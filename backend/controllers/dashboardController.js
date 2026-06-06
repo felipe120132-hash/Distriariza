@@ -2,23 +2,21 @@ const db = require('../config/db');
 
 exports.getStats = async (req, res) => {
     try {
-        // Ventas del día (UTC - 5 Colombia aprox, pero usamos la fecha del servidor DB)
-        // O más sencillo: CURDATE() asumiendo que el servidor DB está en zona horaria local o usamos lógica Node
-        
-        // Ventas del Día
+        // Ventas del Día (hora Colombia UTC-5)
         const [ventasDia] = await db.query(`
             SELECT SUM(total) as total_dia 
             FROM pedidos 
-            WHERE DATE(creado_en) = CURDATE() AND estado != 'cancelado'
+            WHERE DATE(CONVERT_TZ(creado_en, '+00:00', '-05:00')) = DATE(CONVERT_TZ(NOW(), '+00:00', '-05:00'))
+            AND estado != 'cancelado'
         `);
 
-        // Ventas del Mes
+        // Ventas del Mes (hora Colombia UTC-5)
         const [ventasMes] = await db.query(`
             SELECT SUM(total) as total_mes 
             FROM pedidos 
-            WHERE MONTH(creado_en) = MONTH(CURDATE()) 
-              AND YEAR(creado_en) = YEAR(CURDATE()) 
-              AND estado != 'cancelado'
+            WHERE MONTH(CONVERT_TZ(creado_en, '+00:00', '-05:00')) = MONTH(CONVERT_TZ(NOW(), '+00:00', '-05:00'))
+            AND YEAR(CONVERT_TZ(creado_en, '+00:00', '-05:00')) = YEAR(CONVERT_TZ(NOW(), '+00:00', '-05:00'))
+            AND estado != 'cancelado'
         `);
 
         // Total pedidos pendientes
@@ -28,8 +26,7 @@ exports.getStats = async (req, res) => {
             WHERE estado = 'pendiente'
         `);
 
-        // Para los productos más vendidos, traemos todos los pedidos válidos
-        // y agrupamos en Node.js (ya que los items están en JSON)
+        // Productos más vendidos
         const [pedidos] = await db.query(`
             SELECT items 
             FROM pedidos 
@@ -45,7 +42,6 @@ exports.getStats = async (req, res) => {
             } catch (e) {
                 return;
             }
-            
             items.forEach(item => {
                 if (!contadorProductos[item.id]) {
                     contadorProductos[item.id] = { id: item.id, nombre: item.nombre, cantidad_vendida: 0 };
@@ -54,7 +50,6 @@ exports.getStats = async (req, res) => {
             });
         });
 
-        // Ordenar y tomar los 5 más vendidos
         const productosMasVendidos = Object.values(contadorProductos)
             .sort((a, b) => b.cantidad_vendida - a.cantidad_vendida)
             .slice(0, 5);
