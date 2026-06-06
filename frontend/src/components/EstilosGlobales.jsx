@@ -633,14 +633,14 @@ export const EstilosGlobales = ({ dark }) => (
 
     main { padding-bottom: 40px !important; }
 
-    @media (min-width: 641px) {
+    @media (min-width: 769px) {
       .panel-admin {
         max-width: 100% !important;
         width: 100% !important;
       }
     }
 
-    @media (max-width: 640px) {
+    @media (max-width: 768px) {
       .nav-desktop-only { display: none !important; }
       .nav-mobile-only  { display: flex !important; }
 
