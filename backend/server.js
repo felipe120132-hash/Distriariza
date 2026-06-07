@@ -14,7 +14,7 @@ const pedidoRoutes = require('./routes/pedidoRoutes');
 const resenaRoutes = require('./routes/resenaRoutes');
 const authRoutes = require('./routes/authRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
-
+const imagenRoutes = require('./routes/imagenRoutes');
 const app = express();
 app.set('trust proxy', 1);
 
@@ -210,6 +210,7 @@ app.use('/api/pedidos', pedidoRoutes);
 app.use('/api/resenas', resenaRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/productos', imagenRoutes);
 
 // ── Fallback para React Router ────────────────────────────────────────────────
 app.get('*', (req, res) => {
