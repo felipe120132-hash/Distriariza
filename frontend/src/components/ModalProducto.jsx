@@ -12,7 +12,7 @@ export const ModalProducto = ({ p, onClose, onAdd, ratings, onRate, productos = 
 
   const relacionados = productos
     .filter(x => x.id !== p.id && x.categoria_id === p.categoria_id && x.stock > 0)
-    .slice(0, 4);
+    .slice(0, 6);
 
   return (
     <>
@@ -30,8 +30,8 @@ export const ModalProducto = ({ p, onClose, onAdd, ratings, onRate, productos = 
 
         {/* ── INFO ── */}
         <div style={{ padding:'24px 28px 28px' }}>
-          <p className="modal-content-1" style={{ fontSize:'0.68rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.9px', marginBottom:'6px', display:'flex', justifyContent:'space-between' }}>
-            <span>{p.categoria_nombre}</span>
+          <p className="modal-content-1" style={{ fontSize:'0.68rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.9px', marginBottom:'6px' }}>
+            {p.categoria_nombre}
           </p>
           <h2 className="modal-content-2" style={{ fontFamily:'var(--font-display)', fontSize:'1.6rem', fontWeight:700, color:'var(--ink)', marginBottom:'10px', lineHeight:1.2 }}>{p.nombre}</h2>
 
@@ -94,19 +94,19 @@ export const ModalProducto = ({ p, onClose, onAdd, ratings, onRate, productos = 
               <p style={{ fontSize:'0.75rem', fontWeight:700, color:'var(--ink-3)', textTransform:'uppercase', letterSpacing:'0.8px', marginBottom:'16px' }}>
                 También en {p.categoria_nombre}
               </p>
-              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px' }}>
+              <div style={{ display:'flex', gap:'10px', overflowX:'auto', paddingBottom:'8px', scrollbarWidth:'none' }}>
                 {relacionados.map(rel => (
                   <div
                     key={rel.id}
                     onClick={() => navigate(`/producto/${rel.id}`)}
-                    style={{ background:'var(--bg)', borderRadius:'12px', padding:'12px', cursor:'pointer', border:'1px solid var(--border)', transition:'transform 0.2s', display:'flex', flexDirection:'column', gap:'8px' }}
+                    style={{ background:'var(--bg)', borderRadius:'12px', padding:'12px', cursor:'pointer', border:'1px solid var(--border)', transition:'transform 0.2s', display:'flex', flexDirection:'column', gap:'8px', flexShrink:0, width:'140px' }}
                     onMouseEnter={e => e.currentTarget.style.transform='translateY(-2px)'}
                     onMouseLeave={e => e.currentTarget.style.transform='translateY(0)'}
                   >
-                    <div style={{ background:'#fff', borderRadius:'8px', padding:'8px', display:'flex', alignItems:'center', justifyContent:'center', height:'80px' }}>
-                      <img src={imgSrc(rel.imagen_url)} alt={rel.nombre} style={{ maxHeight:'64px', maxWidth:'100%', objectFit:'contain' }} />
+                    <div style={{ background:'#fff', borderRadius:'8px', padding:'8px', display:'flex', alignItems:'center', justifyContent:'center', height:'90px' }}>
+                      <img src={imgSrc(rel.imagen_url)} alt={rel.nombre} style={{ maxHeight:'74px', maxWidth:'100%', objectFit:'contain' }} />
                     </div>
-                    <p style={{ fontSize:'0.75rem', fontWeight:600, color:'var(--ink)', lineHeight:1.3, overflow:'hidden', display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical' }}>
+                    <p style={{ fontSize:'0.73rem', fontWeight:600, color:'var(--ink)', lineHeight:1.3, overflow:'hidden', display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical' }}>
                       {rel.nombre}
                     </p>
                     <p style={{ fontSize:'0.78rem', fontWeight:700, color:'var(--accent)' }}>{moneda(rel.precio)}</p>
