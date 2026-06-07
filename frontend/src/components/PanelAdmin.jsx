@@ -30,6 +30,8 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
   const [imagen, setImagen] = useState(null);
   const [error, setError] = useState('');
   const [cargando, setCargando] = useState(false);
+  const [imagenesExtra, setImagenesExtra] = useState([]);
+  const [subiendoImagen, setSubiendoImagen] = useState(false);
 
   useEffect(() => {
     const savedToken = sessionStorage.getItem('admin_token');
@@ -76,6 +78,34 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
     } finally {
       setCargandoPedidos(false);
     }
+  };
+
+  const fetchImagenesExtra = async (productoId) => {
+    try {
+      const res = await axios.get(`${BACKEND}/api/productos/${productoId}/imagenes`);
+      setImagenesExtra(res.data);
+    } catch (e) { console.error(e); }
+  };
+
+  const subirImagenExtra = async (e) => {
+    const file = e.target.files[0];
+    if (!file || !selected) return;
+    setSubiendoImagen(true);
+    const formData = new FormData();
+    formData.append('imagen', file);
+    try {
+      await axios.post(`${BACKEND}/api/productos/${selected.id}/imagenes`, formData, { headers: authHeaders() });
+      await fetchImagenesExtra(selected.id);
+    } catch (err) { console.error('Error subiendo imagen:', err); }
+    finally { setSubiendoImagen(false); }
+  };
+
+  const eliminarImagenExtra = async (imagenId) => {
+    if (!window.confirm('¿Eliminar esta imagen?')) return;
+    try {
+      await axios.delete(`${BACKEND}/api/productos/imagenes/${imagenId}`, { headers: authHeaders() });
+      setImagenesExtra(prev => prev.filter(img => img.id !== imagenId));
+    } catch (err) { console.error('Error eliminando imagen:', err); }
   };
 
   const exportarExcel = () => {
@@ -157,11 +187,12 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
     setSelected(p); setNombre(p.nombre); setDesc(p.descripcion);
     setPrecio(p.precio); setStock(p.stock !== undefined ? p.stock : 0);
     setCat(p.categoria_id); setImagen(null); setModo('editar');
+    fetchImagenesExtra(p.id);
   };
 
   const handleNew = () => {
     setSelected(null); setNombre(''); setDesc(''); setPrecio('');
-    setStock('0'); setCat('1'); setImagen(null); setModo('nuevo');
+    setStock('0'); setCat('1'); setImagen(null); setImagenesExtra([]); setModo('nuevo');
   };
 
   const handleSubmit = async (e) => {
@@ -210,44 +241,46 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
     if (estado === 'cancelado')  return { bg: 'rgba(239,68,68,0.12)',   color: '#ef4444' };
     return { bg: 'var(--border)', color: 'var(--ink-3)' };
   };
+
   const Variacion = ({ valor, montoComparacion, labelComparacion }) => {
     if (valor !== null && valor !== undefined) {
       const positivo = valor >= 0;
       return (
-      <span style={{
-        display: 'inline-flex', alignItems: 'center', gap: '3px',
-        background: positivo ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)',
-        color: positivo ? '#16a34a' : '#ef4444',
-        fontSize: '0.7rem', fontWeight: 700, padding: '3px 8px',
-        borderRadius: '99px', marginTop: '8px'
+        <span style={{
+          display: 'inline-flex', alignItems: 'center', gap: '3px',
+          background: positivo ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)',
+          color: positivo ? '#16a34a' : '#ef4444',
+          fontSize: '0.7rem', fontWeight: 700, padding: '3px 8px',
+          borderRadius: '99px', marginTop: '8px'
         }}>
           {positivo ? '↑' : '↓'} {Math.abs(valor)}% vs. {labelComparacion}
-          </span>
-          );
-        }
-        if (montoComparacion > 0) {
-          return (
-          <span style={{
-            display: 'inline-flex', alignItems: 'center', gap: '3px',
-            background: 'rgba(255,255,255,0.06)',
-            color: 'var(--ink-3)',
-            fontSize: '0.7rem', fontWeight: 600, padding: '3px 8px',
-            borderRadius: '99px', marginTop: '8px'
-            }}>
-              {labelComparacion}: {moneda(montoComparacion)}
-              </span>
-              );
-            }
-            return null;
-          };
-          return (
-          <>
-          <div onClick={onClose} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.5)', zIndex:4000 }} />
-          <div className="panel panel-admin" style={{
-            position:'fixed', top:0, right:0, width:'100%', maxWidth:'min(600px, 100vw)',
-            height:'100%', background:'var(--bg)', zIndex:4001,
-            display:'flex', flexDirection:'column', overflow:'hidden'
-            }}>
+        </span>
+      );
+    }
+    if (montoComparacion > 0) {
+      return (
+        <span style={{
+          display: 'inline-flex', alignItems: 'center', gap: '3px',
+          background: 'rgba(255,255,255,0.06)',
+          color: 'var(--ink-3)',
+          fontSize: '0.7rem', fontWeight: 600, padding: '3px 8px',
+          borderRadius: '99px', marginTop: '8px'
+        }}>
+          {labelComparacion}: {moneda(montoComparacion)}
+        </span>
+      );
+    }
+    return null;
+  };
+
+  return (
+    <>
+      <div onClick={onClose} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.5)', zIndex:4000 }} />
+      <div className="panel panel-admin" style={{
+        position:'fixed', top:0, right:0, width:'100%', maxWidth:'min(600px, 100vw)',
+        height:'100%', background:'var(--bg)', zIndex:4001,
+        display:'flex', flexDirection:'column', overflow:'hidden'
+      }}>
 
         {/* ── HEADER ── */}
         <div style={{
@@ -323,34 +356,27 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
               {seccion === 'dashboard' && modo === 'lista' && (
                 <div style={{ display:'flex', flexDirection:'column', gap:'16px' }}>
                   <h3 style={{ fontFamily:'var(--font-display)', fontSize:'1.1rem', fontWeight:700, color:'var(--ink)' }}>Resumen de Actividad</h3>
-
                   {cargandoStats ? (
                     <div style={{ textAlign:'center', padding:'40px' }}>
                       <p style={{ color:'var(--ink-3)', fontSize:'0.9rem' }}>Cargando estadísticas...</p>
                     </div>
                   ) : stats ? (
                     <>
-                      {/* MÉTRICAS */}
                       <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px' }}>
                         <div style={{ background:'var(--surface)', border:'1px solid var(--border)', borderRadius:'16px', padding:'18px' }}>
                           <p style={{ fontSize:'0.68rem', fontWeight:700, color:'var(--ink-3)', textTransform:'uppercase', letterSpacing:'0.6px' }}>Ventas de Hoy</p>
                           <p style={{ fontSize:'1.6rem', fontWeight:800, color:'var(--ink)', marginTop:'6px', lineHeight:1 }}>{moneda(stats.ventas_dia)}</p>
                           <Variacion valor={stats.variacion_dia} montoComparacion={stats.ventas_ayer} labelComparacion="ayer" />
-                          </div>
-                          <div style={{ background:'var(--surface)', border:'1px solid var(--border)', borderRadius:'16px', padding:'18px' }}>
-                            <p style={{ fontSize:'0.68rem', fontWeight:700, color:'var(--ink-3)', textTransform:'uppercase', letterSpacing:'0.6px' }}>Ingresos del Mes</p>
-                            <p style={{ fontSize:'1.6rem', fontWeight:800, color:'var(--ink)', marginTop:'6px', lineHeight:1 }}>{moneda(stats.ventas_mes)}</p>
-                            <Variacion valor={stats.variacion_mes} montoComparacion={stats.ventas_mes_anterior} labelComparacion="mes ant." />
-                            </div>
                         </div>
-                        
-                      {/* PEDIDOS PENDIENTES */}
+                        <div style={{ background:'var(--surface)', border:'1px solid var(--border)', borderRadius:'16px', padding:'18px' }}>
+                          <p style={{ fontSize:'0.68rem', fontWeight:700, color:'var(--ink-3)', textTransform:'uppercase', letterSpacing:'0.6px' }}>Ingresos del Mes</p>
+                          <p style={{ fontSize:'1.6rem', fontWeight:800, color:'var(--ink)', marginTop:'6px', lineHeight:1 }}>{moneda(stats.ventas_mes)}</p>
+                          <Variacion valor={stats.variacion_mes} montoComparacion={stats.ventas_mes_anterior} labelComparacion="mes ant." />
+                        </div>
+                      </div>
+
                       {stats.pedidos_pendientes > 0 && (
-                        <div style={{
-                          background:'rgba(245,158,11,0.08)', border:'1px solid rgba(245,158,11,0.2)',
-                          borderRadius:'14px', padding:'14px 18px',
-                          display:'flex', alignItems:'center', justifyContent:'space-between'
-                        }}>
+                        <div style={{ background:'rgba(245,158,11,0.08)', border:'1px solid rgba(245,158,11,0.2)', borderRadius:'14px', padding:'14px 18px', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
                           <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
                             <span style={{ fontSize:'1.2rem' }}>⏳</span>
                             <div>
@@ -364,7 +390,6 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
                         </div>
                       )}
 
-                      {/* TOP PRODUCTOS */}
                       <div style={{ background:'var(--surface)', border:'1px solid var(--border)', borderRadius:'16px', padding:'18px' }}>
                         <p style={{ fontSize:'0.85rem', fontWeight:700, color:'var(--ink)', marginBottom:'14px' }}>🔥 Top Productos Más Vendidos</p>
                         {stats.productos_top && stats.productos_top.length > 0 ? (
@@ -372,21 +397,11 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
                             {stats.productos_top.map((prod, idx) => {
                               const prodData = productos.find(p => String(p.id) === String(prod.id));
                               return (
-                                <div key={prod.id} style={{
-                                  display:'flex', alignItems:'center', gap:'12px',
-                                  padding:'10px 0',
-                                  borderBottom: idx < stats.productos_top.length - 1 ? '1px solid var(--border)' : 'none'
-                                }}>
+                                <div key={prod.id} style={{ display:'flex', alignItems:'center', gap:'12px', padding:'10px 0', borderBottom: idx < stats.productos_top.length - 1 ? '1px solid var(--border)' : 'none' }}>
                                   <span style={{ fontSize:'0.75rem', fontWeight:800, color:'var(--ink-3)', minWidth:'24px' }}>#{idx+1}</span>
-                                  {prodData && (
-                                    <img src={imgSrc(prodData.imagen_url)} style={{ width:'36px', height:'36px', objectFit:'cover', borderRadius:'8px', flexShrink:0 }} />
-                                  )}
-                                  <span style={{ fontSize:'0.82rem', fontWeight:600, color:'var(--ink)', flex:1, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
-                                    {prod.nombre}
-                                  </span>
-                                  <span style={{ background:'rgba(34,197,94,0.12)', color:'#16a34a', padding:'3px 10px', borderRadius:'99px', fontSize:'0.72rem', fontWeight:700, flexShrink:0 }}>
-                                    {prod.cantidad_vendida} ud.
-                                  </span>
+                                  {prodData && <img src={imgSrc(prodData.imagen_url)} style={{ width:'36px', height:'36px', objectFit:'cover', borderRadius:'8px', flexShrink:0 }} />}
+                                  <span style={{ fontSize:'0.82rem', fontWeight:600, color:'var(--ink)', flex:1, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{prod.nombre}</span>
+                                  <span style={{ background:'rgba(34,197,94,0.12)', color:'#16a34a', padding:'3px 10px', borderRadius:'99px', fontSize:'0.72rem', fontWeight:700, flexShrink:0 }}>{prod.cantidad_vendida} ud.</span>
                                 </div>
                               );
                             })}
@@ -464,7 +479,6 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
                       <button onClick={exportarExcel} disabled={pedidos.length === 0} className="pill-btn pill-btn--green" style={{ padding:'6px 14px', fontSize:'0.7rem', opacity: pedidos.length === 0 ? 0.5 : 1 }}>📊 Excel</button>
                     </div>
                   </div>
-
                   {cargandoPedidos ? (
                     <div style={{ textAlign:'center', padding:'40px' }}>
                       <p style={{ color:'var(--ink-3)', fontSize:'0.9rem' }}>Cargando pedidos...</p>
@@ -482,12 +496,9 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
                         const expandido = pedidoExpandido === p.id;
                         return (
                           <div key={p.id} style={{ background:'var(--surface)', borderRadius:'14px', border:'1px solid var(--border)', overflow:'hidden' }}>
-                            <div onClick={() => setPedidoExpandido(expandido ? null : p.id)}
-                              style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'14px 16px', cursor:'pointer' }}>
+                            <div onClick={() => setPedidoExpandido(expandido ? null : p.id)} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'14px 16px', cursor:'pointer' }}>
                               <div>
-                                <p style={{ fontWeight:700, fontSize:'0.88rem', color:'var(--ink)', marginBottom:'2px' }}>
-                                  #{String(p.id).padStart(5,'0')} — {p.cliente_nombre}
-                                </p>
+                                <p style={{ fontWeight:700, fontSize:'0.88rem', color:'var(--ink)', marginBottom:'2px' }}>#{String(p.id).padStart(5,'0')} — {p.cliente_nombre}</p>
                                 <p style={{ fontSize:'0.72rem', color:'var(--ink-3)' }}>
                                   {new Date(p.creado_en).toLocaleDateString('es-CO', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' })}
                                 </p>
@@ -534,12 +545,8 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
                                   })}
                                 </div>
                                 <div style={{ display:'flex', gap:'8px', marginTop:'12px' }}>
-                                  <button onClick={async () => await generarPDF(p, items, p.total, p.id)} className="pill-btn pill-btn--ghost" style={{ flex:1, justifyContent:'center', fontSize:'0.8rem' }}>
-                                    📄 Descargar PDF
-                                  </button>
-                                  <button onClick={() => eliminarPedido(p.id)} className="pill-btn" style={{ flex:1, justifyContent:'center', fontSize:'0.8rem', background:'rgba(239,68,68,0.1)', color:'#ef4444', border:'1px solid rgba(239,68,68,0.2)' }}>
-                                    🗑️ Eliminar
-                                  </button>
+                                  <button onClick={async () => await generarPDF(p, items, p.total, p.id)} className="pill-btn pill-btn--ghost" style={{ flex:1, justifyContent:'center', fontSize:'0.8rem' }}>📄 Descargar PDF</button>
+                                  <button onClick={() => eliminarPedido(p.id)} className="pill-btn" style={{ flex:1, justifyContent:'center', fontSize:'0.8rem', background:'rgba(239,68,68,0.1)', color:'#ef4444', border:'1px solid rgba(239,68,68,0.2)' }}>🗑️ Eliminar</button>
                                 </div>
                               </div>
                             )}
@@ -589,7 +596,7 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
                   </div>
                   <div>
                     <label style={{ fontSize:'0.8rem', fontWeight:600, color:'var(--ink-2)', marginBottom:'6px', display:'block' }}>
-                      {modo === 'editar' ? 'Cambiar imagen (opcional)' : 'Subir imagen'}
+                      {modo === 'editar' ? 'Cambiar imagen principal (opcional)' : 'Subir imagen'}
                     </label>
                     <label htmlFor="file-upload"
                       style={{ height:'160px', width:'100%', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:'12px', cursor:'pointer', border:'2px dashed var(--border)', background:'var(--bg)', borderRadius:'12px', transition:'border-color 0.2s', boxSizing:'border-box' }}
@@ -612,6 +619,40 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
                       <input id="file-upload" type="file" accept="image/*" onChange={e => setImagen(e.target.files[0])} style={{ display:'none' }} />
                     </label>
                   </div>
+
+                  {/* ── IMÁGENES ADICIONALES (solo en editar) ── */}
+                  {modo === 'editar' && (
+                    <div>
+                      <label style={{ fontSize:'0.8rem', fontWeight:600, color:'var(--ink-2)', marginBottom:'10px', display:'block' }}>
+                        Imágenes adicionales
+                      </label>
+                      {imagenesExtra.length > 0 && (
+                        <div style={{ display:'flex', gap:'8px', flexWrap:'wrap', marginBottom:'12px' }}>
+                          {imagenesExtra.map(img => (
+                            <div key={img.id} style={{ position:'relative', width:'72px', height:'72px' }}>
+                              <img src={img.imagen_url} alt="extra" style={{ width:'72px', height:'72px', objectFit:'cover', borderRadius:'10px', border:'1px solid var(--border)' }} />
+                              <button type="button" onClick={() => eliminarImagenExtra(img.id)}
+                                style={{ position:'absolute', top:'-6px', right:'-6px', width:'20px', height:'20px', borderRadius:'50%', background:'#ef4444', color:'#fff', border:'none', cursor:'pointer', fontSize:'0.65rem', fontWeight:700, display:'flex', alignItems:'center', justifyContent:'center', lineHeight:1 }}>
+                                ✕
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      <label htmlFor="file-extra"
+                        style={{ display:'flex', alignItems:'center', gap:'8px', padding:'10px 16px', border:'2px dashed var(--border)', borderRadius:'12px', cursor: subiendoImagen ? 'not-allowed' : 'pointer', background:'var(--bg)', fontSize:'0.8rem', color:'var(--ink-3)', fontWeight:500, transition:'border-color 0.2s', opacity: subiendoImagen ? 0.6 : 1 }}
+                        onMouseEnter={e => { if (!subiendoImagen) e.currentTarget.style.borderColor='var(--accent)'; }}
+                        onMouseLeave={e => e.currentTarget.style.borderColor='var(--border)'}
+                      >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width:'18px', height:'18px', flexShrink:0 }}>
+                          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
+                        </svg>
+                        {subiendoImagen ? 'Subiendo...' : 'Agregar imagen adicional'}
+                        <input id="file-extra" type="file" accept="image/*" onChange={subirImagenExtra} disabled={subiendoImagen} style={{ display:'none' }} />
+                      </label>
+                    </div>
+                  )}
+
                   {error && (
                     <div style={{ background:'rgba(239,68,68,0.06)', border:'1px solid rgba(239,68,68,0.15)', borderRadius:'10px', padding:'10px 14px', fontSize:'0.8rem', color:'#ef4444', textAlign:'center' }}>
                       {error}
@@ -628,38 +669,14 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
 
         {/* ── BARRA INFERIOR ── */}
         {auth && modo === 'lista' && (
-          <div style={{
-            position:'absolute', bottom:0, left:0, right:0,
-            background:'var(--surface)', borderTop:'1px solid var(--border)',
-            display:'flex', padding:'8px 16px 12px',
-            gap:'4px',
-          }}>
+          <div style={{ position:'absolute', bottom:0, left:0, right:0, background:'var(--surface)', borderTop:'1px solid var(--border)', display:'flex', padding:'8px 16px 12px', gap:'4px' }}>
             {[
-              { key:'dashboard', label:'Dashboard', icon:(
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
-                </svg>
-              )},
-              { key:'productos', label:'Productos', icon:(
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-                </svg>
-              )},
-              { key:'pedidos', label:`Pedidos${pedidos.length > 0 ? ` (${pedidos.length})` : ''}`, icon:(
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-                </svg>
-              )},
+              { key:'dashboard', label:'Dashboard', icon:(<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>) },
+              { key:'productos', label:'Productos', icon:(<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>) },
+              { key:'pedidos', label:`Pedidos${pedidos.length > 0 ? ` (${pedidos.length})` : ''}`, icon:(<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>) },
             ].map(tab => (
               <button key={tab.key} onClick={() => setSeccion(tab.key)}
-                style={{
-                  flex:1, display:'flex', flexDirection:'column', alignItems:'center', gap:'4px',
-                  padding:'8px 4px', border:'none', cursor:'pointer', borderRadius:'12px',
-                  background: seccion === tab.key ? 'rgba(26,92,255,0.1)' : 'transparent',
-                  color: seccion === tab.key ? 'var(--accent)' : 'var(--ink-3)',
-                  transition:'all 0.2s',
-                }}>
+                style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', gap:'4px', padding:'8px 4px', border:'none', cursor:'pointer', borderRadius:'12px', background: seccion === tab.key ? 'rgba(26,92,255,0.1)' : 'transparent', color: seccion === tab.key ? 'var(--accent)' : 'var(--ink-3)', transition:'all 0.2s' }}>
                 {tab.icon}
                 <span style={{ fontSize:'0.62rem', fontWeight:600 }}>{tab.label}</span>
               </button>

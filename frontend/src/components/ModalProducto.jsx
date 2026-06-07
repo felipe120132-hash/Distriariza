@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { imgSrc, moneda } from '../utils/helpers.js';
 import { DESCRIPCIONES, BEST_SELLER_NAMES, OPCIONES_COLORES } from '../constants/index.js';
+import { BACKEND } from '../constants/index.js';
+import axios from 'axios';
 
 export const ModalProducto = ({ p, onClose, onAdd, ratings, onRate, productos = [] }) => {
   const navigate = useNavigate();
@@ -9,6 +11,19 @@ export const ModalProducto = ({ p, onClose, onAdd, ratings, onRate, productos = 
   const isBest = BEST_SELLER_NAMES.includes(p.nombre);
   const colores = OPCIONES_COLORES[p.nombre];
   const [colorSel, setColorSel] = useState(colores ? colores[0] : null);
+  const [imagenesExtra, setImagenesExtra] = useState([]);
+  const [imgActiva, setImgActiva] = useState(imgSrc(p.imagen_url));
+
+  useEffect(() => {
+    axios.get(`${BACKEND}/api/productos/${p.id}/imagenes`)
+      .then(r => setImagenesExtra(r.data))
+      .catch(() => {});
+  }, [p.id]);
+
+  const todasLasImagenes = [
+    { id: 'principal', imagen_url: p.imagen_url },
+    ...imagenesExtra,
+  ];
 
   const relacionados = productos
     .filter(x => x.id !== p.id && x.categoria_id === p.categoria_id && x.stock > 0)
@@ -20,12 +35,51 @@ export const ModalProducto = ({ p, onClose, onAdd, ratings, onRate, productos = 
       <div className="modal modal-sheet" style={{ position:'fixed', zIndex:3001, background:'var(--surface)', overflowY:'auto', boxShadow:'0 32px 80px rgba(0,0,0,0.3)' }}>
         <button onClick={onClose} className="close-btn-custom" style={{ position:'absolute', top:'16px', right:'16px', zIndex:10 }} aria-label="Cerrar">✕</button>
 
-        {/* ── IMAGEN ── */}
-        <div style={{ background:'linear-gradient(180deg, #fff 0%, #f9f9f9 100%)', borderRadius:'28px 28px 0 0', padding:'40px 32px 32px', display:'flex', alignItems:'center', justifyContent:'center', minHeight:'280px', overflow:'hidden', position:'relative' }}>
+        {/* ── GALERÍA ── */}
+        <div style={{ background:'linear-gradient(180deg, #fff 0%, #f9f9f9 100%)', borderRadius:'28px 28px 0 0', padding:'40px 32px 20px', display:'flex', flexDirection:'column', alignItems:'center', position:'relative' }}>
           {isBest && (
             <div style={{ position:'absolute', top:'20px', left:'24px', background:'var(--gold)', color:'#000', borderRadius:'99px', padding:'5px 14px', fontSize:'0.7rem', fontWeight:800, boxShadow:'0 4px 12px rgba(0,0,0,0.1)' }}>🔥 Más vendido</div>
           )}
-          <img className="modal-img img-blend" src={imgSrc(p.imagen_url)} alt={p.nombre} style={{ maxHeight:'240px', maxWidth:'100%', objectFit:'contain', display:'block', filter:'drop-shadow(0 8px 24px rgba(0,0,0,0.08))' }} />
+
+          {/* Imagen principal */}
+          <div style={{ display:'flex', alignItems:'center', justifyContent:'center', minHeight:'240px', width:'100%' }}>
+            <img
+              className="modal-img img-blend"
+              src={imgActiva}
+              alt={p.nombre}
+              style={{ maxHeight:'220px', maxWidth:'100%', objectFit:'contain', display:'block', filter:'drop-shadow(0 8px 24px rgba(0,0,0,0.08))', transition:'opacity 0.2s' }}
+            />
+          </div>
+
+          {/* Miniaturas — solo si hay más de 1 imagen */}
+          {todasLasImagenes.length > 1 && (
+            <div style={{ display:'flex', gap:'8px', marginTop:'16px', overflowX:'auto', paddingBottom:'4px', scrollbarWidth:'none', width:'100%', justifyContent:'center' }}>
+              {todasLasImagenes.map((img, i) => {
+                const url = imgSrc(img.imagen_url);
+                const activa = imgActiva === url;
+                return (
+                  <div
+                    key={img.id}
+                    onClick={() => setImgActiva(url)}
+                    style={{
+                      width:'60px', height:'60px', borderRadius:'10px', flexShrink:0,
+                      background:'#fff', padding:'4px', cursor:'pointer',
+                      border: activa ? '2.5px solid var(--accent)' : '2px solid var(--border)',
+                      transition:'border-color 0.2s, transform 0.15s',
+                      transform: activa ? 'scale(1.05)' : 'scale(1)',
+                      display:'flex', alignItems:'center', justifyContent:'center',
+                    }}
+                  >
+                    <img
+                      src={url}
+                      alt={`Vista ${i + 1}`}
+                      style={{ maxWidth:'100%', maxHeight:'100%', objectFit:'contain' }}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* ── INFO ── */}
