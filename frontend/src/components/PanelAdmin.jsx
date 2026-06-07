@@ -331,7 +331,6 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
                   ) : stats ? (
                     <>
                       {/* MÉTRICAS */}
-                      {/* MÉTRICAS */}
                       <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px' }}>
                         <div style={{ background:'var(--surface)', border:'1px solid var(--border)', borderRadius:'16px', padding:'18px' }}>
                           <p style={{ fontSize:'0.68rem', fontWeight:700, color:'var(--ink-3)', textTransform:'uppercase', letterSpacing:'0.6px' }}>Ventas de Hoy</p>
