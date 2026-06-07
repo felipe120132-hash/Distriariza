@@ -110,8 +110,8 @@ export default function App() {
       {productoRoute && (() => {
         const productId = location.pathname.split('/producto/')[1];
         const p = productos.find(x => String(x.id) === String(productId));
-        return p ? <ModalProducto p={p} onClose={() => navigate(-1)} onAdd={addItem} ratings={ratings} onRate={handleRate} /> : null;
-      })()}
+        return p ? <ModalProducto p={p} onClose={() => navigate(-1)} onAdd={addItem} ratings={ratings} onRate={handleRate} productos={productos} /> : null;
+        })()}
       {cartOpen && (
         <PanelCarrito carrito={carrito} onClose={() => navigate(-1)} onAdd={addItem} onRemove={removeOne} onChangeQty={setQty} onClear={() => setCarrito([])} totalCompra={totalCompra} totalItems={totalItems} />
       )}

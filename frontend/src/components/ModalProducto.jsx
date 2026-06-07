@@ -1,39 +1,47 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { imgSrc, moneda } from '../utils/helpers.js';
 import { DESCRIPCIONES, BEST_SELLER_NAMES, OPCIONES_COLORES } from '../constants/index.js';
 
-export const ModalProducto = ({ p, onClose, onAdd, ratings, onRate }) => {
+export const ModalProducto = ({ p, onClose, onAdd, ratings, onRate, productos = [] }) => {
+  const navigate = useNavigate();
   const desc = DESCRIPCIONES[p.nombre];
   const isBest = BEST_SELLER_NAMES.includes(p.nombre);
   const colores = OPCIONES_COLORES[p.nombre];
   const [colorSel, setColorSel] = useState(colores ? colores[0] : null);
 
+  const relacionados = productos
+    .filter(x => x.id !== p.id && x.categoria_id === p.categoria_id && x.stock > 0)
+    .slice(0, 4);
+
   return (
     <>
       <div className="modal-overlay" onClick={onClose} style={{ position:'fixed', inset:0, background:'rgba(10,10,10,0.6)', backdropFilter:'blur(8px)', WebkitBackdropFilter:'blur(8px)', zIndex:3000 }} />
       <div className="modal modal-sheet" style={{ position:'fixed', zIndex:3001, background:'var(--surface)', overflowY:'auto', boxShadow:'0 32px 80px rgba(0,0,0,0.3)' }}>
-        <button onClick={onClose} className="close-btn-custom" style={{ position:'absolute', top:'16px', right:'16px', zIndex:10 }}
-          aria-label="Cerrar"
-        >✕</button>
+        <button onClick={onClose} className="close-btn-custom" style={{ position:'absolute', top:'16px', right:'16px', zIndex:10 }} aria-label="Cerrar">✕</button>
+
+        {/* ── IMAGEN ── */}
         <div style={{ background:'linear-gradient(180deg, #fff 0%, #f9f9f9 100%)', borderRadius:'28px 28px 0 0', padding:'40px 32px 32px', display:'flex', alignItems:'center', justifyContent:'center', minHeight:'280px', overflow:'hidden', position:'relative' }}>
           {isBest && (
             <div style={{ position:'absolute', top:'20px', left:'24px', background:'var(--gold)', color:'#000', borderRadius:'99px', padding:'5px 14px', fontSize:'0.7rem', fontWeight:800, boxShadow:'0 4px 12px rgba(0,0,0,0.1)' }}>🔥 Más vendido</div>
           )}
           <img className="modal-img img-blend" src={imgSrc(p.imagen_url)} alt={p.nombre} style={{ maxHeight:'240px', maxWidth:'100%', objectFit:'contain', display:'block', filter:'drop-shadow(0 8px 24px rgba(0,0,0,0.08))' }} />
         </div>
+
+        {/* ── INFO ── */}
         <div style={{ padding:'24px 28px 28px' }}>
           <p className="modal-content-1" style={{ fontSize:'0.68rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.9px', marginBottom:'6px', display:'flex', justifyContent:'space-between' }}>
             <span>{p.categoria_nombre}</span>
           </p>
           <h2 className="modal-content-2" style={{ fontFamily:'var(--font-display)', fontSize:'1.6rem', fontWeight:700, color:'var(--ink)', marginBottom:'10px', lineHeight:1.2 }}>{p.nombre}</h2>
-          
+
           {colores && (
             <div className="modal-content-2" style={{ marginBottom:'20px' }}>
               <p style={{ fontSize:'0.7rem', color:'var(--ink-3)', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.8px', marginBottom:'10px' }}>Elige un color:</p>
               <div style={{ display:'flex', gap:'8px', flexWrap:'wrap' }}>
                 {colores.map(c => (
-                  <button key={c} onClick={() => setColorSel(c)} 
-                    style={{ 
+                  <button key={c} onClick={() => setColorSel(c)}
+                    style={{
                       padding:'6px 14px', borderRadius:'10px', fontSize:'0.75rem', fontWeight:600, cursor:'pointer',
                       border: colorSel === c ? '2.5px solid var(--accent)' : '1.5px solid var(--border)',
                       background: colorSel === c ? 'var(--accent)' : 'transparent',
@@ -47,8 +55,11 @@ export const ModalProducto = ({ p, onClose, onAdd, ratings, onRate }) => {
           )}
 
           <div className="modal-content-2" style={{ marginBottom:'18px' }}>
-            <span style={{ fontSize:'0.85rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'1px', color: p.stock > 0 ? '#16a34a' : '#ef4444', background: p.stock > 0 ? 'rgba(22,163,74,0.1)' : 'rgba(239,68,68,0.1)', padding:'6px 14px', borderRadius:'10px', display:'inline-block' }}>{p.stock > 0 ? `STOCK: ${p.stock}` : 'AGOTADO'}</span>
+            <span style={{ fontSize:'0.85rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'1px', color: p.stock > 0 ? '#16a34a' : '#ef4444', background: p.stock > 0 ? 'rgba(22,163,74,0.1)' : 'rgba(239,68,68,0.1)', padding:'6px 14px', borderRadius:'10px', display:'inline-block' }}>
+              {p.stock > 0 ? `STOCK: ${p.stock}` : 'AGOTADO'}
+            </span>
           </div>
+
           <div className="modal-content-3" style={{ color:'var(--ink-2)', fontSize:'0.9rem', lineHeight:1.75, marginBottom:'28px' }}>
             {desc ? (
               <>
@@ -63,6 +74,7 @@ export const ModalProducto = ({ p, onClose, onAdd, ratings, onRate }) => {
               <p>{p.descripcion || 'Calidad garantizada para tu mascota.'}</p>
             )}
           </div>
+
           <div className="modal-content-4" style={{ display:'flex', justifyContent:'space-between', alignItems:'center', borderTop:'1px solid var(--border)', paddingTop:'20px' }}>
             <div>
               <p style={{ fontSize:'0.68rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.6px', marginBottom:'3px' }}>Precio</p>
@@ -75,6 +87,34 @@ export const ModalProducto = ({ p, onClose, onAdd, ratings, onRate }) => {
               <span>{p.stock > 0 ? 'Añadir al carrito' : 'Agotado'}</span>
             </button>
           </div>
+
+          {/* ── PRODUCTOS RELACIONADOS ── */}
+          {relacionados.length > 0 && (
+            <div style={{ marginTop:'32px', paddingTop:'24px', borderTop:'1px solid var(--border)' }}>
+              <p style={{ fontSize:'0.75rem', fontWeight:700, color:'var(--ink-3)', textTransform:'uppercase', letterSpacing:'0.8px', marginBottom:'16px' }}>
+                También en {p.categoria_nombre}
+              </p>
+              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px' }}>
+                {relacionados.map(rel => (
+                  <div
+                    key={rel.id}
+                    onClick={() => navigate(`/producto/${rel.id}`)}
+                    style={{ background:'var(--bg)', borderRadius:'12px', padding:'12px', cursor:'pointer', border:'1px solid var(--border)', transition:'transform 0.2s', display:'flex', flexDirection:'column', gap:'8px' }}
+                    onMouseEnter={e => e.currentTarget.style.transform='translateY(-2px)'}
+                    onMouseLeave={e => e.currentTarget.style.transform='translateY(0)'}
+                  >
+                    <div style={{ background:'#fff', borderRadius:'8px', padding:'8px', display:'flex', alignItems:'center', justifyContent:'center', height:'80px' }}>
+                      <img src={imgSrc(rel.imagen_url)} alt={rel.nombre} style={{ maxHeight:'64px', maxWidth:'100%', objectFit:'contain' }} />
+                    </div>
+                    <p style={{ fontSize:'0.75rem', fontWeight:600, color:'var(--ink)', lineHeight:1.3, overflow:'hidden', display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical' }}>
+                      {rel.nombre}
+                    </p>
+                    <p style={{ fontSize:'0.78rem', fontWeight:700, color:'var(--accent)' }}>{moneda(rel.precio)}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </>
