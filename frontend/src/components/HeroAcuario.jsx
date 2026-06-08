@@ -38,15 +38,38 @@ export const HeroAcuario = ({ busqueda, setBusqueda, scrollY = 0 }) => {
         <h1 style={{ fontFamily:'var(--font-display)', fontSize:'clamp(2.2rem,5vw,3.5rem)', fontWeight:700, color:'#fff', lineHeight:1.15, marginBottom:'20px', textShadow:'0 4px 16px rgba(0,0,0,0.4)' }}>
           Todo para tus<br/>peces y hámsters.
         </h1>
-        <div className="inputbox--hero">
+        <div style={{
+          display:'flex', alignItems:'center',
+          background:'rgba(255,255,255,0.92)',
+          borderRadius:'99px',
+          padding:'12px 20px',
+          gap:'10px',
+          boxShadow:'0 8px 32px rgba(0,0,0,0.2)',
+          backdropFilter:'blur(8px)',
+          maxWidth:'420px',
+          width:'100%'
+        }}>
+          <svg xmlns="http://www.w3.org/2000/svg" width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+            <circle cx={11} cy={11} r={8}/><line x1={21} y1={21} x2={16.65} y2={16.65}/>
+          </svg>
           <input
             type="text"
             value={busqueda}
             onChange={e => setBusqueda(e.target.value)}
-            placeholder=" "
+            placeholder="Buscar productos…"
+            style={{
+              border:'none',
+              outline:'none',
+              background:'transparent',
+              fontSize:'0.95rem',
+              color:'#222',
+              width:'100%',
+              fontFamily:'inherit'
+            }}
           />
-          <span>Buscar productos…</span>
-          <i />
+          {busqueda && (
+            <button onClick={() => setBusqueda('')} style={{ background:'none', border:'none', cursor:'pointer', color:'#999', fontSize:'1.1rem', padding:'0', lineHeight:1 }}>✕</button>
+          )}
         </div>
       </div>
 
