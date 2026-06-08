@@ -36,18 +36,45 @@ export const ModalProducto = ({ p, onClose, onAdd, ratings, onRate, productos = 
         <button onClick={onClose} className="close-btn-custom" style={{ position:'absolute', top:'16px', right:'16px', zIndex:10 }} aria-label="Cerrar">✕</button>
 
         {/* ── GALERÍA ── */}
-        <div style={{ borderRadius:'28px 28px 0 0', padding:'40px 0 20px', display:'flex', flexDirection:'column', alignItems:'center', position:'relative', overflow:'hidden' }}>
+        <div style={{
+          background:'#fff',
+          borderRadius:'28px 28px 0 0',
+          overflow:'hidden',
+          position:'relative',
+          display:'flex',
+          flexDirection:'column',
+          alignItems:'center',
+          paddingBottom:'20px'
+        }}>
           {isBest && (
             <div style={{ position:'absolute', top:'20px', left:'24px', background:'var(--gold)', color:'#000', borderRadius:'99px', padding:'5px 14px', fontSize:'0.7rem', fontWeight:800, boxShadow:'0 4px 12px rgba(0,0,0,0.1)', zIndex:2 }}>🔥 Más vendido</div>
           )}
 
           {/* Imagen principal */}
-          <div style={{ display:'flex', alignItems:'center', justifyContent:'center', width:'100%', height:'260px', overflow:'hidden' }}>
+          <div style={{
+            width:'100%',
+            height:'280px',
+            borderRadius:'28px 28px 20px 20px',
+            overflow:'hidden',
+            display:'flex',
+            alignItems:'center',
+            justifyContent:'center',
+            padding:'0 24px',
+            boxSizing:'border-box'
+          }}>
             <img
               className="modal-img img-blend"
               src={imgActiva}
               alt={p.nombre}
-              style={{ width:'100%', height:'100%', objectFit:'contain', display:'block', filter:'drop-shadow(0 8px 24px rgba(0,0,0,0.08))', transition:'opacity 0.2s' }}
+              style={{
+                maxWidth:'100%',
+                maxHeight:'100%',
+                objectFit:'contain',
+                display:'block',
+                filter:'drop-shadow(0 8px 24px rgba(0,0,0,0.12))',
+                transition:'opacity 0.2s',
+                borderRadius:'16px'
+              }}
             />
           </div>
 
@@ -73,7 +100,7 @@ export const ModalProducto = ({ p, onClose, onAdd, ratings, onRate, productos = 
                     <img
                       src={url}
                       alt={`Vista ${i + 1}`}
-                      style={{ maxWidth:'100%', maxHeight:'100%', objectFit:'contain' }}
+                      style={{ maxWidth:'100%', maxHeight:'100%', objectFit:'contain', borderRadius:'6px' }}
                     />
                   </div>
                 );
