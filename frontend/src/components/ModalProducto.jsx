@@ -36,24 +36,24 @@ export const ModalProducto = ({ p, onClose, onAdd, ratings, onRate, productos = 
         <button onClick={onClose} className="close-btn-custom" style={{ position:'absolute', top:'16px', right:'16px', zIndex:10 }} aria-label="Cerrar">✕</button>
 
         {/* ── GALERÍA ── */}
-        <div style={{ background:'linear-gradient(180deg, #fff 0%, #f9f9f9 100%)', borderRadius:'28px 28px 0 0', padding:'40px 32px 20px', display:'flex', flexDirection:'column', alignItems:'center', position:'relative' }}>
+        <div style={{ borderRadius:'28px 28px 0 0', padding:'40px 0 20px', display:'flex', flexDirection:'column', alignItems:'center', position:'relative', overflow:'hidden' }}>
           {isBest && (
-            <div style={{ position:'absolute', top:'20px', left:'24px', background:'var(--gold)', color:'#000', borderRadius:'99px', padding:'5px 14px', fontSize:'0.7rem', fontWeight:800, boxShadow:'0 4px 12px rgba(0,0,0,0.1)' }}>🔥 Más vendido</div>
+            <div style={{ position:'absolute', top:'20px', left:'24px', background:'var(--gold)', color:'#000', borderRadius:'99px', padding:'5px 14px', fontSize:'0.7rem', fontWeight:800, boxShadow:'0 4px 12px rgba(0,0,0,0.1)', zIndex:2 }}>🔥 Más vendido</div>
           )}
 
           {/* Imagen principal */}
-          <div style={{ display:'flex', alignItems:'center', justifyContent:'center', minHeight:'240px', width:'100%' }}>
+          <div style={{ display:'flex', alignItems:'center', justifyContent:'center', width:'100%', height:'260px', overflow:'hidden' }}>
             <img
               className="modal-img img-blend"
               src={imgActiva}
               alt={p.nombre}
-              style={{ maxHeight:'220px', maxWidth:'100%', objectFit:'contain', display:'block', filter:'drop-shadow(0 8px 24px rgba(0,0,0,0.08))', transition:'opacity 0.2s' }}
+              style={{ width:'100%', height:'100%', objectFit:'contain', display:'block', filter:'drop-shadow(0 8px 24px rgba(0,0,0,0.08))', transition:'opacity 0.2s' }}
             />
           </div>
 
           {/* Miniaturas — solo si hay más de 1 imagen */}
           {todasLasImagenes.length > 1 && (
-            <div style={{ display:'flex', gap:'8px', marginTop:'16px', overflowX:'auto', paddingBottom:'4px', scrollbarWidth:'none', width:'100%', justifyContent:'center' }}>
+            <div style={{ display:'flex', gap:'8px', marginTop:'16px', overflowX:'auto', paddingBottom:'4px', scrollbarWidth:'none', width:'100%', justifyContent:'center', paddingLeft:'16px', paddingRight:'16px' }}>
               {todasLasImagenes.map((img, i) => {
                 const url = imgSrc(img.imagen_url);
                 const activa = imgActiva === url;
@@ -157,8 +157,8 @@ export const ModalProducto = ({ p, onClose, onAdd, ratings, onRate, productos = 
                     onMouseEnter={e => e.currentTarget.style.transform='translateY(-2px)'}
                     onMouseLeave={e => e.currentTarget.style.transform='translateY(0)'}
                   >
-                    <div style={{ background:'#fff', borderRadius:'8px', padding:'8px', display:'flex', alignItems:'center', justifyContent:'center', height:'90px' }}>
-                      <img src={imgSrc(rel.imagen_url)} alt={rel.nombre} style={{ maxHeight:'74px', maxWidth:'100%', objectFit:'contain' }} />
+                    <div style={{ borderRadius:'8px', overflow:'hidden', height:'90px', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                      <img src={imgSrc(rel.imagen_url)} alt={rel.nombre} style={{ width:'100%', height:'100%', objectFit:'contain' }} />
                     </div>
                     <p style={{ fontSize:'0.73rem', fontWeight:600, color:'var(--ink)', lineHeight:1.3, overflow:'hidden', display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical' }}>
                       {rel.nombre}
