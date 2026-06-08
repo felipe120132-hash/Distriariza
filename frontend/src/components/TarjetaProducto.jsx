@@ -9,10 +9,10 @@ export const TarjetaProducto = memo(({ p, onAdd, onOpen, ratings, onRate, isBest
       </div>
     )}
     <div onClick={() => onOpen(p)} className="img-container"
-      style={{ height:'220px', cursor:'pointer', padding:'0', borderRadius:'24px 24px 0 0', overflow:'hidden', background:'var(--card-img-bg, #f0f4f8)' }}
+      style={{ height:'220px', cursor:'pointer', padding:'16px', borderRadius:'24px 24px 0 0', overflow:'hidden', background:'var(--card-img-bg, #f0f4f8)', display:'flex', alignItems:'center', justifyContent:'center' }}
     >
       <img src={imgSrc(p.imagen_url)} alt={p.nombre} loading="lazy" decoding="async" className="zoom-img img-blend"
-        style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }}
+        style={{ width:'100%', height:'100%', objectFit:'contain', display:'block' }}
       />
     </div>
     <div style={{ padding:'18px 20px 20px' }}>
