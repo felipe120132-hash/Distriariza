@@ -67,8 +67,8 @@ export const ModalProducto = ({ p, onClose, onAdd, ratings, onRate, productos = 
               src={imgActiva}
               alt={p.nombre}
               style={{
-                maxWidth:'100%',
-                maxHeight:'100%',
+                maxWidth:'85%',
+                maxHeight:'85%',
                 objectFit:'contain',
                 display:'block',
                 filter:'drop-shadow(0 8px 24px rgba(0,0,0,0.12))',
