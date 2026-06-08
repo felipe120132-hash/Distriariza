@@ -2,18 +2,13 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-// Utils & Constants
 import { BACKEND } from './constants/index.js';
+import { slugify } from './utils/helpers.js';
 
-// Global Styles & Layout
 import { EstilosGlobales } from './components/EstilosGlobales.jsx';
 import { Cargador } from './components/Cargador.jsx';
 import { BarraNavegacion } from './components/BarraNavegacion.jsx';
-
-// Pages
 import { Inicio } from './pages/Inicio.jsx';
-
-// Modals & Panels
 import { PanelCarrito } from './components/PanelCarrito.jsx';
 import { PanelResenas } from './components/PanelResenas.jsx';
 import { PanelAdmin } from './components/PanelAdmin.jsx';
@@ -106,12 +101,12 @@ export default function App() {
         <Route path="*" element={<Inicio productos={productos} busqueda={busqueda} setBusqueda={setBusqueda} scrollY={scrollY} addItem={addItem} ratings={ratings} handleRate={handleRate} />} />
       </Routes>
 
-      {/* ── MODALS / PANELS ── */}
       {productoRoute && (() => {
-        const productId = location.pathname.split('/producto/')[1];
-        const p = productos.find(x => String(x.id) === String(productId));
+        const slug = location.pathname.split('/producto/')[1];
+        const p = productos.find(x => slugify(x.nombre) === slug);
         return p ? <ModalProducto p={p} onClose={() => navigate(-1)} onAdd={addItem} ratings={ratings} onRate={handleRate} productos={productos} /> : null;
-        })()}
+      })()}
+
       {cartOpen && (
         <PanelCarrito carrito={carrito} onClose={() => navigate(-1)} onAdd={addItem} onRemove={removeOne} onChangeQty={setQty} onClear={() => setCarrito([])} totalCompra={totalCompra} totalItems={totalItems} />
       )}
@@ -127,21 +122,7 @@ export default function App() {
           href="https://wa.me/573219627376"
           target="_blank"
           rel="noopener noreferrer"
-          style={{
-            position: 'fixed',
-            bottom: '90px',
-            right: '20px',
-            width: '52px',
-            height: '52px',
-            borderRadius: '50%',
-            background: '#25D366',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 4px 20px rgba(37,211,102,0.4)',
-            zIndex: 3000,
-            transition: 'transform 0.2s, box-shadow 0.2s',
-          }}
+          style={{ position:'fixed', bottom:'90px', right:'20px', width:'52px', height:'52px', borderRadius:'50%', background:'#25D366', display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'0 4px 20px rgba(37,211,102,0.4)', zIndex:3000, transition:'transform 0.2s, box-shadow 0.2s' }}
           onMouseEnter={e => { e.currentTarget.style.transform='scale(1.1)'; e.currentTarget.style.boxShadow='0 6px 28px rgba(37,211,102,0.6)'; }}
           onMouseLeave={e => { e.currentTarget.style.transform='scale(1)'; e.currentTarget.style.boxShadow='0 4px 20px rgba(37,211,102,0.4)'; }}
         >

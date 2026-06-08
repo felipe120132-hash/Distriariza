@@ -13,3 +13,9 @@ export const imgSrc = (url) => {
 };
 
 export const normaliza = (s) => (s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase();
+
+export const slugify = (nombre) =>
+  (nombre||'').toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9-]/g, '');

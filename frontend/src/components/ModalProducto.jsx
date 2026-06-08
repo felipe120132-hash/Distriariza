@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { imgSrc, moneda } from '../utils/helpers.js';
+import { imgSrc, moneda, slugify } from '../utils/helpers.js';
 import { DESCRIPCIONES, BEST_SELLER_NAMES, OPCIONES_COLORES } from '../constants/index.js';
 import { BACKEND } from '../constants/index.js';
 import axios from 'axios';
@@ -36,49 +36,20 @@ export const ModalProducto = ({ p, onClose, onAdd, ratings, onRate, productos = 
         <button onClick={onClose} className="close-btn-custom" style={{ position:'absolute', top:'16px', right:'16px', zIndex:10 }} aria-label="Cerrar">✕</button>
 
         {/* ── GALERÍA ── */}
-        <div style={{
-          background:'#fff',
-          borderRadius:'28px 28px 0 0',
-          overflow:'hidden',
-          position:'relative',
-          display:'flex',
-          flexDirection:'column',
-          alignItems:'center',
-          paddingBottom:'20px'
-        }}>
+        <div style={{ background:'#fff', borderRadius:'28px 28px 0 0', overflow:'hidden', position:'relative', display:'flex', flexDirection:'column', alignItems:'center', paddingBottom:'20px' }}>
           {isBest && (
             <div style={{ position:'absolute', top:'20px', left:'24px', background:'var(--gold)', color:'#000', borderRadius:'99px', padding:'5px 14px', fontSize:'0.7rem', fontWeight:800, boxShadow:'0 4px 12px rgba(0,0,0,0.1)', zIndex:2 }}>🔥 Más vendido</div>
           )}
 
-          {/* Imagen principal */}
-          <div style={{
-            width:'100%',
-            height:'280px',
-            borderRadius:'28px 28px 20px 20px',
-            overflow:'hidden',
-            display:'flex',
-            alignItems:'center',
-            justifyContent:'center',
-            padding:'0 24px',
-            boxSizing:'border-box'
-          }}>
+          <div style={{ width:'100%', height:'280px', borderRadius:'28px 28px 20px 20px', overflow:'hidden', display:'flex', alignItems:'center', justifyContent:'center', padding:'0 24px', boxSizing:'border-box' }}>
             <img
               className="modal-img img-blend"
               src={imgActiva}
               alt={p.nombre}
-              style={{
-                maxWidth:'85%',
-                maxHeight:'85%',
-                objectFit:'contain',
-                display:'block',
-                filter:'drop-shadow(0 8px 24px rgba(0,0,0,0.12))',
-                transition:'opacity 0.2s',
-                borderRadius:'16px'
-              }}
+              style={{ maxWidth:'85%', maxHeight:'85%', objectFit:'contain', display:'block', filter:'drop-shadow(0 8px 24px rgba(0,0,0,0.12))', transition:'opacity 0.2s', borderRadius:'16px' }}
             />
           </div>
 
-          {/* Miniaturas — solo si hay más de 1 imagen */}
           {todasLasImagenes.length > 1 && (
             <div style={{ display:'flex', gap:'8px', marginTop:'16px', overflowX:'auto', paddingBottom:'4px', scrollbarWidth:'none', width:'100%', justifyContent:'center', paddingLeft:'16px', paddingRight:'16px' }}>
               {todasLasImagenes.map((img, i) => {
@@ -88,20 +59,9 @@ export const ModalProducto = ({ p, onClose, onAdd, ratings, onRate, productos = 
                   <div
                     key={img.id}
                     onClick={() => setImgActiva(url)}
-                    style={{
-                      width:'60px', height:'60px', borderRadius:'10px', flexShrink:0,
-                      background:'#fff', padding:'4px', cursor:'pointer',
-                      border: activa ? '2.5px solid var(--accent)' : '2px solid var(--border)',
-                      transition:'border-color 0.2s, transform 0.15s',
-                      transform: activa ? 'scale(1.05)' : 'scale(1)',
-                      display:'flex', alignItems:'center', justifyContent:'center',
-                    }}
+                    style={{ width:'60px', height:'60px', borderRadius:'10px', flexShrink:0, background:'#fff', padding:'4px', cursor:'pointer', border: activa ? '2.5px solid var(--accent)' : '2px solid var(--border)', transition:'border-color 0.2s, transform 0.15s', transform: activa ? 'scale(1.05)' : 'scale(1)', display:'flex', alignItems:'center', justifyContent:'center' }}
                   >
-                    <img
-                      src={url}
-                      alt={`Vista ${i + 1}`}
-                      style={{ maxWidth:'100%', maxHeight:'100%', objectFit:'contain', borderRadius:'6px' }}
-                    />
+                    <img src={url} alt={`Vista ${i + 1}`} style={{ maxWidth:'100%', maxHeight:'100%', objectFit:'contain', borderRadius:'6px' }} />
                   </div>
                 );
               })}
@@ -122,13 +82,7 @@ export const ModalProducto = ({ p, onClose, onAdd, ratings, onRate, productos = 
               <div style={{ display:'flex', gap:'8px', flexWrap:'wrap' }}>
                 {colores.map(c => (
                   <button key={c} onClick={() => setColorSel(c)}
-                    style={{
-                      padding:'6px 14px', borderRadius:'10px', fontSize:'0.75rem', fontWeight:600, cursor:'pointer',
-                      border: colorSel === c ? '2.5px solid var(--accent)' : '1.5px solid var(--border)',
-                      background: colorSel === c ? 'var(--accent)' : 'transparent',
-                      color: colorSel === c ? '#fff' : 'var(--ink)',
-                      transition: 'all 0.2s'
-                    }}
+                    style={{ padding:'6px 14px', borderRadius:'10px', fontSize:'0.75rem', fontWeight:600, cursor:'pointer', border: colorSel === c ? '2.5px solid var(--accent)' : '1.5px solid var(--border)', background: colorSel === c ? 'var(--accent)' : 'transparent', color: colorSel === c ? '#fff' : 'var(--ink)', transition: 'all 0.2s' }}
                   >{c}</button>
                 ))}
               </div>
@@ -179,7 +133,7 @@ export const ModalProducto = ({ p, onClose, onAdd, ratings, onRate, productos = 
                 {relacionados.map(rel => (
                   <div
                     key={rel.id}
-                    onClick={() => navigate(`/producto/${rel.id}`)}
+                    onClick={() => navigate(`/producto/${slugify(rel.nombre)}`)}
                     style={{ background:'var(--bg)', borderRadius:'12px', padding:'12px', cursor:'pointer', border:'1px solid var(--border)', transition:'transform 0.2s', display:'flex', flexDirection:'column', gap:'8px', flexShrink:0, width:'140px' }}
                     onMouseEnter={e => e.currentTarget.style.transform='translateY(-2px)'}
                     onMouseLeave={e => e.currentTarget.style.transform='translateY(0)'}
