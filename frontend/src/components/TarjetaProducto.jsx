@@ -12,7 +12,7 @@ export const TarjetaProducto = memo(({ p, onAdd, onOpen, ratings, onRate, isBest
       style={{ height:'220px', cursor:'pointer', padding:'0', borderRadius:'24px 24px 0 0', overflow:'hidden', background:'var(--card-img-bg, #f0f4f8)' }}
     >
       <img src={imgSrc(p.imagen_url)} alt={p.nombre} loading="lazy" decoding="async" className="zoom-img img-blend"
-        style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }}
+        style={{ width:'100%', height:'100%', objectFit:'cover', objectPosition:'center center', display:'block' }}
       />
     </div>
     <div style={{ padding:'18px 20px 20px' }}>
