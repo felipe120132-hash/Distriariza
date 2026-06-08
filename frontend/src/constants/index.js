@@ -25,20 +25,22 @@ export const OPCIONES_COLORES = {
 };
 
 export const COLECCIONES = [
-  { label:'Líquidos',   val:'Líquidos vitales',         icon:'💧' },
-  { label:'Comida',     val:'Alimentos',                icon:'🫙' },
-  { label:'Accesorios', val:'Accesorios',               icon:'🎨' },
-  { label:'Equipos',    val:'Equipos',                  icon:'⚙️' },
-  { label:'Hámsters',   val:'Jaulas para Hámster',      icon:'🐹' },
+  { label:'Líquidos',   val:'Líquidos vitales',      icon:'🧪' },
+  { label:'Comida',     val:'Alimentos',             icon:'🐟' },
+  { label:'Accesorios', val:'Accesorios',            icon:'🪨' },
+  { label:'Equipos',    val:'Equipos',               icon:'🔧' },
+  { label:'Plantas',    val:'Plantas',               icon:'🌿' },
+  { label:'Hámsters',   val:'Jaulas para Hámster',   icon:'🐹' },
 ];
 
 export const CATEGORIAS_WHEEL = [
-  { label: 'Todos', val: 'Todos', num: '01', angle: -75, icon: '🌈' },
-  { label: 'Líquidos', val: 'Líquidos vitales', num: '02', angle: -45, icon: '💧' },
-  { label: 'Comida', val: 'Alimentos', num: '03', angle: -15, icon: '🫙' },
-  { label: 'Accesorios', val: 'Accesorios', num: '04', angle: 15, icon: '🎨' },
-  { label: 'Equipos', val: 'Equipos', num: '05', angle: 45, icon: '⚙️' },
-  { label: 'Hámsters', val: 'Jaulas para Hámster', num: '06', angle: 75, icon: '🐹' }
+  { label: 'Todos',      val: 'Todos',               num: '01', angle: -75, icon: '🌈' },
+  { label: 'Líquidos',   val: 'Líquidos vitales',    num: '02', angle: -45, icon: '🧪' },
+  { label: 'Comida',     val: 'Alimentos',            num: '03', angle: -15, icon: '🐟' },
+  { label: 'Accesorios', val: 'Accesorios',           num: '04', angle: 15,  icon: '🪨' },
+  { label: 'Equipos',    val: 'Equipos',              num: '05', angle: 45,  icon: '🔧' },
+  { label: 'Plantas',    val: 'Plantas',              num: '06', angle: 60,  icon: '🌿' },
+  { label: 'Hámsters',   val: 'Jaulas para Hámster', num: '07', angle: 75,  icon: '🐹' },
 ];
 
 export const BEST_SELLER_NAMES = [
