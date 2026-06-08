@@ -20,6 +20,42 @@ export const ModalProducto = ({ p, onClose, onAdd, ratings, onRate, productos = 
       .catch(() => {});
   }, [p.id]);
 
+  useEffect(() => {
+    const prevTitle = document.title;
+    const descripcionMeta = desc ? desc.resumen : (p.descripcion || 'Calidad garantizada para tu mascota.');
+    const imagenMeta = imgSrc(p.imagen_url);
+    const urlMeta = `https://distriariza.vercel.app/producto/${slugify(p.nombre)}`;
+
+    document.title = `${p.nombre} | Distribuciones Ariza`;
+
+    const setMeta = (property, content, isName = false) => {
+      const attr = isName ? 'name' : 'property';
+      let el = document.querySelector(`meta[${attr}="${property}"]`);
+      if (!el) {
+        el = document.createElement('meta');
+        el.setAttribute(attr, property);
+        document.head.appendChild(el);
+      }
+      el.setAttribute('content', content);
+    };
+
+    setMeta('description', descripcionMeta, true);
+    setMeta('og:title', `${p.nombre} | Distribuciones Ariza`);
+    setMeta('og:description', descripcionMeta);
+    setMeta('og:image', imagenMeta);
+    setMeta('og:url', urlMeta);
+    setMeta('og:type', 'product');
+    setMeta('og:site_name', 'Distribuciones Ariza');
+    setMeta('twitter:card', 'summary_large_image', true);
+    setMeta('twitter:title', `${p.nombre} | Distribuciones Ariza`, true);
+    setMeta('twitter:description', descripcionMeta, true);
+    setMeta('twitter:image', imagenMeta, true);
+
+    return () => {
+      document.title = prevTitle;
+    };
+  }, [p]);
+
   const todasLasImagenes = [
     { id: 'principal', imagen_url: p.imagen_url },
     ...imagenesExtra,
