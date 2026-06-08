@@ -5,10 +5,10 @@ export const TarjetaDestacado = memo(({ p, onAdd, onOpen, ratings, onRate, rank 
   <div className="prod-card" style={{ background:'var(--card-bg)', borderRadius:'24px', overflow:'hidden', boxShadow:'var(--shadow-sm)', flexShrink:0, width:'200px' }}>
     <div style={{ position:'relative' }}>
       <div onClick={() => onOpen(p)} className="img-container"
-        style={{ minHeight:'160px', height:'40vw', maxHeight:'200px', cursor:'pointer', padding:'12px', borderRadius:'24px 24px 0 0', overflow:'hidden', background:'var(--card-img-bg, #f0f4f8)', display:'flex', alignItems:'center', justifyContent:'center' }}
+        style={{ height:'160px', cursor:'pointer', padding:'0', borderRadius:'24px 24px 0 0', overflow:'hidden', background:'var(--card-img-bg, #f0f4f8)' }}
       >
         <img src={imgSrc(p.imagen_url)} alt={p.nombre} decoding="async" className="zoom-img img-blend"
-          style={{ width:'100%', height:'100%', objectFit:'contain', display:'block' }}
+          style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }}
         />
       </div>
       <div className="badge-best" style={{ position:'absolute', top:'12px', left:'12px', background: rank===1 ? '#f59e0b' : rank===2 ? '#94a3b8' : rank===3 ? '#cd7c3a' : 'var(--accent)', color:'#fff', borderRadius:'99px', padding:'4px 12px', fontSize:'0.65rem', fontWeight:700, letterSpacing:'0.5px', boxShadow:'0 4px 12px rgba(0,0,0,0.2)', zIndex:10 }}>
