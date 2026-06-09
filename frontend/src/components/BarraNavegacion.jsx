@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { PanelHistorial } from './PanelHistorial.jsx';
+import Switch from './Switch.jsx';
 
 export const BarraNavegacion = ({ dark, setDark, totalItems, categoria, setCategoria, setBusqueda }) => {
   const navigate = useNavigate();
@@ -101,25 +102,17 @@ export const BarraNavegacion = ({ dark, setDark, totalItems, categoria, setCateg
           flex-shrink: 0;
           color: #7D8590;
         }
-        .mobile-menu-item--active svg {
-          color: var(--accent);
-        }
+        .mobile-menu-item--active svg { color: var(--accent); }
       `}</style>
 
-      {/* ── HISTORIAL PANEL ── */}
       {historialOpen && <PanelHistorial onClose={() => setHistorialOpen(false)} />}
 
-      {/* ── OVERLAY MENÚ MÓVIL ── */}
       {menuOpen && (
-        <div
-          onClick={() => setMenuOpen(false)}
-          style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.4)', zIndex:1099, backdropFilter:'blur(2px)' }}
-        />
+        <div onClick={() => setMenuOpen(false)} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.4)', zIndex:1099, backdropFilter:'blur(2px)' }} />
       )}
 
       {/* ── MENÚ LATERAL MÓVIL ── */}
       <div className={`mobile-menu${menuOpen ? ' mobile-menu--open' : ''}`}>
-        {/* Header del menú */}
         <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'20px 24px', borderBottom:'1px solid var(--border)' }}>
           <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
             <img src="/Logo.jpeg" alt="Logo" style={{ height:'32px', width:'32px', borderRadius:'8px', objectFit:'cover' }} />
@@ -128,11 +121,9 @@ export const BarraNavegacion = ({ dark, setDark, totalItems, categoria, setCateg
           <button onClick={() => setMenuOpen(false)} style={{ background:'none', border:'none', cursor:'pointer', fontSize:'1.2rem', color:'var(--ink-2)', padding:'4px' }}>✕</button>
         </div>
 
-        {/* Links */}
         <div style={{ flex:1, overflowY:'auto', paddingTop:'8px' }}>
           {links.map(({ label, ruta, activo }) => (
-            <button
-              key={label}
+            <button key={label}
               onClick={() => {
                 if (ruta === null) { setMenuOpen(false); setHistorialOpen(true); }
                 else navegar(ruta);
@@ -145,10 +136,11 @@ export const BarraNavegacion = ({ dark, setDark, totalItems, categoria, setCateg
           ))}
         </div>
 
-        {/* Footer del menú */}
         <div style={{ padding:'20px 24px', borderTop:'1px solid var(--border)', display:'flex', alignItems:'center', gap:'10px' }}>
           <span style={{ fontSize:'0.85rem', color:'var(--ink-3)' }}>{dark ? '🌙 Modo oscuro' : '☀️ Modo claro'}</span>
-          <button className="dark-toggle" onClick={() => setDark(d => !d)} style={{ marginLeft:'auto' }} />
+          <div style={{ marginLeft:'auto' }} onClick={() => setDark(d => !d)}>
+            <Switch checked={dark} />
+          </div>
         </div>
       </div>
 
@@ -161,26 +153,15 @@ export const BarraNavegacion = ({ dark, setDark, totalItems, categoria, setCateg
         justifyContent:'space-between',
         padding:'0 20px', height:'64px',
       }}>
-
-        {/* ── IZQUIERDA: Hamburguesa (móvil) + Logo ── */}
         <div style={{ display:'flex', alignItems:'center', gap:'12px' }}>
-          <button
-            className="nav-mobile-only"
-            onClick={() => setMenuOpen(o => !o)}
-            style={{
-              background:'none', border:'none', cursor:'pointer',
-              width:'36px', height:'36px', display:'flex',
-              flexDirection:'column', justifyContent:'center',
-              alignItems:'center', gap:'5px', padding:'4px',
-              borderRadius:'8px',
-            }}
+          <button className="nav-mobile-only" onClick={() => setMenuOpen(o => !o)}
+            style={{ background:'none', border:'none', cursor:'pointer', width:'36px', height:'36px', display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center', gap:'5px', padding:'4px', borderRadius:'8px' }}
           >
             <span style={{ display:'block', width:'22px', height:'2.5px', background:'var(--ink)', borderRadius:'4px', transition:'all 0.25s', transform: menuOpen ? 'rotate(45deg) translate(5px,5px)' : 'none' }}/>
             <span style={{ display:'block', width:'22px', height:'2.5px', background:'var(--ink)', borderRadius:'4px', transition:'all 0.25s', opacity: menuOpen ? 0 : 1 }}/>
             <span style={{ display:'block', width:'22px', height:'2.5px', background:'var(--ink)', borderRadius:'4px', transition:'all 0.25s', transform: menuOpen ? 'rotate(-45deg) translate(5px,-5px)' : 'none' }}/>
           </button>
 
-          {/* Logo */}
           <div style={{ display:'flex', alignItems:'center', gap:'10px', cursor:'pointer' }} onClick={() => navegar('/')}>
             <img src="/Logo.jpeg" alt="Logo" style={{ height:'38px', width:'38px', borderRadius:'10px', objectFit:'cover' }} onError={e => e.target.src='https://via.placeholder.com/38?text=A'} />
             <div>
@@ -190,11 +171,9 @@ export const BarraNavegacion = ({ dark, setDark, totalItems, categoria, setCateg
           </div>
         </div>
 
-        {/* ── CENTRO: Links desktop ── */}
         <div className="nav-desktop-only" style={{ display:'flex', alignItems:'center', gap:'4px' }}>
           {links.map(({ label, ruta, activo }) => (
-            <button
-              key={label}
+            <button key={label}
               onClick={() => {
                 if (ruta === null) setHistorialOpen(true);
                 else navegar(ruta);
@@ -206,35 +185,21 @@ export const BarraNavegacion = ({ dark, setDark, totalItems, categoria, setCateg
           ))}
         </div>
 
-        {/* ── DERECHA: Toggle + Carrito ── */}
         <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
-          <div className="nav-desktop-only" style={{ display:'flex', alignItems:'center', gap:'5px' }}>
-            <span style={{ fontSize:'0.75rem', color:'var(--ink-3)' }}>{dark ? '🌙' : '☀️'}</span>
-            <button className="dark-toggle" onClick={() => setDark(d => !d)} />
+          <div className="nav-desktop-only" style={{ display:'flex', alignItems:'center', gap:'8px' }} onClick={() => setDark(d => !d)}>
+            <Switch checked={dark} />
           </div>
 
-          <button
-            onClick={() => navigate('/carrito')}
-            style={{
-              background:'none', border:'2px solid var(--border)',
-              cursor:'pointer', position:'relative',
-              width:'42px', height:'42px', borderRadius:'12px',
-              display:'flex', alignItems:'center', justifyContent:'center',
-              fontSize:'1.1rem', transition:'border-color 0.2s',
-            }}
+          <button onClick={() => navigate('/carrito')}
+            style={{ background:'none', border:'2px solid var(--border)', cursor:'pointer', position:'relative', width:'42px', height:'42px', borderRadius:'12px', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'1.1rem', transition:'border-color 0.2s' }}
             onMouseEnter={e => e.currentTarget.style.borderColor='var(--accent)'}
             onMouseLeave={e => e.currentTarget.style.borderColor='var(--border)'}
           >
             🛒
             {totalItems > 0 && (
-              <span style={{
-                position:'absolute', top:'-6px', right:'-6px',
-                background:'#ef4444', color:'#fff',
-                fontSize:'0.55rem', fontWeight:700,
-                width:'18px', height:'18px', borderRadius:'50%',
-                display:'flex', alignItems:'center', justifyContent:'center',
-                border:'2px solid var(--surface)',
-              }}>{totalItems}</span>
+              <span style={{ position:'absolute', top:'-6px', right:'-6px', background:'#ef4444', color:'#fff', fontSize:'0.55rem', fontWeight:700, width:'18px', height:'18px', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', border:'2px solid var(--surface)' }}>
+                {totalItems}
+              </span>
             )}
           </button>
         </div>
