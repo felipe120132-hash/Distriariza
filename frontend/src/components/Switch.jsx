@@ -4,8 +4,8 @@ import styled from 'styled-components';
 const Switch = ({ checked }) => {
   return (
     <StyledWrapper>
-      <label className="switch">
-        <input id="input" type="checkbox" checked={checked} onChange={() => {}} />
+      <label className="switch" style={{ pointerEvents:'none' }}>
+        <input type="checkbox" checked={checked} onChange={() => {}} />
         <div className="slider round">
           <div className="sun-moon">
             <svg id="moon-dot-1" className="moon-dot" viewBox="0 0 100 100"><circle cx={50} cy={50} r={50} /></svg>
@@ -34,21 +34,21 @@ const Switch = ({ checked }) => {
 };
 
 const StyledWrapper = styled.div`
+  cursor: pointer;
+
   .switch {
     position: relative;
     display: inline-block;
     width: 60px;
     height: 34px;
-    cursor: pointer;
   }
-  .switch #input {
+  .switch input {
     opacity: 0;
     width: 0;
     height: 0;
   }
   .slider {
     position: absolute;
-    cursor: pointer;
     top: 0; left: 0; right: 0; bottom: 0;
     background-color: #2196f3;
     transition: 0.4s;
@@ -64,14 +64,14 @@ const StyledWrapper = styled.div`
     background-color: yellow;
     transition: 0.4s;
   }
-  #input:checked + .slider { background-color: black; }
-  #input:checked + .slider .sun-moon {
+  input:checked + .slider { background-color: black; }
+  input:checked + .slider .sun-moon {
     transform: translateX(26px);
     background-color: white;
     animation: rotate-center 0.6s ease-in-out both;
   }
   .moon-dot { opacity: 0; transition: 0.4s; fill: gray; }
-  #input:checked + .slider .sun-moon .moon-dot { opacity: 1; }
+  input:checked + .slider .sun-moon .moon-dot { opacity: 1; }
   .slider.round { border-radius: 34px; }
   .slider.round .sun-moon { border-radius: 50%; }
   #moon-dot-1 { left: 10px; top: 3px; position: absolute; width: 6px; height: 6px; z-index: 4; }
@@ -96,7 +96,7 @@ const StyledWrapper = styled.div`
   }
   .stars { transform: translateY(-32px); opacity: 0; transition: 0.4s; }
   .star { fill: white; position: absolute; transition: 0.4s; animation: star-twinkle 2s infinite; }
-  #input:checked + .slider .stars { transform: translateY(0); opacity: 1; }
+  input:checked + .slider .stars { transform: translateY(0); opacity: 1; }
   #star-1 { width: 20px; top: 2px; left: 3px; animation-delay: 0.3s; }
   #star-2 { width: 6px; top: 16px; left: 3px; }
   #star-3 { width: 12px; top: 20px; left: 10px; animation-delay: 0.6s; }
