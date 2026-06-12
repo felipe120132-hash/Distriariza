@@ -12,7 +12,7 @@ const transporter = nodemailer.createTransport({
 });
 
 const crearPedido = async (req, res) => {
-    const { cliente_nombre, cliente_telefono, cliente_direccion, cliente_ciudad, total, items } = req.body;
+    const { cliente_nombre, cliente_telefono, cliente_direccion, cliente_ciudad, cliente_email, total, items } = req.body;
 
     // ── Validación de campos ──────────────────────────────────────────────────
     if (!cliente_nombre || typeof cliente_nombre !== 'string' || cliente_nombre.trim().length < 2) {
@@ -26,6 +26,9 @@ const crearPedido = async (req, res) => {
     }
     if (!total || !isPositiveNumber(total)) {
         return res.status(400).json({ error: 'El total debe ser un número positivo.' });
+    }
+    if (!cliente_email || typeof cliente_email !== 'string' || !/^\S+@\S+\.\S+$/.test(cliente_email)) {
+        return res.status(400).json({ error: 'Se requiere un correo electrónico válido.' });
     }
     if (!Array.isArray(items) || items.length === 0) {
         return res.status(400).json({ error: 'El pedido debe contener al menos un producto.' });
@@ -46,14 +49,15 @@ const crearPedido = async (req, res) => {
     const telefonoLimpio  = sanitizeString(cliente_telefono, 20);
     const direccionLimpia = sanitizeString(cliente_direccion || '', 200);
     const ciudadLimpia    = sanitizeString(cliente_ciudad, 100);
+    const emailLimpio     = sanitizeString(cliente_email, 100);
 
     try {
         // Crear el pedido
         const [result] = await db.query(
             `INSERT INTO pedidos 
-             (cliente_nombre, cliente_telefono, cliente_direccion, cliente_ciudad, total, items, estado) 
-             VALUES (?, ?, ?, ?, ?, ?, 'pendiente')`,
-            [nombreLimpio, telefonoLimpio, direccionLimpia, ciudadLimpia, Number(total), JSON.stringify(items)]
+             (cliente_nombre, cliente_telefono, cliente_direccion, cliente_ciudad, cliente_email, total, items, estado) 
+             VALUES (?, ?, ?, ?, ?, ?, ?, 'pendiente')`,
+            [nombreLimpio, telefonoLimpio, direccionLimpia, ciudadLimpia, emailLimpio, Number(total), JSON.stringify(items)]
         );
 
         // Descontar stock automáticamente
@@ -68,21 +72,46 @@ const crearPedido = async (req, res) => {
 
         // Enviar notificación por correo
         if (process.env.EMAIL_PASS) {
-            const mailOptions = {
+            const adminEmail = process.env.ADMIN_EMAIL || process.env.EMAIL_USER || 'felipe120132@gmail.com';
+            
+            // 1. Correo para el Admin
+            const mailAdminOptions = {
                 from: process.env.EMAIL_USER || 'felipe120132@gmail.com',
-                to: 'felipe120132@gmail.com', // Correo destino del admin
+                to: adminEmail,
                 subject: `🛒 Nuevo pedido #${result.insertId} de ${nombreLimpio}`,
                 html: `
                     <h2>¡Tienes un nuevo pedido!</h2>
                     <p><strong>Cliente:</strong> ${nombreLimpio}</p>
                     <p><strong>Teléfono:</strong> ${telefonoLimpio}</p>
+                    <p><strong>Email:</strong> ${emailLimpio}</p>
                     <p><strong>Ciudad:</strong> ${ciudadLimpia}</p>
                     <p><strong>Total:</strong> $${Number(total).toLocaleString('es-CO')}</p>
                     <hr/>
                     <p><a href="https://distriariza.vercel.app/admin">Ingresa al Panel Admin</a> para ver los detalles y actualizar el estado.</p>
                 `
             };
-            transporter.sendMail(mailOptions).catch(err => console.error('Error enviando correo:', err));
+
+            // 2. Correo para el Cliente
+            const mailClienteOptions = {
+                from: process.env.EMAIL_USER || 'felipe120132@gmail.com',
+                to: emailLimpio,
+                subject: `Confirmación de pedido #${result.insertId} - Distriariza`,
+                html: `
+                    <h2>¡Gracias por tu compra, ${nombreLimpio}!</h2>
+                    <p>Hemos recibido tu pedido correctamente. Nos pondremos en contacto contigo pronto por WhatsApp para coordinar el envío.</p>
+                    <h3>Resumen de tu pedido:</h3>
+                    <ul>
+                        ${items.map(i => `<li>${i.cantidad}x ${i.nombre} - $${(i.precio * i.cantidad).toLocaleString('es-CO')}</li>`).join('')}
+                    </ul>
+                    <p><strong>Total pagado:</strong> $${Number(total).toLocaleString('es-CO')}</p>
+                    <p><strong>Dirección de entrega:</strong> ${direccionLimpia}, ${ciudadLimpia}</p>
+                    <hr/>
+                    <p>El equipo de Distriariza</p>
+                `
+            };
+
+            transporter.sendMail(mailAdminOptions).catch(err => console.error('Error enviando correo a admin:', err));
+            transporter.sendMail(mailClienteOptions).catch(err => console.error('Error enviando correo a cliente:', err));
         }
 
         res.status(201).json({ message: 'Pedido registrado', pedidoId: result.insertId });
@@ -117,7 +146,37 @@ const actualizarEstado = async (req, res) => {
     }
 
     try {
+        const [rows] = await db.query('SELECT * FROM pedidos WHERE id = ?', [Number(id)]);
+        if (rows.length === 0) return res.status(404).json({ error: 'Pedido no encontrado' });
+        
+        const pedido = rows[0];
+
         await db.query('UPDATE pedidos SET estado = ? WHERE id = ?', [estado, Number(id)]);
+        
+        // Notificar al cliente sobre el cambio de estado
+        if (process.env.EMAIL_PASS && pedido.cliente_email) {
+            const estadoNombres = {
+                'pendiente': 'Pendiente',
+                'enviado': 'Enviado 🚚',
+                'entregado': 'Entregado ✅',
+                'cancelado': 'Cancelado ❌'
+            };
+            
+            const mailStatusOptions = {
+                from: process.env.EMAIL_USER || 'felipe120132@gmail.com',
+                to: pedido.cliente_email,
+                subject: `Actualización de tu pedido #${id} - Distriariza`,
+                html: `
+                    <h2>Hola ${pedido.cliente_nombre},</h2>
+                    <p>El estado de tu pedido <strong>#${id}</strong> ha sido actualizado a: <strong>${estadoNombres[estado] || estado}</strong>.</p>
+                    ${estado === 'enviado' ? '<p>Tu pedido va en camino. Pronto lo recibirás.</p>' : ''}
+                    <hr/>
+                    <p>El equipo de Distriariza</p>
+                `
+            };
+            transporter.sendMail(mailStatusOptions).catch(err => console.error('Error enviando correo de estado:', err));
+        }
+
         res.json({ message: 'Estado actualizado' });
     } catch (error) {
         console.error(error);

@@ -4,6 +4,7 @@ import { imgSrc, moneda } from '../utils/helpers.js';
 import { BACKEND } from '../constants/index.js';
 import { Contador } from './Contador.jsx';
 import { generarPDF } from '../utils/generarPDF.js';
+import { toast } from 'react-hot-toast';
 
 export const PanelCarrito = ({ carrito, onClose, onAdd, onRemove, onChangeQty, onClear, totalCompra, totalItems }) => {
   const [paso, setPaso] = useState('lista');
@@ -13,11 +14,12 @@ export const PanelCarrito = ({ carrito, onClose, onAdd, onRemove, onChangeQty, o
       return {
         nombre: guardados.nombre || '',
         telefono: guardados.telefono || '',
+        email: guardados.email || '',
         direccion: guardados.direccion || '',
         ciudad: guardados.ciudad || '',
       };
     } catch {
-      return { nombre:'', direccion:'', ciudad:'', telefono:'' };
+      return { nombre:'', direccion:'', ciudad:'', telefono:'', email:'' };
     }
   });
   const [enviando, setEnviando] = useState(false);
@@ -30,6 +32,7 @@ export const PanelCarrito = ({ carrito, onClose, onAdd, onRemove, onChangeQty, o
       const res = await axios.post(`${BACKEND}/api/pedidos`, {
         cliente_nombre: datos.nombre,
         cliente_telefono: datos.telefono,
+        cliente_email: datos.email,
         cliente_direccion: datos.direccion,
         cliente_ciudad: datos.ciudad,
         total: totalCompra,
@@ -44,6 +47,9 @@ export const PanelCarrito = ({ carrito, onClose, onAdd, onRemove, onChangeQty, o
       pedidoId = res.data.pedidoId;
     } catch (e) {
       console.error('Error al guardar pedido:', e);
+      toast.error('No se pudo procesar el pedido. Revisa tus datos e intenta de nuevo.');
+      setEnviando(false);
+      return;
     }
 
     try {
@@ -74,6 +80,7 @@ export const PanelCarrito = ({ carrito, onClose, onAdd, onRemove, onChangeQty, o
       localStorage.setItem('datos_cliente', JSON.stringify({
         nombre: datos.nombre,
         telefono: datos.telefono,
+        email: datos.email,
         direccion: datos.direccion,
         ciudad: datos.ciudad,
       }));
@@ -92,6 +99,7 @@ export const PanelCarrito = ({ carrito, onClose, onAdd, onRemove, onChangeQty, o
     window.open(`https://wa.me/573219627376?text=${encodeURIComponent(msg)}`, '_blank');
 
     setEnviando(false);
+    toast.success('¡Pedido procesado con éxito!');
     setPaso('confirmado');
   };
 
@@ -160,6 +168,7 @@ export const PanelCarrito = ({ carrito, onClose, onAdd, onRemove, onChangeQty, o
                     onClick={() => setDatos({
                       nombre: datosGuardados.nombre,
                       telefono: datosGuardados.telefono,
+                      email: datosGuardados.email || '',
                       direccion: datosGuardados.direccion,
                       ciudad: datosGuardados.ciudad,
                     })}
@@ -185,6 +194,13 @@ export const PanelCarrito = ({ carrito, onClose, onAdd, onRemove, onChangeQty, o
                 inputMode="numeric"
                 value={datos.telefono}
                 onChange={e => setDatos(d => ({...d, telefono: e.target.value.replace(/\D/g, '')}))}
+              />
+              <input
+                className="form-input"
+                placeholder="Correo electrónico"
+                type="email"
+                value={datos.email}
+                onChange={e => setDatos(d => ({...d, email: e.target.value}))}
               />
               <input
                 className="form-input"
@@ -229,7 +245,7 @@ export const PanelCarrito = ({ carrito, onClose, onAdd, onRemove, onChangeQty, o
             <button
               className={`pill-btn ${paso==='lista' ? 'pill-btn--accent' : 'pill-btn--green'}`}
               onClick={paso==='lista' ? () => setPaso('envio') : enviarPedido}
-              disabled={enviando || (paso==='envio' && (!datos.nombre.trim() || !datos.telefono.trim() || !datos.ciudad.trim()))}
+              disabled={enviando || (paso==='envio' && (!datos.nombre.trim() || !datos.telefono.trim() || !datos.ciudad.trim() || !datos.email.trim() || !/^\S+@\S+\.\S+$/.test(datos.email)))}
               style={{ width:'100%', justifyContent:'center', padding:'15px', fontSize:'0.9rem', opacity: enviando ? 0.7 : 1 }}
             >
               {paso==='lista' ? 'Continuar' : enviando ? 'Procesando...' : '📄 Confirmar y descargar factura'}

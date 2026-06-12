@@ -13,6 +13,7 @@ import { PanelCarrito } from './components/PanelCarrito.jsx';
 import { PanelResenas } from './components/PanelResenas.jsx';
 import { PanelAdmin } from './components/PanelAdmin.jsx';
 import { ModalProducto } from './components/ModalProducto.jsx';
+import { Toaster, toast } from 'react-hot-toast';
 
 export default function App() {
   const navigate = useNavigate();
@@ -57,7 +58,9 @@ export default function App() {
       return ex
         ? prev.map(i => (i.id===p.id && (i.colorSeleccionado || '') === colorKey) ? {...i, cantidad:i.cantidad+1} : i)
         : [...prev, {...p, cantidad:1}];
-    }), []);
+    });
+    toast.success('Agregado al carrito', { position: 'bottom-center' });
+  }, []);
 
   const removeOne = (id, color) => {
     const colorKey = color || '';
@@ -85,6 +88,7 @@ export default function App() {
   return (
     <>
       <EstilosGlobales dark={dark}/>
+      <Toaster />
 
       <BarraNavegacion
         dark={dark}

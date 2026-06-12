@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { imgSrc, moneda, normaliza } from '../utils/helpers.js';
 import { BACKEND } from '../constants/index.js';
+import { toast } from 'react-hot-toast';
 
 export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
   const [auth, setAuth] = useState(false);
@@ -136,7 +137,11 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       setPedidos(prev => prev.map(p => p.id === id ? { ...p, estado } : p));
-    } catch (e) { console.error('Error al actualizar estado:', e); }
+      toast.success(`Estado actualizado a ${estado} y notificación enviada al cliente.`, { position: 'bottom-center' });
+    } catch (e) { 
+      console.error('Error al actualizar estado:', e); 
+      toast.error('Error al actualizar el estado.');
+    }
   };
 
   const eliminarPedido = async (id) => {
