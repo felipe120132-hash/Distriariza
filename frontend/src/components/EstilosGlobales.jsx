@@ -624,8 +624,8 @@ export const EstilosGlobales = ({ dark }) => (
     }
 
     .modal-sheet {
-      top: 0; left: 0; transform: none;
-      width: 100%; max-width: 100%; height: 100vh; max-height: 100vh; border-radius: 0;
+      top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 90%; max-width: 480px; max-height: 90vh; border-radius: 28px;
     }
 
     .nav-mobile-only { display: none; }
@@ -645,10 +645,10 @@ export const EstilosGlobales = ({ dark }) => (
       .nav-mobile-only  { display: flex !important; }
 
       .modal-sheet {
-        top: 0 !important; left: 0 !important; bottom: auto !important;
-        transform: none !important; width: 100% !important; height: 100vh !important;
-        max-width: 100% !important; max-height: 100vh !important;
-        border-radius: 0 !important;
+        top: auto !important; left: 0 !important; bottom: 0 !important;
+        transform: none !important; width: 100% !important;
+        max-width: 100% !important; max-height: 92vh !important;
+        border-radius: 28px 28px 0 0 !important;
       }
 
       @keyframes slideUp {
