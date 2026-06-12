@@ -14,12 +14,11 @@ export const PanelCarrito = ({ carrito, onClose, onAdd, onRemove, onChangeQty, o
       return {
         nombre: guardados.nombre || '',
         telefono: guardados.telefono || '',
-        email: guardados.email || '',
         direccion: guardados.direccion || '',
         ciudad: guardados.ciudad || '',
       };
     } catch {
-      return { nombre:'', direccion:'', ciudad:'', telefono:'', email:'' };
+      return { nombre:'', direccion:'', ciudad:'', telefono:'' };
     }
   });
   const [enviando, setEnviando] = useState(false);
@@ -32,7 +31,6 @@ export const PanelCarrito = ({ carrito, onClose, onAdd, onRemove, onChangeQty, o
       const res = await axios.post(`${BACKEND}/api/pedidos`, {
         cliente_nombre: datos.nombre,
         cliente_telefono: datos.telefono,
-        cliente_email: datos.email,
         cliente_direccion: datos.direccion,
         cliente_ciudad: datos.ciudad,
         total: totalCompra,
@@ -80,7 +78,6 @@ export const PanelCarrito = ({ carrito, onClose, onAdd, onRemove, onChangeQty, o
       localStorage.setItem('datos_cliente', JSON.stringify({
         nombre: datos.nombre,
         telefono: datos.telefono,
-        email: datos.email,
         direccion: datos.direccion,
         ciudad: datos.ciudad,
       }));
@@ -168,7 +165,6 @@ export const PanelCarrito = ({ carrito, onClose, onAdd, onRemove, onChangeQty, o
                     onClick={() => setDatos({
                       nombre: datosGuardados.nombre,
                       telefono: datosGuardados.telefono,
-                      email: datosGuardados.email || '',
                       direccion: datosGuardados.direccion,
                       ciudad: datosGuardados.ciudad,
                     })}
@@ -195,13 +191,7 @@ export const PanelCarrito = ({ carrito, onClose, onAdd, onRemove, onChangeQty, o
                 value={datos.telefono}
                 onChange={e => setDatos(d => ({...d, telefono: e.target.value.replace(/\D/g, '')}))}
               />
-              <input
-                className="form-input"
-                placeholder="Correo electrónico"
-                type="email"
-                value={datos.email}
-                onChange={e => setDatos(d => ({...d, email: e.target.value}))}
-              />
+
               <input
                 className="form-input"
                 placeholder="Dirección"
@@ -245,7 +235,7 @@ export const PanelCarrito = ({ carrito, onClose, onAdd, onRemove, onChangeQty, o
             <button
               className={`pill-btn ${paso==='lista' ? 'pill-btn--accent' : 'pill-btn--green'}`}
               onClick={paso==='lista' ? () => setPaso('envio') : enviarPedido}
-              disabled={enviando || (paso==='envio' && (!datos.nombre.trim() || !datos.telefono.trim() || !datos.ciudad.trim() || !datos.email.trim() || !/^\S+@\S+\.\S+$/.test(datos.email)))}
+              disabled={enviando || (paso==='envio' && (!datos.nombre.trim() || !datos.telefono.trim() || !datos.ciudad.trim()))}
               style={{ width:'100%', justifyContent:'center', padding:'15px', fontSize:'0.9rem', opacity: enviando ? 0.7 : 1 }}
             >
               {paso==='lista' ? 'Continuar' : enviando ? 'Procesando...' : '📄 Confirmar y descargar factura'}

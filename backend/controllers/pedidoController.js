@@ -3,7 +3,7 @@ const { sanitizeString, isPositiveNumber, isPositiveInt, isValidPhone, isValidEs
 // Email logic has been removed as per user request
 
 const crearPedido = async (req, res) => {
-    const { cliente_nombre, cliente_telefono, cliente_direccion, cliente_ciudad, cliente_email, total, items } = req.body;
+    const { cliente_nombre, cliente_telefono, cliente_direccion, cliente_ciudad, total, items } = req.body;
 
     // ── Validación de campos ──────────────────────────────────────────────────
     if (!cliente_nombre || typeof cliente_nombre !== 'string' || cliente_nombre.trim().length < 2) {
@@ -18,9 +18,7 @@ const crearPedido = async (req, res) => {
     if (!total || !isPositiveNumber(total)) {
         return res.status(400).json({ error: 'El total debe ser un número positivo.' });
     }
-    if (!cliente_email || typeof cliente_email !== 'string' || !/^\S+@\S+\.\S+$/.test(cliente_email)) {
-        return res.status(400).json({ error: 'Se requiere un correo electrónico válido.' });
-    }
+
     if (!Array.isArray(items) || items.length === 0) {
         return res.status(400).json({ error: 'El pedido debe contener al menos un producto.' });
     }
@@ -40,15 +38,14 @@ const crearPedido = async (req, res) => {
     const telefonoLimpio  = sanitizeString(cliente_telefono, 20);
     const direccionLimpia = sanitizeString(cliente_direccion || '', 200);
     const ciudadLimpia    = sanitizeString(cliente_ciudad, 100);
-    const emailLimpio     = sanitizeString(cliente_email, 100);
 
     try {
         // Crear el pedido
         const [result] = await db.query(
             `INSERT INTO pedidos 
-             (cliente_nombre, cliente_telefono, cliente_direccion, cliente_ciudad, cliente_email, total, items, estado) 
-             VALUES (?, ?, ?, ?, ?, ?, ?, 'pendiente')`,
-            [nombreLimpio, telefonoLimpio, direccionLimpia, ciudadLimpia, emailLimpio, Number(total), JSON.stringify(items)]
+             (cliente_nombre, cliente_telefono, cliente_direccion, cliente_ciudad, total, items, estado) 
+             VALUES (?, ?, ?, ?, ?, ?, 'pendiente')`,
+            [nombreLimpio, telefonoLimpio, direccionLimpia, ciudadLimpia, Number(total), JSON.stringify(items)]
         );
 
         // Descontar stock automáticamente
