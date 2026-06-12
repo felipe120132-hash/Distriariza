@@ -4,10 +4,12 @@ const nodemailer = require('nodemailer');
 
 // Configuración de Nodemailer (usa variables de entorno o valores por defecto para evitar crashes si no están configuradas)
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
     auth: {
-        user: process.env.EMAIL_USER || 'felipe120132@gmail.com', // El correo que autoriza el envío
-        pass: process.env.EMAIL_PASS || '' // La contraseña de aplicación
+        user: process.env.EMAIL_USER || 'felipe120132@gmail.com',
+        pass: process.env.EMAIL_PASS || ''
     }
 });
 
