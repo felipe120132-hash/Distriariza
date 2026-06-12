@@ -49,7 +49,7 @@ export default function App() {
 
   useEffect(() => { fetchProductos(); }, []);
 
-  const addItem = useCallback((p) =>
+  const addItem = useCallback((p) => {
     setCarrito(prev => {
       if (p.stock <= 0) return prev;
       const colorKey = p.colorSeleccionado || '';
