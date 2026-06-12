@@ -1,17 +1,30 @@
 const db = require('../config/db');
 const { sanitizeString, isPositiveNumber, isPositiveInt, isValidPhone, isValidEstado } = require('../middleware/sanitize');
-const nodemailer = require('nodemailer');
-
-// Configuración de Nodemailer (usa variables de entorno o valores por defecto para evitar crashes si no están configuradas)
-const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
-    auth: {
-        user: process.env.EMAIL_USER || 'felipe120132@gmail.com',
-        pass: process.env.EMAIL_PASS || ''
+// Función para enviar correos usando la API HTTP de SendGrid
+const sendEmail = async (toEmail, subject, htmlContent) => {
+    if (!process.env.SENDGRID_API_KEY) return;
+    try {
+        const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${process.env.SENDGRID_API_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                personalizations: [{ to: [{ email: toEmail }] }],
+                from: { email: process.env.EMAIL_USER || 'felipe120132@gmail.com', name: 'Distriariza' },
+                subject: subject,
+                content: [{ type: 'text/html', value: htmlContent }]
+            })
+        });
+        if (!response.ok) {
+            const errData = await response.text();
+            console.error('Error desde SendGrid API:', errData);
+        }
+    } catch (err) {
+        console.error('Error de red al conectar con SendGrid:', err);
     }
-});
+};
 
 const crearPedido = async (req, res) => {
     const { cliente_nombre, cliente_telefono, cliente_direccion, cliente_ciudad, cliente_email, total, items } = req.body;
@@ -73,15 +86,11 @@ const crearPedido = async (req, res) => {
         );
 
         // Enviar notificación por correo
-        if (process.env.EMAIL_PASS) {
+        if (process.env.SENDGRID_API_KEY) {
             const adminEmail = process.env.ADMIN_EMAIL || process.env.EMAIL_USER || 'felipe120132@gmail.com';
             
             // 1. Correo para el Admin
-            const mailAdminOptions = {
-                from: process.env.EMAIL_USER || 'felipe120132@gmail.com',
-                to: adminEmail,
-                subject: `🛒 Nuevo pedido #${result.insertId} de ${nombreLimpio}`,
-                html: `
+            const adminHtml = `
                     <h2>¡Tienes un nuevo pedido!</h2>
                     <p><strong>Cliente:</strong> ${nombreLimpio}</p>
                     <p><strong>Teléfono:</strong> ${telefonoLimpio}</p>
@@ -90,15 +99,10 @@ const crearPedido = async (req, res) => {
                     <p><strong>Total:</strong> $${Number(total).toLocaleString('es-CO')}</p>
                     <hr/>
                     <p><a href="https://distriariza.vercel.app/admin">Ingresa al Panel Admin</a> para ver los detalles y actualizar el estado.</p>
-                `
-            };
+                `;
 
             // 2. Correo para el Cliente
-            const mailClienteOptions = {
-                from: process.env.EMAIL_USER || 'felipe120132@gmail.com',
-                to: emailLimpio,
-                subject: `Confirmación de pedido #${result.insertId} - Distriariza`,
-                html: `
+            const clienteHtml = `
                     <h2>¡Gracias por tu compra, ${nombreLimpio}!</h2>
                     <p>Hemos recibido tu pedido correctamente. Nos pondremos en contacto contigo pronto por WhatsApp para coordinar el envío.</p>
                     <h3>Resumen de tu pedido:</h3>
@@ -109,11 +113,10 @@ const crearPedido = async (req, res) => {
                     <p><strong>Dirección de entrega:</strong> ${direccionLimpia}, ${ciudadLimpia}</p>
                     <hr/>
                     <p>El equipo de Distriariza</p>
-                `
-            };
+                `;
 
-            transporter.sendMail(mailAdminOptions).catch(err => console.error('Error enviando correo a admin:', err));
-            transporter.sendMail(mailClienteOptions).catch(err => console.error('Error enviando correo a cliente:', err));
+            sendEmail(adminEmail, `🛒 Nuevo pedido #${result.insertId} de ${nombreLimpio}`, adminHtml);
+            sendEmail(emailLimpio, `Confirmación de pedido #${result.insertId} - Distriariza`, clienteHtml);
         }
 
         res.status(201).json({ message: 'Pedido registrado', pedidoId: result.insertId });
@@ -156,7 +159,7 @@ const actualizarEstado = async (req, res) => {
         await db.query('UPDATE pedidos SET estado = ? WHERE id = ?', [estado, Number(id)]);
         
         // Notificar al cliente sobre el cambio de estado
-        if (process.env.EMAIL_PASS && pedido.cliente_email) {
+        if (process.env.SENDGRID_API_KEY && pedido.cliente_email) {
             const estadoNombres = {
                 'pendiente': 'Pendiente',
                 'enviado': 'Enviado 🚚',
@@ -164,19 +167,14 @@ const actualizarEstado = async (req, res) => {
                 'cancelado': 'Cancelado ❌'
             };
             
-            const mailStatusOptions = {
-                from: process.env.EMAIL_USER || 'felipe120132@gmail.com',
-                to: pedido.cliente_email,
-                subject: `Actualización de tu pedido #${id} - Distriariza`,
-                html: `
+            const statusHtml = `
                     <h2>Hola ${pedido.cliente_nombre},</h2>
                     <p>El estado de tu pedido <strong>#${id}</strong> ha sido actualizado a: <strong>${estadoNombres[estado] || estado}</strong>.</p>
                     ${estado === 'enviado' ? '<p>Tu pedido va en camino. Pronto lo recibirás.</p>' : ''}
                     <hr/>
                     <p>El equipo de Distriariza</p>
-                `
-            };
-            transporter.sendMail(mailStatusOptions).catch(err => console.error('Error enviando correo de estado:', err));
+                `;
+            sendEmail(pedido.cliente_email, `Actualización de tu pedido #${id} - Distriariza`, statusHtml);
         }
 
         res.json({ message: 'Estado actualizado' });
