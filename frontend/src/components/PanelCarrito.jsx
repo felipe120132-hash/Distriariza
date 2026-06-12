@@ -113,7 +113,7 @@ export const PanelCarrito = ({ carrito, onClose, onAdd, onRemove, onChangeQty, o
   return (
     <>
       <div onClick={() => { onClose(); setPaso('lista'); }} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.3)', zIndex:1500 }} />
-      <div className="panel" style={{ position:'fixed', top:0, right:0, width:'100%', maxWidth:'400px', height:'100%', background:'var(--surface)', zIndex:2000, display:'flex', flexDirection:'column' }}>
+      <div className="panel" style={{ position:'fixed', top:0, right:0, width:'100%', maxWidth:'100%', height:'100%', background:'var(--surface)', zIndex:2000, display:'flex', flexDirection:'column' }}>
 
         {/* ── HEADER ── */}
         <div style={{ display:'flex', alignItems:'center', padding:'24px 28px', borderBottom:'1px solid var(--border)' }}>

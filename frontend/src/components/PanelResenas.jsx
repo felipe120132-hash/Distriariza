@@ -84,7 +84,7 @@ export const PanelResenas = ({ onClose, dark }) => {
   return (
     <>
       <div onClick={onClose} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.3)', zIndex:1500 }} />
-      <div className="panel" style={{ position:'fixed', top:0, right:0, width:'100%', maxWidth:'420px', height:'100%', background:'var(--surface)', zIndex:2000, display:'flex', flexDirection:'column' }}>
+      <div className="panel" style={{ position:'fixed', top:0, right:0, width:'100%', maxWidth:'100%', height:'100%', background:'var(--surface)', zIndex:2000, display:'flex', flexDirection:'column' }}>
         <div style={{ padding:'24px 28px 0', borderBottom:'1px solid var(--border)' }}>
           <div style={{ display:'flex', alignItems:'center', marginBottom:'16px' }}>
             <h2 style={{ fontFamily:'var(--font-display)', fontSize:'1.25rem', fontWeight:700, color:'var(--ink)', flex:1 }}>Reseñas</h2>

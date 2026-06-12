@@ -282,7 +282,7 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
     <>
       <div onClick={onClose} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.5)', zIndex:4000 }} />
       <div className="panel panel-admin" style={{
-        position:'fixed', top:0, right:0, width:'100%', maxWidth:'min(600px, 100vw)',
+        position:'fixed', top:0, right:0, width:'100%', maxWidth:'100%',
         height:'100%', background:'var(--bg)', zIndex:4001,
         display:'flex', flexDirection:'column', overflow:'hidden'
       }}>
