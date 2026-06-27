@@ -59,6 +59,17 @@ export const EstilosGlobales = ({ dark }) => (
     .hero-text {
       position: absolute; bottom: 52px; left: 36px; z-index: 20;
     }
+    
+    .main-content-wrapper {
+      position: relative;
+      z-index: 1;
+      background: var(--bg);
+      border-radius: 32px 32px 0 0;
+      margin-top: -16px;
+      padding: 56px 24px 120px;
+      box-shadow: 0 -16px 48px rgba(0,0,0,0.18);
+      max-width: none;
+    }
 
     @keyframes spin { to { transform: rotate(360deg); } }
     .loader-ring {
@@ -706,8 +717,16 @@ export const EstilosGlobales = ({ dark }) => (
     }
 
     @media (max-width: 640px) {
-      .nav-desktop-only { display: none !important; }
       .nav-mobile-only  { display: flex !important; }
+      .nav-desktop-only { display: none !important; }
+
+      .hero-text { bottom: 32px !important; }
+
+      .main-content-wrapper {
+        padding: 24px 20px 100px !important;
+        margin-top: -32px !important;
+        border-radius: 24px 24px 0 0 !important;
+      }
 
       .modal-sheet {
         top: auto !important; left: 0 !important; bottom: 0 !important;
