@@ -45,7 +45,7 @@ export const Inicio = ({ productos, busqueda, setBusqueda, scrollY, addItem, rat
   return (
     <div style={{ position:'relative' }}>
       <div style={{ position:'sticky', top:64, zIndex:0, height:440, overflow:'hidden' }}>
-        <HeroAcuario busqueda={busqueda} setBusqueda={setBusqueda} scrollY={scrollY} />
+        <HeroAcuario productos={productos} busqueda={busqueda} setBusqueda={setBusqueda} scrollY={scrollY} />
       </div>
 
       <main style={{ position:'relative', zIndex:1, background:'var(--bg)', borderRadius:'32px 32px 0 0', marginTop:-16, padding:'56px 24px 120px', boxShadow:'0 -16px 48px rgba(0,0,0,0.18)', maxWidth:'none' }}>

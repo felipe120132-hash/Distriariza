@@ -1,4 +1,5 @@
 import { generarPDF } from '../utils/generarPDF.js';
+import { generarCatalogoPDF } from '../utils/generarCatalogoPDF.js';
 import * as XLSX from 'xlsx';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
@@ -299,9 +300,14 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
           </h2>
           <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
             {auth && (
-              <button onClick={handleLogout} className="pill-btn pill-btn--ghost" style={{ padding:'6px 14px', fontSize:'0.7rem', color:'#ef4444' }}>
-                Cerrar sesión
-              </button>
+              <>
+                <button onClick={() => generarCatalogoPDF(productos)} className="pill-btn pill-btn--ghost" style={{ padding:'6px 14px', fontSize:'0.7rem', color:'var(--accent)' }}>
+                  📄 PDF Catálogo
+                </button>
+                <button onClick={handleLogout} className="pill-btn pill-btn--ghost" style={{ padding:'6px 14px', fontSize:'0.7rem', color:'#ef4444' }}>
+                  Cerrar sesión
+                </button>
+              </>
             )}
             <button onClick={onClose} className="close-btn-custom">✕</button>
           </div>

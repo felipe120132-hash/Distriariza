@@ -90,9 +90,20 @@ export const PanelCarrito = ({ carrito, onClose, onAdd, onRemove, onChangeQty, o
     }
 
     const lista = carrito.map(p =>
-      `• ${p.nombre}${p.colorSeleccionado ? ` [Color: ${p.colorSeleccionado}]` : ''} (x${p.cantidad})`
+      `🔸 ${p.nombre}${p.colorSeleccionado ? ` [${p.colorSeleccionado}]` : ''}\n      x${p.cantidad} — ${moneda(p.precio * p.cantidad)}`
     ).join('\n');
-    const msg = `*NUEVO PEDIDO - DISTRIBUCIONES ARIZA*\n\n*Pedido #:* ${String(pedidoId).padStart(5,'0')}\n*Cliente:* ${datos.nombre}\n*Dirección:* ${datos.direccion}\n*Ciudad:* ${datos.ciudad}\n*Teléfono:* ${datos.telefono}\n\n*Productos:*\n${lista}\n\n*Total: ${moneda(totalCompra)}*`;
+    
+    const msg = `🛒 *NUEVO PEDIDO - DISTRIARIZA*\n\n` +
+                `*Pedido #:* ${String(pedidoId).padStart(5,'0')}\n\n` +
+                `👤 *Datos del Cliente:*\n` +
+                `• *Nombre:* ${datos.nombre}\n` +
+                `• *Dirección:* ${datos.direccion}\n` +
+                `• *Ciudad:* ${datos.ciudad}\n` +
+                `• *Teléfono:* ${datos.telefono}\n\n` +
+                `🛍️ *Resumen del Pedido:*\n${lista}\n\n` +
+                `💰 *TOTAL A PAGAR: ${moneda(totalCompra)}*\n\n` +
+                `_¡Gracias por tu preferencia!_ 🐟`;
+    
     window.open(`https://wa.me/573219627376?text=${encodeURIComponent(msg)}`, '_blank');
 
     setEnviando(false);
