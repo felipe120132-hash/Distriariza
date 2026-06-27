@@ -220,7 +220,7 @@ export const BarraNavegacion = ({ dark, setDark, totalItems, categoria, setCateg
 
           <div style={{ display:'flex', alignItems:'center', gap:'10px', cursor:'pointer' }} onClick={() => navegar('/')}>
             <img src="/Logo.jpeg" alt="Logo" style={{ height:'38px', width:'38px', borderRadius:'10px', objectFit:'cover' }} onError={e => e.target.src='https://via.placeholder.com/38?text=A'} />
-            <div className="nav-desktop-only">
+            <div className="nav-desktop-only" style={{ flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center' }}>
               <p style={{ fontFamily:'var(--font-display)', fontSize:'0.95rem', fontWeight:700, color:'var(--ink)', lineHeight:1 }}>Distribuciones Ariza</p>
               <p style={{ fontSize:'0.58rem', color:'var(--accent)', fontWeight:700, letterSpacing:'1.2px', textTransform:'uppercase', marginTop:'2px' }}>Fish Accessories</p>
             </div>
