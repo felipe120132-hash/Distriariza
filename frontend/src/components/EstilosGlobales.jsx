@@ -272,36 +272,45 @@ export const EstilosGlobales = ({ dark }) => (
 
     .story-highlight {
       display: flex; flex-direction: column; align-items: center; gap: 8px;
-      background: none; border: none; cursor: pointer; flex-shrink: 0; width: 76px;
-      transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      background: none; border: none; cursor: pointer; flex-shrink: 0; width: 80px;
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
-    .story-highlight:hover { transform: translateY(-3px); }
-    .story-highlight:active { transform: scale(0.95); }
+    .story-highlight:hover { transform: translateY(-4px) scale(1.05); }
+    .story-highlight:active { transform: scale(0.93); }
     
     .story-ring {
-      position: relative; width: 68px; height: 68px; border-radius: 50%;
-      background: ${dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'};
-      display: flex; align-items: center; justify-content: center;
-      transition: background 0.3s, box-shadow 0.3s;
+      position: relative; width: 72px; height: 72px; border-radius: 50%;
+      padding: 3px;
+      background: ${dark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)'};
+      transition: background 0.3s, box-shadow 0.3s, transform 0.3s;
     }
-    .story-highlight:hover .story-ring { box-shadow: var(--shadow-md); }
+    .story-highlight:hover .story-ring {
+      box-shadow: 0 4px 20px rgba(26,92,255,0.25);
+    }
     .story-highlight--on .story-ring {
-      background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+      background: linear-gradient(135deg, #0066ff 0%, #00b4ff 50%, #00d4aa 100%);
+      box-shadow: 0 4px 24px rgba(0,102,255,0.4);
     }
     
     .story-icon {
-      width: 62px; height: 62px; border-radius: 50%;
+      width: 100%; height: 100%; border-radius: 50%;
       background: ${dark ? '#18181b' : '#fff'};
-      border: 3px solid var(--bg);
       display: flex; align-items: center; justify-content: center;
       font-size: 1.5rem; transition: background 0.3s;
+      overflow: hidden; position: relative;
     }
-    .story-highlight--on .story-icon { background: ${dark ? '#000' : '#fafafa'}; }
+    .story-icon img {
+      width: 100%; height: 100%; object-fit: cover; border-radius: 50%;
+    }
+    .story-highlight--on .story-icon {
+      background: ${dark ? '#0a0a0f' : '#f0f7ff'};
+    }
     
     .story-label {
-      font-size: 0.72rem; font-weight: 500; color: var(--ink-2);
+      font-size: 0.7rem; font-weight: 500; color: var(--ink-2);
       text-align: center; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-      transition: color 0.3s;
+      transition: color 0.3s, font-weight 0.3s;
+      font-family: var(--font-body);
     }
     .story-highlight--on .story-label { font-weight: 700; color: var(--ink); }
 

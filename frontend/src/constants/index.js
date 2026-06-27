@@ -25,12 +25,12 @@ export const OPCIONES_COLORES = {
 };
 
 export const COLECCIONES = [
-  { label:'Líquidos',   val:'Líquidos vitales',      icon:'🧪' },
-  { label:'Comida',     val:'Alimentos',             icon:'🐟' },
-  { label:'Accesorios', val:'Accesorios',            icon:'🪨' },
-  { label:'Equipos',    val:'Equipos',               icon:'🔧' },
-  { label:'Plantas',    val:'Plantas',               icon:'🌿' },
-  { label:'Hámsters',   val:'Jaulas para Hámster',   icon:'🐹' },
+  { label:'Líquidos',   val:'Líquidos vitales',      icon:'🧪', img:'/categories/liquidos.png' },
+  { label:'Comida',     val:'Alimentos',             icon:'🐟', img:'/categories/comida.png' },
+  { label:'Accesorios', val:'Accesorios',            icon:'🪨', img:'/categories/accesorios.png' },
+  { label:'Equipos',    val:'Equipos',               icon:'🔧', img:'/categories/equipos.png' },
+  { label:'Plantas',    val:'Plantas',               icon:'🌿', img:'/categories/plantas.png' },
+  { label:'Hámsters',   val:'Jaulas para Hámster',   icon:'🐹', img:'/categories/hamsters.png' },
 ];
 
 export const CATEGORIAS_WHEEL = [

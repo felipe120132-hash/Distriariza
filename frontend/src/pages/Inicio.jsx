@@ -58,13 +58,15 @@ export const Inicio = ({ productos, busqueda, setBusqueda, scrollY, addItem, rat
           )}
 
           <section style={{ marginBottom:'48px', display:'flex', flexDirection:'column', alignItems:'center', overflow:'visible' }}>
-            <div style={{ display:'flex', gap:'16px', overflowX:'auto', paddingBottom:'12px', paddingTop:'8px', paddingLeft:'12px', paddingRight:'12px', scrollbarWidth:'none', justifyContent:'flex-start', maxWidth:'100%', WebkitOverflowScrolling:'touch' }}>
+            <div style={{ display:'flex', gap:'18px', overflowX:'auto', paddingBottom:'12px', paddingTop:'8px', paddingLeft:'16px', paddingRight:'16px', scrollbarWidth:'none', justifyContent:'center', maxWidth:'100%', WebkitOverflowScrolling:'touch', flexWrap:'wrap' }}>
               <button
                 className={`story-highlight ${categoriaActual === 'Todos' ? 'story-highlight--on' : 'story-highlight--off'}`}
                 onClick={() => handleCategoriaClick('Todos')}
               >
                 <div className="story-ring">
-                  <div className="story-icon">🌈</div>
+                  <div className="story-icon">
+                    <img src="/categories/todos.png" alt="Todos" onError={(e) => { e.target.style.display='none'; e.target.parentElement.textContent='🌈'; }} />
+                  </div>
                 </div>
                 <span className="story-label">Todos</span>
               </button>
@@ -75,7 +77,9 @@ export const Inicio = ({ productos, busqueda, setBusqueda, scrollY, addItem, rat
                   onClick={() => handleCategoriaClick(c.val)}
                 >
                   <div className="story-ring">
-                    <div className="story-icon">{c.icon}</div>
+                    <div className="story-icon">
+                      <img src={c.img} alt={c.label} onError={(e) => { e.target.style.display='none'; e.target.parentElement.textContent=c.icon; }} />
+                    </div>
                   </div>
                   <span className="story-label">{c.label}</span>
                 </button>
