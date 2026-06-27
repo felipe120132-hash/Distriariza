@@ -210,7 +210,7 @@ export const BarraNavegacion = ({ dark, setDark, totalItems, categoria, setCateg
         padding:'0 20px', height:'64px',
       }}>
         <div style={{ display:'flex', alignItems:'center', gap:'12px', flexShrink: 0 }}>
-          <button className="nav-mobile-only" onClick={() => setMenuOpen(o => !o)}
+          <button onClick={() => setMenuOpen(o => !o)}
             style={{ background:'none', border:'none', cursor:'pointer', width:'36px', height:'36px', display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center', gap:'5px', padding:'4px', borderRadius:'8px' }}
           >
             <span style={{ display:'block', width:'22px', height:'2.5px', background:'var(--ink)', borderRadius:'4px', transition:'all 0.25s', transform: menuOpen ? 'rotate(45deg) translate(5px,5px)' : 'none' }}/>
@@ -253,20 +253,6 @@ export const BarraNavegacion = ({ dark, setDark, totalItems, categoria, setCateg
               </div>
             )}
           </div>
-        </div>
-
-        <div className="nav-desktop-only" style={{ display:'flex', alignItems:'center', gap:'4px' }}>
-          {links.map(({ label, ruta, activo }) => (
-            <button key={label}
-              onClick={() => {
-                if (ruta === null) setHistorialOpen(true);
-                else navegar(ruta);
-              }}
-              className={`nav-link${activo ? ' nav-link--active' : ''}`}
-            >
-              {label}
-            </button>
-          ))}
         </div>
 
         <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
