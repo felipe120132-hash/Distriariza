@@ -59,7 +59,10 @@ export default function App() {
         ? prev.map(i => (i.id===p.id && (i.colorSeleccionado || '') === colorKey) ? {...i, cantidad:i.cantidad+1} : i)
         : [...prev, {...p, cantidad:1}];
     });
-    toast.success('Agregado al carrito', { position: 'bottom-center' });
+    toast.success(`${p.nombre} añadido`, { 
+      icon: '🛍️', 
+      position: 'bottom-center'
+    });
   }, []);
 
   const removeOne = (id, color) => {
@@ -88,7 +91,21 @@ export default function App() {
   return (
     <>
       <EstilosGlobales dark={dark}/>
-      <Toaster />
+      <Toaster 
+        toastOptions={{
+          duration: 2500,
+          style: {
+            fontFamily: "var(--font-body)",
+            background: 'var(--surface)',
+            color: 'var(--ink)',
+            border: '1px solid var(--border)',
+            boxShadow: 'var(--shadow-md)',
+            borderRadius: '16px',
+            padding: '12px 20px',
+            fontWeight: 600
+          }
+        }}
+      />
 
       <BarraNavegacion
         dark={dark}

@@ -9,6 +9,7 @@ import { COLECCIONES, BEST_SELLER_NAMES } from '../constants/index.js';
 export const Inicio = ({ productos, busqueda, setBusqueda, scrollY, addItem, ratings, handleRate }) => {
   const navigate = useNavigate();
   const { cat } = useParams();
+  const [orden, setOrden] = useState('recomendado');
 
   const categoriaParam = cat ? cat.replace(/-/g, ' ') : 'Todos';
   const coleccionEncontrada = COLECCIONES.find(c => normaliza(c.val) === normaliza(categoriaParam));
@@ -16,13 +17,21 @@ export const Inicio = ({ productos, busqueda, setBusqueda, scrollY, addItem, rat
 
   const bestSellers = BEST_SELLER_NAMES.map(name => productos.find(p => p.nombre === name)).filter(Boolean).slice(0, 5);
 
-  const visibles = productos.filter(p => {
+  let visibles = productos.filter(p => {
     const matchBusq = normaliza(p.nombre).includes(normaliza(busqueda));
     if (categoriaActual === 'Todos') return matchBusq;
-    const prodCat = normaliza(p.categoria_nombre);
+    const prodCat = normaliza(p.categoria_nombre || '');
     const flt = normaliza(categoriaActual);
     return matchBusq && (prodCat === flt || prodCat.includes(flt) || flt.includes(prodCat));
   });
+
+  if (orden === 'stock') {
+    visibles = visibles.filter(p => p.stock > 0);
+  } else if (orden === 'precio_asc') {
+    visibles = visibles.sort((a, b) => a.precio - b.precio);
+  } else if (orden === 'precio_desc') {
+    visibles = visibles.sort((a, b) => b.precio - a.precio);
+  }
 
   const handleCategoriaClick = (nuevaCat) => {
     setBusqueda('');
@@ -40,7 +49,7 @@ export const Inicio = ({ productos, busqueda, setBusqueda, scrollY, addItem, rat
       </div>
 
       <main style={{ position:'relative', zIndex:1, background:'var(--bg)', borderRadius:'32px 32px 0 0', marginTop:-16, padding:'56px 24px 120px', boxShadow:'0 -16px 48px rgba(0,0,0,0.18)', maxWidth:'none' }}>
-        <div style={{ maxWidth:1200, margin:'0 auto' }}>
+        <div key={categoriaActual} className="page-transition" style={{ maxWidth:1200, margin:'0 auto' }}>
 
           {bestSellers.length > 0 && !busqueda && (
             <section style={{ marginBottom:'48px' }}>
@@ -88,9 +97,26 @@ export const Inicio = ({ productos, busqueda, setBusqueda, scrollY, addItem, rat
           </section>
 
           <section>
-            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'baseline', marginBottom:'24px' }}>
-              <h2 style={{ fontSize:'1rem', fontWeight:600, color:'var(--ink)' }}>{categoriaActual === 'Todos' ? 'Todos los productos' : categoriaActual}</h2>
-              <span style={{ fontSize:'0.8rem', color:'var(--ink-3)' }}>{visibles.length} resultado{visibles.length!==1&&'s'}</span>
+            <div style={{ display:'flex', flexWrap:'wrap', gap:'12px', justifyContent:'space-between', alignItems:'center', marginBottom:'24px' }}>
+              <div style={{ display:'flex', alignItems:'center', gap:'12px' }}>
+                <h2 style={{ fontSize:'1.2rem', fontWeight:600, color:'var(--ink)' }}>{categoriaActual === 'Todos' ? 'Todos los productos' : categoriaActual}</h2>
+                <span style={{ fontSize:'0.85rem', color:'var(--ink-3)', background:'var(--border)', padding:'2px 8px', borderRadius:'12px' }}>{visibles.length}</span>
+              </div>
+              
+              <select 
+                value={orden} 
+                onChange={(e) => setOrden(e.target.value)}
+                style={{
+                  padding: '8px 16px', borderRadius: '20px', border: '1px solid var(--border)',
+                  background: 'var(--surface)', color: 'var(--ink)', fontSize: '0.9rem',
+                  cursor: 'pointer', outline: 'none', fontFamily: 'var(--font-body)'
+                }}
+              >
+                <option value="recomendado">Recomendados</option>
+                <option value="precio_asc">Menor precio</option>
+                <option value="precio_desc">Mayor precio</option>
+                <option value="stock">Solo en stock</option>
+              </select>
             </div>
             <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(230px, 1fr))', gap:'20px' }}>
               {visibles.map(p => (
