@@ -201,7 +201,10 @@ export const BarraNavegacion = ({ dark, setDark, totalItems, categoria, setCateg
 
         <div style={{ flex: 1, maxWidth: '400px', margin: '0 10px' }} ref={containerRefDesktop}>
           <div style={{ position: 'relative', display: 'flex', alignItems: 'center', background: 'var(--border)', borderRadius: '99px', padding: '10px 16px', gap: '8px' }}>
-            <span style={{ fontSize: '1rem', opacity: 0.5 }}>🔍</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.5, flexShrink: 0, color: 'var(--ink)' }}>
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
             <input 
               type="text" value={busqueda} 
               onChange={e => { setBusqueda(e.target.value); setShowSugerencias(true); }}
