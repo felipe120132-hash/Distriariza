@@ -107,9 +107,11 @@ export const Inicio = ({ productos, busqueda, setBusqueda, scrollY, addItem, rat
                 value={orden} 
                 onChange={(e) => setOrden(e.target.value)}
                 style={{
-                  padding: '8px 16px', borderRadius: '20px', border: '1px solid var(--border)',
-                  background: 'var(--surface)', color: 'var(--ink)', fontSize: '0.9rem',
-                  cursor: 'pointer', outline: 'none', fontFamily: 'var(--font-body)'
+                  padding: '8px 36px 8px 16px', borderRadius: '20px', border: '1px solid var(--border)',
+                  background: `var(--surface) url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23a0a0a0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>') no-repeat right 12px center / 16px auto`,
+                  color: 'var(--ink)', fontSize: '0.95rem', fontWeight: 500,
+                  cursor: 'pointer', outline: 'none', fontFamily: 'var(--font-body)',
+                  appearance: 'none', WebkitAppearance: 'none'
                 }}
               >
                 <option value="recomendado">Recomendados</option>
