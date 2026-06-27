@@ -322,6 +322,22 @@ export const EstilosGlobales = ({ dark }) => (
     }
     .story-scroll::-webkit-scrollbar { display: none; }
 
+    @media (min-width: 641px) {
+      .story-highlight { width: 100px; gap: 10px; }
+      .story-ring { width: 88px; height: 88px; padding: 3.5px; }
+      .story-icon { font-size: 1.8rem; }
+      .story-label { font-size: 0.82rem; }
+      .story-scroll { gap: 32px; padding: 12px 32px 16px; }
+    }
+
+    @media (min-width: 1024px) {
+      .story-highlight { width: 110px; gap: 12px; }
+      .story-ring { width: 96px; height: 96px; padding: 4px; }
+      .story-icon { font-size: 2rem; }
+      .story-label { font-size: 0.85rem; }
+      .story-scroll { gap: 40px; padding: 16px 48px 20px; }
+    }
+
     @media (max-width: 640px) {
       .story-scroll { justify-content: flex-start; }
     }
