@@ -57,8 +57,8 @@ export const Inicio = ({ productos, busqueda, setBusqueda, scrollY, addItem, rat
             </section>
           )}
 
-          <section style={{ marginBottom:'48px', display:'flex', flexDirection:'column', alignItems:'center', overflow:'visible' }}>
-            <div style={{ display:'flex', gap:'18px', overflowX:'auto', paddingBottom:'12px', paddingTop:'8px', paddingLeft:'16px', paddingRight:'16px', scrollbarWidth:'none', justifyContent:'center', maxWidth:'100%', WebkitOverflowScrolling:'touch', flexWrap:'wrap' }}>
+          <section style={{ marginBottom:'48px', overflow:'visible' }}>
+            <div style={{ display:'flex', gap:'18px', overflowX:'auto', paddingBottom:'12px', paddingTop:'8px', paddingLeft:'16px', paddingRight:'16px', scrollbarWidth:'none', WebkitOverflowScrolling:'touch', flexWrap:'nowrap' }}>
               <button
                 className={`story-highlight ${categoriaActual === 'Todos' ? 'story-highlight--on' : 'story-highlight--off'}`}
                 onClick={() => handleCategoriaClick('Todos')}
