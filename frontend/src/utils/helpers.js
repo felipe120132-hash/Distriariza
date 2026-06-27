@@ -43,21 +43,23 @@ export const flyToCart = (e, imgSrc) => {
 
   document.body.appendChild(flyImg);
 
-  // Trigger reflow
+  // Force reflow
   flyImg.getBoundingClientRect();
 
-  // Move to cart
-  flyImg.style.top = `${endRect.top + endRect.height/2 - 15}px`;
-  flyImg.style.left = `${endRect.left + endRect.width/2 - 15}px`;
-  flyImg.style.width = '30px';
-  flyImg.style.height = '30px';
-  flyImg.style.opacity = '0';
-  flyImg.style.transform = 'scale(0.2)';
+  // Defer the transition to next tick so the browser registers the initial state
+  setTimeout(() => {
+    flyImg.style.top = `${endRect.top + endRect.height/2 - 15}px`;
+    flyImg.style.left = `${endRect.left + endRect.width/2 - 15}px`;
+    flyImg.style.width = '30px';
+    flyImg.style.height = '30px';
+    flyImg.style.opacity = '0.5';
+    flyImg.style.transform = 'scale(0.2)';
+  }, 10);
 
   // Pop animation on cart
   setTimeout(() => {
     cartIcon.style.transform = 'scale(1.2)';
     setTimeout(() => cartIcon.style.transform = 'scale(1)', 200);
-    flyImg.remove();
+    if (flyImg.parentNode) flyImg.parentNode.removeChild(flyImg);
   }, 700);
 };
