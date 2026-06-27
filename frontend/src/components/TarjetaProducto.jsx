@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { imgSrc, moneda } from '../utils/helpers.js';
+import { imgSrc, moneda, flyToCart } from '../utils/helpers.js';
 
 export const TarjetaProducto = memo(({ p, onAdd, onOpen, ratings, onRate, isBestSeller }) => (
   <div className="prod-card fade-up" style={{ background:'var(--card-bg)', borderRadius:'24px', overflow:'hidden', boxShadow:'var(--shadow-sm)', position:'relative' }}>
@@ -25,7 +25,7 @@ export const TarjetaProducto = memo(({ p, onAdd, onOpen, ratings, onRate, isBest
       </div>
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', borderTop:'1px solid var(--border)', paddingTop:'14px' }}>
         <span style={{ fontSize:'1.2rem', fontWeight:800, color:'var(--ink)', letterSpacing:'-0.5px' }}>{moneda(p.precio)}</span>
-        <button className="add-btn" onClick={() => onAdd(p)} disabled={p.stock <= 0}>
+        <button className="add-btn" onClick={(e) => { onAdd(p); flyToCart(e, imgSrc(p.imagen_url)); }} disabled={p.stock <= 0}>
           <span className="add-btn__text">{p.stock > 0 ? 'Añadir' : 'Agotado'}</span>
           <span className="add-btn__icon">
             <svg xmlns="http://www.w3.org/2000/svg" width={20} height={20} viewBox="0 0 24 24" strokeWidth={2.5} strokeLinejoin="round" strokeLinecap="round" stroke="currentColor" fill="none">

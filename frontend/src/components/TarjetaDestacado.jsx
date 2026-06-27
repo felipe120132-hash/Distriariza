@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { imgSrc, moneda } from '../utils/helpers.js';
+import { imgSrc, moneda, flyToCart } from '../utils/helpers.js';
 
 export const TarjetaDestacado = memo(({ p, onAdd, onOpen, ratings, onRate, rank }) => (
   <div className="prod-card" style={{ background:'var(--card-bg)', borderRadius:'24px', overflow:'hidden', boxShadow:'var(--shadow-sm)', flexShrink:0, width:'200px' }}>
@@ -22,7 +22,7 @@ export const TarjetaDestacado = memo(({ p, onAdd, onOpen, ratings, onRate, rank 
       </div>
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
         <span style={{ fontSize:'1rem', fontWeight:700, color:'var(--ink)' }}>{moneda(p.precio)}</span>
-        <button className="send-btn send-btn--sm" onClick={() => onAdd(p)} disabled={p.stock <= 0}>
+        <button className="send-btn send-btn--sm" onClick={(e) => { onAdd(p); flyToCart(e, imgSrc(p.imagen_url)); }} disabled={p.stock <= 0}>
           <div className="svg-wrapper-1"><div className="svg-wrapper">
             <span className="plus-icon">+</span>
           </div></div>

@@ -244,8 +244,8 @@ export const BarraNavegacion = ({ dark, setDark, totalItems, categoria, setCateg
             <Switch checked={dark} />
           </div>
 
-          <button onClick={() => navigate('/carrito')}
-            style={{ background:'none', border:'2px solid var(--border)', cursor:'pointer', position:'relative', width:'42px', height:'42px', borderRadius:'12px', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'1.1rem', transition:'border-color 0.2s' }}
+          <button id="cart-icon" onClick={() => navigate('/carrito')}
+            style={{ background:'none', border:'2px solid var(--border)', cursor:'pointer', position:'relative', width:'42px', height:'42px', borderRadius:'12px', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'1.1rem', transition:'border-color 0.2s, transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)' }}
             onMouseEnter={e => e.currentTarget.style.borderColor='var(--accent)'}
             onMouseLeave={e => e.currentTarget.style.borderColor='var(--border)'}
           >

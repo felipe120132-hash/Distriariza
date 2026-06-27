@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { imgSrc, moneda, slugify } from '../utils/helpers.js';
+import { imgSrc, moneda, slugify, flyToCart } from '../utils/helpers.js';
 import { DESCRIPCIONES, BEST_SELLER_NAMES, OPCIONES_COLORES } from '../constants/index.js';
 import { BACKEND } from '../constants/index.js';
 import axios from 'axios';
@@ -151,7 +151,7 @@ export const ModalProducto = ({ p, onClose, onAdd, ratings, onRate, productos = 
               <p style={{ fontSize:'0.68rem', color:'var(--ink-3)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.6px', marginBottom:'3px' }}>Precio</p>
               <span style={{ fontSize:'1.6rem', fontWeight:600, color:'var(--ink)', letterSpacing:'-0.5px' }}>{moneda(p.precio)}</span>
             </div>
-            <button className="send-btn send-btn--lg" onClick={() => { onAdd({...p, colorSeleccionado: colorSel}); onClose(); }} disabled={p.stock <= 0}>
+            <button className="send-btn send-btn--lg" onClick={(e) => { flyToCart(e, imgSrc(p.imagen_url)); onAdd({...p, colorSeleccionado: colorSel}); onClose(); }} disabled={p.stock <= 0}>
               <div className="svg-wrapper-1"><div className="svg-wrapper">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path fill="currentColor" d="M1.946 9.315c-.522-.174-.527-.455.01-.634l19.087-6.362c.529-.176.832.12.684.638l-5.454 19.086c-.15.529-.455.547-.679.045L12 14l6-8-8 6-8.054-2.685z"/></svg>
               </div></div>
