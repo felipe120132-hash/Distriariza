@@ -1,13 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { PanelHistorial } from './PanelHistorial.jsx';
 import Switch from './Switch.jsx';
+import { normaliza, slugify, moneda, imgSrc } from '../utils/helpers.js';
 
-export const BarraNavegacion = ({ dark, setDark, totalItems, categoria, setCategoria, setBusqueda }) => {
+export const BarraNavegacion = ({ dark, setDark, totalItems, categoria, setCategoria, busqueda = '', setBusqueda = () => {}, productos = [] }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [historialOpen, setHistorialOpen] = useState(false);
+  const [showSugerencias, setShowSugerencias] = useState(false);
+  const containerRefDesktop = useRef(null);
+  const containerRefMobile = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (containerRefDesktop.current && !containerRefDesktop.current.contains(event.target)) {
+        setShowSugerencias(false);
+      }
+      if (containerRefMobile.current && !containerRefMobile.current.contains(event.target)) {
+        setShowSugerencias(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const sugerencias = busqueda.trim() 
+    ? productos.filter(p => normaliza(p.nombre).includes(normaliza(busqueda))).slice(0, 5) 
+    : [];
+
+  const handleSelect = (p) => {
+    setBusqueda('');
+    setShowSugerencias(false);
+    setMenuOpen(false);
+    navigate('/producto/' + slugify(p.nombre));
+  };
 
   const navegar = (ruta) => {
     setMenuOpen(false);
@@ -121,6 +149,34 @@ export const BarraNavegacion = ({ dark, setDark, totalItems, categoria, setCateg
           <button onClick={() => setMenuOpen(false)} style={{ background:'none', border:'none', cursor:'pointer', fontSize:'1.2rem', color:'var(--ink-2)', padding:'4px' }}>✕</button>
         </div>
 
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)' }} ref={containerRefMobile}>
+          <div style={{ position: 'relative', display: 'flex', alignItems: 'center', background: 'var(--border)', borderRadius: '99px', padding: '10px 16px', gap: '8px' }}>
+            <span style={{ fontSize: '1rem', opacity: 0.5 }}>🔍</span>
+            <input 
+              type="text" value={busqueda} 
+              onChange={e => { setBusqueda(e.target.value); setShowSugerencias(true); }}
+              onFocus={() => setShowSugerencias(true)}
+              placeholder="Buscar productos..."
+              style={{ border: 'none', background: 'transparent', outline: 'none', color: 'var(--ink)', width: '100%', fontSize: '0.9rem' }}
+            />
+            {busqueda && <button onClick={() => { setBusqueda(''); setShowSugerencias(false); }} style={{ background:'none', border:'none', color:'var(--ink-3)' }}>✕</button>}
+            
+            {showSugerencias && busqueda.trim() !== '' && (
+              <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'var(--surface)', borderRadius: '12px', boxShadow: 'var(--shadow-md)', zIndex: 100, marginTop: '8px', overflow: 'hidden', border: '1px solid var(--border)' }}>
+                {sugerencias.length > 0 ? sugerencias.map(p => (
+                  <div key={p.id} onClick={() => handleSelect(p)} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px', borderBottom: '1px solid var(--border)' }}>
+                    <img src={imgSrc(p.imagen_url)} style={{ width: '30px', height: '30px', borderRadius: '4px', objectFit: 'cover' }}/>
+                    <div style={{ flex: 1, overflow: 'hidden' }}>
+                      <p style={{ margin: 0, fontSize: '0.85rem', fontWeight: 600, color: 'var(--ink)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.nombre}</p>
+                      <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--ink-3)' }}>{moneda(p.precio)}</p>
+                    </div>
+                  </div>
+                )) : <div style={{ padding: '12px', textAlign: 'center', fontSize: '0.8rem', color: 'var(--ink-3)' }}>Sin resultados</div>}
+              </div>
+            )}
+          </div>
+        </div>
+
         <div style={{ flex:1, overflowY:'auto', paddingTop:'8px' }}>
           {links.map(({ label, ruta, activo }) => (
             <button key={label}
@@ -153,7 +209,7 @@ export const BarraNavegacion = ({ dark, setDark, totalItems, categoria, setCateg
         justifyContent:'space-between',
         padding:'0 20px', height:'64px',
       }}>
-        <div style={{ display:'flex', alignItems:'center', gap:'12px' }}>
+        <div style={{ display:'flex', alignItems:'center', gap:'12px', flexShrink: 0 }}>
           <button className="nav-mobile-only" onClick={() => setMenuOpen(o => !o)}
             style={{ background:'none', border:'none', cursor:'pointer', width:'36px', height:'36px', display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center', gap:'5px', padding:'4px', borderRadius:'8px' }}
           >
@@ -164,10 +220,38 @@ export const BarraNavegacion = ({ dark, setDark, totalItems, categoria, setCateg
 
           <div style={{ display:'flex', alignItems:'center', gap:'10px', cursor:'pointer' }} onClick={() => navegar('/')}>
             <img src="/Logo.jpeg" alt="Logo" style={{ height:'38px', width:'38px', borderRadius:'10px', objectFit:'cover' }} onError={e => e.target.src='https://via.placeholder.com/38?text=A'} />
-            <div>
+            <div className="nav-desktop-only">
               <p style={{ fontFamily:'var(--font-display)', fontSize:'0.95rem', fontWeight:700, color:'var(--ink)', lineHeight:1 }}>Distribuciones Ariza</p>
               <p style={{ fontSize:'0.58rem', color:'var(--accent)', fontWeight:700, letterSpacing:'1.2px', textTransform:'uppercase', marginTop:'2px' }}>Fish Accessories</p>
             </div>
+          </div>
+        </div>
+
+        <div className="nav-desktop-only" style={{ flex: 1, maxWidth: '400px', margin: '0 20px' }} ref={containerRefDesktop}>
+          <div style={{ position: 'relative', display: 'flex', alignItems: 'center', background: 'var(--border)', borderRadius: '99px', padding: '10px 16px', gap: '8px' }}>
+            <span style={{ fontSize: '1rem', opacity: 0.5 }}>🔍</span>
+            <input 
+              type="text" value={busqueda} 
+              onChange={e => { setBusqueda(e.target.value); setShowSugerencias(true); }}
+              onFocus={() => setShowSugerencias(true)}
+              placeholder="Buscar productos..."
+              style={{ border: 'none', background: 'transparent', outline: 'none', color: 'var(--ink)', width: '100%', fontSize: '0.9rem' }}
+            />
+            {busqueda && <button onClick={() => { setBusqueda(''); setShowSugerencias(false); }} style={{ background:'none', border:'none', color:'var(--ink-3)', cursor: 'pointer' }}>✕</button>}
+            
+            {showSugerencias && busqueda.trim() !== '' && (
+              <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'var(--surface)', borderRadius: '16px', boxShadow: 'var(--shadow-lg)', zIndex: 100, marginTop: '8px', overflow: 'hidden', border: '1px solid var(--border)' }}>
+                {sugerencias.length > 0 ? sugerencias.map((p, i) => (
+                  <div key={p.id} onClick={() => handleSelect(p)} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderBottom: i < sugerencias.length - 1 ? '1px solid var(--border)' : 'none', cursor: 'pointer', transition: 'background 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = 'var(--bg)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                    <img src={imgSrc(p.imagen_url)} style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'cover' }}/>
+                    <div style={{ flex: 1, overflow: 'hidden' }}>
+                      <p style={{ margin: 0, fontSize: '0.9rem', fontWeight: 600, color: 'var(--ink)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.nombre}</p>
+                      <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--ink-3)' }}>{moneda(p.precio)}</p>
+                    </div>
+                  </div>
+                )) : <div style={{ padding: '16px', textAlign: 'center', fontSize: '0.9rem', color: 'var(--ink-3)' }}>Sin resultados</div>}
+              </div>
+            )}
           </div>
         </div>
 

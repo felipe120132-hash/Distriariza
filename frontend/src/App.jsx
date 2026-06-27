@@ -113,7 +113,9 @@ export default function App() {
         totalItems={totalItems}
         categoria={categoria}
         setCategoria={setCategoria}
+        busqueda={busqueda}
         setBusqueda={setBusqueda}
+        productos={productos}
       />
 
       <Routes>
