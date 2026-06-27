@@ -224,7 +224,16 @@ export const BarraNavegacion = ({ dark, setDark, totalItems, categoria, setCateg
                       <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--ink-3)' }}>{moneda(p.precio)}</p>
                     </div>
                   </div>
-                )) : <div style={{ padding: '16px', textAlign: 'center', fontSize: '0.9rem', color: 'var(--ink-3)' }}>Sin resultados</div>}
+                )) : (
+                  <div style={{ padding: '24px 16px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--ink-3)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.5 }}>
+                      <circle cx="11" cy="11" r="8"></circle>
+                      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                      <line x1="8" y1="11" x2="14" y2="11"></line>
+                    </svg>
+                    <span style={{ fontSize: '0.85rem', color: 'var(--ink-3)' }}>Sin resultados para "{busqueda}"</span>
+                  </div>
+                )}
               </div>
             )}
           </div>

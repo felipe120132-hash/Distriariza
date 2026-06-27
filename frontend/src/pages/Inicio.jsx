@@ -128,9 +128,26 @@ export const Inicio = ({ productos, busqueda, setBusqueda, scrollY, addItem, rat
               ))}
             </div>
             {visibles.length === 0 && (
-              <div style={{ textAlign:'center', padding:'80px 20px' }}>
-                <p style={{ fontSize:'2rem', marginBottom:'12px' }}>🔍</p>
-                <p style={{ color:'var(--ink-3)' }}>No se encontraron productos.</p>
+              <div style={{ textAlign:'center', padding:'80px 20px', display: 'flex', flexDirection: 'column', alignItems: 'center', animation: 'fadeIn 0.5s ease-out' }}>
+                <div style={{ background: 'var(--surface)', padding: '30px', borderRadius: '50%', boxShadow: 'var(--shadow-md)', marginBottom: '24px' }}>
+                  <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--ink-3)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.7 }}>
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    <path d="M8 11h6"></path>
+                  </svg>
+                </div>
+                <h3 style={{ fontSize:'1.4rem', fontWeight: 700, marginBottom:'8px', color: 'var(--ink)' }}>¡Ups! No hay resultados</h3>
+                <p style={{ color:'var(--ink-3)', maxWidth: '400px', lineHeight: 1.5, marginBottom: '24px' }}>No encontramos productos que coincidan con <b>"{busqueda || categoriaActual}"</b>. Prueba buscando con otras palabras o revisa nuestras categorías.</p>
+                <button 
+                  onClick={() => { setBusqueda(''); setCategoriaActual('Todos'); }}
+                  style={{ background: 'var(--accent)', color: '#fff', border: 'none', padding: '12px 24px', borderRadius: '99px', fontSize: '0.95rem', fontWeight: 600, cursor: 'pointer', transition: 'transform 0.2s, background 0.2s' }}
+                  onMouseEnter={e => e.currentTarget.style.background = 'var(--accent-h)'}
+                  onMouseLeave={e => e.currentTarget.style.background = 'var(--accent)'}
+                  onMouseDown={e => e.currentTarget.style.transform = 'scale(0.95)'}
+                  onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}
+                >
+                  Ver todos los productos
+                </button>
               </div>
             )}
           </section>
