@@ -270,20 +270,40 @@ export const EstilosGlobales = ({ dark }) => (
     .form-input::placeholder { color: var(--ink-3); }
     textarea.form-input { font-family: var(--font-body); }
 
-    .cat-pill {
-      flex-shrink: 0; padding: 8px 16px; border-radius: 99px;
-      font-size: 0.78rem; font-weight: 600; border: none; cursor: pointer;
-      transition: background 0.25s, color 0.25s, transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.25s;
+    .story-highlight {
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      background: none; border: none; cursor: pointer; flex-shrink: 0; width: 76px;
+      transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
-    .cat-pill:hover { transform: translateY(-3px) scale(1.05); box-shadow: var(--shadow-md); }
-    .cat-pill:active { transform: scale(0.95); }
-    .cat-pill--off {
-      background: ${dark ? 'rgba(255,255,255,0.07)' : 'var(--surface)'};
-      color: var(--ink-2);
-      box-shadow: var(--shadow-sm);
+    .story-highlight:hover { transform: translateY(-3px); }
+    .story-highlight:active { transform: scale(0.95); }
+    
+    .story-ring {
+      position: relative; width: 68px; height: 68px; border-radius: 50%;
+      background: ${dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'};
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.3s, box-shadow 0.3s;
     }
-    .cat-pill--off:hover { background: ${dark ? 'rgba(255,255,255,0.12)' : '#eaeae6'}; color: var(--ink); }
-    .cat-pill--on { background: var(--ink); color: ${dark ? '#111' : 'var(--surface)'}; }
+    .story-highlight:hover .story-ring { box-shadow: var(--shadow-md); }
+    .story-highlight--on .story-ring {
+      background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    }
+    
+    .story-icon {
+      width: 62px; height: 62px; border-radius: 50%;
+      background: ${dark ? '#18181b' : '#fff'};
+      border: 3px solid var(--bg);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; transition: background 0.3s;
+    }
+    .story-highlight--on .story-icon { background: ${dark ? '#000' : '#fafafa'}; }
+    
+    .story-label {
+      font-size: 0.72rem; font-weight: 500; color: var(--ink-2);
+      text-align: center; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      transition: color 0.3s;
+    }
+    .story-highlight--on .story-label { font-weight: 700; color: var(--ink); }
 
     .nav-tab {
       background: none; border: none; cursor: pointer;

@@ -58,20 +58,26 @@ export const Inicio = ({ productos, busqueda, setBusqueda, scrollY, addItem, rat
           )}
 
           <section style={{ marginBottom:'48px', display:'flex', flexDirection:'column', alignItems:'center', overflow:'visible' }}>
-            <div style={{ display:'flex', gap:'8px', overflowX:'auto', paddingBottom:'6px', paddingTop:'8px', paddingLeft:'12px', paddingRight:'12px', scrollbarWidth:'none', justifyContent:'center', flexWrap:'wrap' }}>
+            <div style={{ display:'flex', gap:'16px', overflowX:'auto', paddingBottom:'12px', paddingTop:'8px', paddingLeft:'12px', paddingRight:'12px', scrollbarWidth:'none', justifyContent:'flex-start', maxWidth:'100%', WebkitOverflowScrolling:'touch' }}>
               <button
-                className={`cat-pill ${categoriaActual === 'Todos' ? 'cat-pill--on' : 'cat-pill--off'}`}
+                className={`story-highlight ${categoriaActual === 'Todos' ? 'story-highlight--on' : 'story-highlight--off'}`}
                 onClick={() => handleCategoriaClick('Todos')}
               >
-                Todos
+                <div className="story-ring">
+                  <div className="story-icon">🌈</div>
+                </div>
+                <span className="story-label">Todos</span>
               </button>
               {COLECCIONES.map((c) => (
                 <button
                   key={c.val}
-                  className={`cat-pill ${categoriaActual === c.val ? 'cat-pill--on' : 'cat-pill--off'}`}
+                  className={`story-highlight ${categoriaActual === c.val ? 'story-highlight--on' : 'story-highlight--off'}`}
                   onClick={() => handleCategoriaClick(c.val)}
                 >
-                  {c.icon} {c.label}
+                  <div className="story-ring">
+                    <div className="story-icon">{c.icon}</div>
+                  </div>
+                  <span className="story-label">{c.label}</span>
                 </button>
               ))}
             </div>
