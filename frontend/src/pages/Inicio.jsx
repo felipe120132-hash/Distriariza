@@ -66,35 +66,37 @@ export const Inicio = ({ productos, busqueda, setBusqueda, scrollY, addItem, rat
             </section>
           )}
 
-          <section style={{ marginBottom:'48px', overflow:'visible' }}>
-            <div className="story-scroll">
-              <button
-                className={`story-highlight ${categoriaActual === 'Todos' ? 'story-highlight--on' : 'story-highlight--off'}`}
-                onClick={() => handleCategoriaClick('Todos')}
-              >
-                <div className="story-ring">
-                  <div className="story-icon">
-                    <img src="/categories/todos.png" alt="Todos" onError={(e) => { e.target.style.display='none'; e.target.parentElement.textContent='🌈'; }} />
-                  </div>
-                </div>
-                <span className="story-label">Todos</span>
-              </button>
-              {COLECCIONES.map((c) => (
+          {!busqueda && (
+            <section style={{ marginBottom:'48px', overflow:'visible' }}>
+              <div className="story-scroll">
                 <button
-                  key={c.val}
-                  className={`story-highlight ${categoriaActual === c.val ? 'story-highlight--on' : 'story-highlight--off'}`}
-                  onClick={() => handleCategoriaClick(c.val)}
+                  className={`story-highlight ${categoriaActual === 'Todos' ? 'story-highlight--on' : 'story-highlight--off'}`}
+                  onClick={() => handleCategoriaClick('Todos')}
                 >
                   <div className="story-ring">
                     <div className="story-icon">
-                      <img src={c.img} alt={c.label} onError={(e) => { e.target.style.display='none'; e.target.parentElement.textContent=c.icon; }} />
+                      <img src="/categories/todos.png" alt="Todos" onError={(e) => { e.target.style.display='none'; e.target.parentElement.textContent='🌈'; }} />
                     </div>
                   </div>
-                  <span className="story-label">{c.label}</span>
+                  <span className="story-label">Todos</span>
                 </button>
-              ))}
-            </div>
-          </section>
+                {COLECCIONES.map((c) => (
+                  <button
+                    key={c.val}
+                    className={`story-highlight ${categoriaActual === c.val ? 'story-highlight--on' : 'story-highlight--off'}`}
+                    onClick={() => handleCategoriaClick(c.val)}
+                  >
+                    <div className="story-ring">
+                      <div className="story-icon">
+                        <img src={c.img} alt={c.label} onError={(e) => { e.target.style.display='none'; e.target.parentElement.textContent=c.icon; }} />
+                      </div>
+                    </div>
+                    <span className="story-label">{c.label}</span>
+                  </button>
+                ))}
+              </div>
+            </section>
+          )}
 
           <section>
             <div style={{ display:'flex', flexWrap:'wrap', gap:'12px', justifyContent:'space-between', alignItems:'center', marginBottom:'24px' }}>
