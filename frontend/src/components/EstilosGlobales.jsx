@@ -314,6 +314,18 @@ export const EstilosGlobales = ({ dark }) => (
     }
     .story-highlight--on .story-label { font-weight: 700; color: var(--ink); }
 
+    .story-scroll {
+      display: flex; gap: 20px; overflow-x: auto;
+      padding: 8px 16px 12px; scrollbar-width: none;
+      -webkit-overflow-scrolling: touch; flex-wrap: nowrap;
+      justify-content: center;
+    }
+    .story-scroll::-webkit-scrollbar { display: none; }
+
+    @media (max-width: 640px) {
+      .story-scroll { justify-content: flex-start; }
+    }
+
     .nav-tab {
       background: none; border: none; cursor: pointer;
       display: flex; flex-direction: column; align-items: center; gap: 2px;
