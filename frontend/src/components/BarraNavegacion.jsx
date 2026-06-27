@@ -149,34 +149,6 @@ export const BarraNavegacion = ({ dark, setDark, totalItems, categoria, setCateg
           <button onClick={() => setMenuOpen(false)} style={{ background:'none', border:'none', cursor:'pointer', fontSize:'1.2rem', color:'var(--ink-2)', padding:'4px' }}>✕</button>
         </div>
 
-        <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)' }} ref={containerRefMobile}>
-          <div style={{ position: 'relative', display: 'flex', alignItems: 'center', background: 'var(--border)', borderRadius: '99px', padding: '10px 16px', gap: '8px' }}>
-            <span style={{ fontSize: '1rem', opacity: 0.5 }}>🔍</span>
-            <input 
-              type="text" value={busqueda} 
-              onChange={e => { setBusqueda(e.target.value); setShowSugerencias(true); }}
-              onFocus={() => setShowSugerencias(true)}
-              placeholder="Buscar productos..."
-              style={{ border: 'none', background: 'transparent', outline: 'none', color: 'var(--ink)', width: '100%', fontSize: '0.9rem' }}
-            />
-            {busqueda && <button onClick={() => { setBusqueda(''); setShowSugerencias(false); }} style={{ background:'none', border:'none', color:'var(--ink-3)' }}>✕</button>}
-            
-            {showSugerencias && busqueda.trim() !== '' && (
-              <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'var(--surface)', borderRadius: '12px', boxShadow: 'var(--shadow-md)', zIndex: 100, marginTop: '8px', overflow: 'hidden', border: '1px solid var(--border)' }}>
-                {sugerencias.length > 0 ? sugerencias.map(p => (
-                  <div key={p.id} onClick={() => handleSelect(p)} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px', borderBottom: '1px solid var(--border)' }}>
-                    <img src={imgSrc(p.imagen_url)} style={{ width: '30px', height: '30px', borderRadius: '4px', objectFit: 'cover' }}/>
-                    <div style={{ flex: 1, overflow: 'hidden' }}>
-                      <p style={{ margin: 0, fontSize: '0.85rem', fontWeight: 600, color: 'var(--ink)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.nombre}</p>
-                      <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--ink-3)' }}>{moneda(p.precio)}</p>
-                    </div>
-                  </div>
-                )) : <div style={{ padding: '12px', textAlign: 'center', fontSize: '0.8rem', color: 'var(--ink-3)' }}>Sin resultados</div>}
-              </div>
-            )}
-          </div>
-        </div>
-
         <div style={{ flex:1, overflowY:'auto', paddingTop:'8px' }}>
           {links.map(({ label, ruta, activo }) => (
             <button key={label}
@@ -227,7 +199,7 @@ export const BarraNavegacion = ({ dark, setDark, totalItems, categoria, setCateg
           </div>
         </div>
 
-        <div className="nav-desktop-only" style={{ flex: 1, maxWidth: '400px', margin: '0 20px' }} ref={containerRefDesktop}>
+        <div style={{ flex: 1, maxWidth: '400px', margin: '0 10px' }} ref={containerRefDesktop}>
           <div style={{ position: 'relative', display: 'flex', alignItems: 'center', background: 'var(--border)', borderRadius: '99px', padding: '10px 16px', gap: '8px' }}>
             <span style={{ fontSize: '1rem', opacity: 0.5 }}>🔍</span>
             <input 
