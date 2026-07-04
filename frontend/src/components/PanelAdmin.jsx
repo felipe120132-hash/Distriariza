@@ -551,13 +551,13 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
                                       </div>
 
                                       {/* Acciones */}
-                                      <div style={{ display:'flex', flexDirection:'column', gap:'5px', flexShrink:0 }}>
-                                        <button onClick={() => handleEdit(p)} style={{ padding:'5px 13px', borderRadius:'8px', border:'1px solid var(--border)', background:'var(--bg)', color:'var(--ink)', fontSize:'0.7rem', fontWeight:600, cursor:'pointer', whiteSpace:'nowrap', transition:'background 0.15s' }}
+                                      <div style={{ display:'flex', flexDirection:'column', gap:'8px', flexShrink:0 }}>
+                                        <button onClick={() => handleEdit(p)} style={{ padding:'7px 14px', borderRadius:'9px', border:'1px solid var(--border)', background:'var(--bg)', color:'var(--ink)', fontSize:'0.72rem', fontWeight:600, cursor:'pointer', whiteSpace:'nowrap', transition:'background 0.15s' }}
                                           onMouseEnter={e => e.currentTarget.style.background='var(--border)'}
                                           onMouseLeave={e => e.currentTarget.style.background='var(--bg)'}>
                                           ✏️ Editar
                                         </button>
-                                        <button onClick={() => handleDelete(p.id)} style={{ padding:'5px 13px', borderRadius:'8px', border:'none', background:'rgba(239,68,68,0.1)', color:'#ef4444', fontSize:'0.7rem', fontWeight:600, cursor:'pointer', whiteSpace:'nowrap', transition:'background 0.15s' }}
+                                        <button onClick={() => handleDelete(p.id)} style={{ padding:'7px 14px', borderRadius:'9px', border:'none', background:'rgba(239,68,68,0.1)', color:'#ef4444', fontSize:'0.72rem', fontWeight:600, cursor:'pointer', whiteSpace:'nowrap', transition:'background 0.15s' }}
                                           onMouseEnter={e => e.currentTarget.style.background='rgba(239,68,68,0.2)'}
                                           onMouseLeave={e => e.currentTarget.style.background='rgba(239,68,68,0.1)'}>
                                           🗑️ Borrar
