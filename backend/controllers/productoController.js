@@ -27,6 +27,8 @@ const getProductos = async (req, res) => {
             params.push(`%${busqueda}%`, `%${busqueda}%`);
         }
 
+        query += ' ORDER BY p.orden ASC, p.id DESC';
+
         const [rows] = await db.query(query, params);
         res.json(rows);
 
@@ -122,4 +124,24 @@ const deleteProducto = async (req, res) => {
     }
 };
 
-module.exports = { getProductos, createProducto, updateProducto, deleteProducto };
+const reorderProductos = async (req, res) => {
+    try {
+        const { productos } = req.body; // array de {id, orden}
+        if (!Array.isArray(productos)) {
+            return res.status(400).json({ error: 'Formato inválido.' });
+        }
+
+        const queries = productos.map((p) => {
+            return db.query('UPDATE productos SET orden = ? WHERE id = ?', [Number(p.orden), Number(p.id)]);
+        });
+
+        await Promise.all(queries);
+
+        res.json({ message: 'Orden actualizado exitosamente' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error al reordenar los productos' });
+    }
+};
+
+module.exports = { getProductos, createProducto, updateProducto, deleteProducto, reorderProductos };

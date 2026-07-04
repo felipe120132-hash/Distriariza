@@ -9,6 +9,7 @@ router.get('/', productoController.getProductos);
 
 // ── Rutas protegidas (requieren JWT) ──────────────────────────────────────────
 router.post('/',   verifyToken, upload.single('imagen'), productoController.createProducto);
+router.put('/reorder', verifyToken, productoController.reorderProductos);
 router.put('/:id', verifyToken, upload.single('imagen'), productoController.updateProducto);
 router.delete('/:id', verifyToken, productoController.deleteProducto);
 

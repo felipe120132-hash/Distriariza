@@ -6,7 +6,7 @@ import axios from 'axios';
 import { imgSrc, moneda, normaliza } from '../utils/helpers.js';
 import { BACKEND } from '../constants/index.js';
 import { toast } from 'react-hot-toast';
-
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
   const [auth, setAuth] = useState(false);
   const [token, setToken] = useState('');
@@ -34,6 +34,11 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
   const [cargando, setCargando] = useState(false);
   const [imagenesExtra, setImagenesExtra] = useState([]);
   const [subiendoImagen, setSubiendoImagen] = useState(false);
+  const [localProductos, setLocalProductos] = useState([]);
+
+  useEffect(() => {
+    setLocalProductos(productos);
+  }, [productos]);
 
   useEffect(() => {
     const savedToken = sessionStorage.getItem('admin_token');
@@ -236,9 +241,33 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
     }
   };
 
-  const productosFiltrados = productos.filter(p =>
+  const productosFiltrados = localProductos.filter(p =>
     normaliza(p.nombre).includes(normaliza(busquedaAdmin))
   );
+
+  const handleDragEnd = async (result) => {
+    if (!result.destination) return;
+    if (busquedaAdmin) {
+      toast.error('No puedes reordenar mientras buscas.');
+      return;
+    }
+
+    const items = Array.from(localProductos);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+
+    setLocalProductos(items);
+
+    const payload = items.map((p, index) => ({ id: p.id, orden: index }));
+
+    try {
+      await axios.put(`${BACKEND}/api/productos/reorder`, { productos: payload }, { headers: authHeaders() });
+    } catch (err) {
+      console.error(err);
+      toast.error('Error al guardar el nuevo orden');
+      onRefresh();
+    }
+  };
 
   const colorEstado = (estado) => {
     if (estado === 'pendiente')  return { bg: 'rgba(245,158,11,0.12)',  color: '#d97706' };
@@ -458,21 +487,48 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
                         <p style={{ color:'var(--ink-3)', fontSize:'0.88rem' }}>No se encontró "{busquedaAdmin}"</p>
                       </div>
                     ) : (
-                      productosFiltrados.map(p => (
-                        <div key={p.id} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'12px', background:'var(--surface)', borderRadius:'12px', border:'1px solid var(--border)' }}>
-                          <div style={{ display:'flex', alignItems:'center', gap:'12px' }}>
-                            <img src={imgSrc(p.imagen_url)} style={{ width:'40px', height:'40px', objectFit:'cover', borderRadius:'8px' }} />
-                            <div>
-                              <p style={{ fontWeight:600, fontSize:'0.85rem', color:'var(--ink)', maxWidth:'200px', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{p.nombre}</p>
-                              <p style={{ fontSize:'0.75rem', color:'var(--ink-2)' }}>{moneda(p.precio)} • Stock: <span style={{ color: p.stock > 0 ? '#16a34a' : '#ef4444', fontWeight:'bold' }}>{p.stock}</span></p>
+                      <DragDropContext onDragEnd={handleDragEnd}>
+                        <Droppable droppableId="productos-list" isDropDisabled={!!busquedaAdmin}>
+                          {(provided) => (
+                            <div {...provided.droppableProps} ref={provided.innerRef} style={{ display:'flex', flexDirection:'column', gap:'10px' }}>
+                              {productosFiltrados.map((p, index) => (
+                                <Draggable key={p.id} draggableId={String(p.id)} index={index} isDragDisabled={!!busquedaAdmin}>
+                                  {(provided, snapshot) => (
+                                    <div 
+                                      ref={provided.innerRef}
+                                      {...provided.draggableProps}
+                                      style={{
+                                        ...provided.draggableProps.style,
+                                        display:'flex', justifyContent:'space-between', alignItems:'center', padding:'12px', background:'var(--surface)', borderRadius:'12px', border:'1px solid var(--border)',
+                                        boxShadow: snapshot.isDragging ? '0 10px 20px rgba(0,0,0,0.15)' : 'none',
+                                        transform: snapshot.isDragging ? `${provided.draggableProps.style?.transform} scale(1.02)` : provided.draggableProps.style?.transform,
+                                        zIndex: snapshot.isDragging ? 9999 : 1,
+                                        transition: snapshot.isDragging ? 'none' : 'all 0.2s cubic-bezier(0.2, 0, 0, 1)'
+                                      }}
+                                    >
+                                      <div style={{ display:'flex', alignItems:'center', gap:'12px' }}>
+                                        <div {...provided.dragHandleProps} style={{ cursor: busquedaAdmin ? 'not-allowed' : 'grab', color:'var(--ink-3)', padding:'4px', display:'flex', alignItems:'center' }}>
+                                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                                        </div>
+                                        <img src={imgSrc(p.imagen_url)} style={{ width:'40px', height:'40px', objectFit:'cover', borderRadius:'8px', pointerEvents:'none' }} />
+                                        <div>
+                                          <p style={{ fontWeight:600, fontSize:'0.85rem', color:'var(--ink)', maxWidth:'180px', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{p.nombre}</p>
+                                          <p style={{ fontSize:'0.75rem', color:'var(--ink-2)' }}>{moneda(p.precio)} • Stock: <span style={{ color: p.stock > 0 ? '#16a34a' : '#ef4444', fontWeight:'bold' }}>{p.stock}</span></p>
+                                        </div>
+                                      </div>
+                                      <div style={{ display:'flex', gap:'8px' }}>
+                                        <button onClick={() => handleEdit(p)} className="pill-btn pill-btn--ghost" style={{ padding:'6px 12px', fontSize:'0.7rem' }}>Editar</button>
+                                        <button onClick={() => handleDelete(p.id)} className="pill-btn" style={{ background:'#ef4444', color:'white', padding:'6px 12px', fontSize:'0.7rem' }}>Borrar</button>
+                                      </div>
+                                    </div>
+                                  )}
+                                </Draggable>
+                              ))}
+                              {provided.placeholder}
                             </div>
-                          </div>
-                          <div style={{ display:'flex', gap:'8px' }}>
-                            <button onClick={() => handleEdit(p)} className="pill-btn pill-btn--ghost" style={{ padding:'6px 12px', fontSize:'0.7rem' }}>Editar</button>
-                            <button onClick={() => handleDelete(p.id)} className="pill-btn" style={{ background:'#ef4444', color:'white', padding:'6px 12px', fontSize:'0.7rem' }}>Borrar</button>
-                          </div>
-                        </div>
-                      ))
+                          )}
+                        </Droppable>
+                      </DragDropContext>
                     )}
                   </div>
                 </div>
