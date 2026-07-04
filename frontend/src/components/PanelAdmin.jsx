@@ -736,7 +736,7 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
 
         {/* ── BARRA INFERIOR ── */}
         {auth && modo === 'lista' && (
-          <div style={{ position:'absolute', bottom:0, left:0, right:0, background:'var(--surface)', borderTop:'1px solid var(--border)', display:'flex', padding:'8px 16px 12px', gap:'4px' }}>
+          <div style={{ position:'absolute', bottom:0, left:0, right:0, background:'var(--surface)', borderTop:'1px solid var(--border)', display:'flex', padding:'8px 16px 12px', gap:'4px', zIndex: 10 }}>
             {[
               { key:'dashboard', label:'Dashboard', icon:(<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>) },
               { key:'productos', label:'Productos', icon:(<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>) },
