@@ -480,7 +480,13 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
                       ✅ {successMsg}
                     </div>
                   )}
-                  <div style={{ display:'flex', flexDirection:'column', gap:'10px' }}>
+                  {!busquedaAdmin && (
+                    <p style={{ fontSize:'0.7rem', color:'var(--ink-3)', marginBottom:'12px', display:'flex', alignItems:'center', gap:'6px' }}>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 9l7-7 7 7M5 15l7 7 7-7"/></svg>
+                      Arrastra para reordenar
+                    </p>
+                  )}
+                  <div style={{ display:'flex', flexDirection:'column', gap:'8px' }}>
                     {productosFiltrados.length === 0 ? (
                       <div style={{ textAlign:'center', padding:'40px 20px' }}>
                         <p style={{ fontSize:'1.8rem', marginBottom:'10px' }}>🔍</p>
@@ -490,8 +496,12 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
                       <DragDropContext onDragEnd={handleDragEnd}>
                         <Droppable droppableId="productos-list" isDropDisabled={!!busquedaAdmin}>
                           {(provided) => (
-                            <div {...provided.droppableProps} ref={provided.innerRef} style={{ display:'flex', flexDirection:'column', gap:'10px' }}>
-                              {productosFiltrados.map((p, index) => (
+                            <div {...provided.droppableProps} ref={provided.innerRef} style={{ display:'flex', flexDirection:'column', gap:'8px' }}>
+                              {productosFiltrados.map((p, index) => {
+                                const cats = { '1':'Líquidos', '2':'Alimentos', '3':'Equipos', '4':'Accesorios', '5':'Plantas', '6':'Hámster' };
+                                const catLabel = cats[String(p.categoria_id)] || 'Otro';
+                                const stockBajo = p.stock > 0 && p.stock <= 10;
+                                return (
                                 <Draggable key={p.id} draggableId={String(p.id)} index={index} isDragDisabled={!!busquedaAdmin}>
                                   {(provided, snapshot) => (
                                     <div 
@@ -499,31 +509,64 @@ export const PanelAdmin = ({ onClose, productos, onRefresh }) => {
                                       {...provided.draggableProps}
                                       style={{
                                         ...provided.draggableProps.style,
-                                        display:'flex', justifyContent:'space-between', alignItems:'center', padding:'12px', background:'var(--surface)', borderRadius:'12px', border:'1px solid var(--border)',
-                                        boxShadow: snapshot.isDragging ? '0 10px 20px rgba(0,0,0,0.15)' : 'none',
+                                        display:'flex', alignItems:'center', gap:'10px',
+                                        padding:'10px 12px',
+                                        background: snapshot.isDragging ? 'var(--card-bg)' : 'var(--surface)',
+                                        borderRadius:'14px',
+                                        border: snapshot.isDragging ? '1px solid var(--accent)' : '1px solid var(--border)',
+                                        boxShadow: snapshot.isDragging ? '0 12px 28px rgba(0,0,0,0.2)' : 'none',
                                         transform: snapshot.isDragging ? `${provided.draggableProps.style?.transform} scale(1.02)` : provided.draggableProps.style?.transform,
                                         zIndex: snapshot.isDragging ? 9999 : 1,
-                                        transition: snapshot.isDragging ? 'none' : 'all 0.2s cubic-bezier(0.2, 0, 0, 1)'
+                                        transition: snapshot.isDragging ? 'none' : 'background 0.2s, box-shadow 0.2s'
                                       }}
                                     >
-                                      <div style={{ display:'flex', alignItems:'center', gap:'12px' }}>
-                                        <div {...provided.dragHandleProps} style={{ cursor: busquedaAdmin ? 'not-allowed' : 'grab', color:'var(--ink-3)', padding:'4px', display:'flex', alignItems:'center' }}>
-                                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-                                        </div>
-                                        <img src={imgSrc(p.imagen_url)} style={{ width:'40px', height:'40px', objectFit:'cover', borderRadius:'8px', pointerEvents:'none' }} />
-                                        <div>
-                                          <p style={{ fontWeight:600, fontSize:'0.85rem', color:'var(--ink)', maxWidth:'180px', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{p.nombre}</p>
-                                          <p style={{ fontSize:'0.75rem', color:'var(--ink-2)' }}>{moneda(p.precio)} • Stock: <span style={{ color: p.stock > 0 ? '#16a34a' : '#ef4444', fontWeight:'bold' }}>{p.stock}</span></p>
+                                      {/* Handle */}
+                                      <div {...provided.dragHandleProps} style={{ cursor: busquedaAdmin ? 'not-allowed' : 'grab', color:'var(--ink-3)', flexShrink:0, display:'flex', alignItems:'center', padding:'2px' }}>
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="4" y1="8" x2="20" y2="8"/><line x1="4" y1="16" x2="20" y2="16"/></svg>
+                                      </div>
+
+                                      {/* Imagen */}
+                                      <img src={imgSrc(p.imagen_url)} style={{ width:'48px', height:'48px', objectFit:'cover', borderRadius:'10px', flexShrink:0, pointerEvents:'none', border:'1px solid var(--border)' }} />
+
+                                      {/* Info */}
+                                      <div style={{ flex:1, minWidth:0 }}>
+                                        <p style={{ fontWeight:700, fontSize:'0.87rem', color:'var(--ink)', lineHeight:1.3, marginBottom:'4px', overflow:'hidden', display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical' }}>{p.nombre}</p>
+                                        <div style={{ display:'flex', alignItems:'center', gap:'6px', flexWrap:'wrap' }}>
+                                          <span style={{ fontSize:'0.8rem', fontWeight:700, color:'var(--accent)' }}>{moneda(p.precio)}</span>
+                                          <span style={{ fontSize:'0.62rem', color:'var(--ink-3)' }}>•</span>
+                                          <span style={{
+                                            fontSize:'0.65rem', fontWeight:700,
+                                            padding:'2px 7px', borderRadius:'99px',
+                                            background: p.stock === 0 ? 'rgba(239,68,68,0.12)' : stockBajo ? 'rgba(245,158,11,0.12)' : 'rgba(34,197,94,0.1)',
+                                            color: p.stock === 0 ? '#ef4444' : stockBajo ? '#d97706' : '#16a34a',
+                                          }}>Stock: {p.stock}</span>
+                                          <span style={{
+                                            fontSize:'0.62rem', fontWeight:600,
+                                            padding:'2px 7px', borderRadius:'99px',
+                                            background:'rgba(255,255,255,0.06)',
+                                            color:'var(--ink-3)',
+                                            border:'1px solid var(--border)'
+                                          }}>{catLabel}</span>
                                         </div>
                                       </div>
-                                      <div style={{ display:'flex', gap:'8px' }}>
-                                        <button onClick={() => handleEdit(p)} className="pill-btn pill-btn--ghost" style={{ padding:'6px 12px', fontSize:'0.7rem' }}>Editar</button>
-                                        <button onClick={() => handleDelete(p.id)} className="pill-btn" style={{ background:'#ef4444', color:'white', padding:'6px 12px', fontSize:'0.7rem' }}>Borrar</button>
+
+                                      {/* Acciones */}
+                                      <div style={{ display:'flex', flexDirection:'column', gap:'5px', flexShrink:0 }}>
+                                        <button onClick={() => handleEdit(p)} style={{ padding:'5px 13px', borderRadius:'8px', border:'1px solid var(--border)', background:'var(--bg)', color:'var(--ink)', fontSize:'0.7rem', fontWeight:600, cursor:'pointer', whiteSpace:'nowrap', transition:'background 0.15s' }}
+                                          onMouseEnter={e => e.currentTarget.style.background='var(--border)'}
+                                          onMouseLeave={e => e.currentTarget.style.background='var(--bg)'}>
+                                          ✏️ Editar
+                                        </button>
+                                        <button onClick={() => handleDelete(p.id)} style={{ padding:'5px 13px', borderRadius:'8px', border:'none', background:'rgba(239,68,68,0.1)', color:'#ef4444', fontSize:'0.7rem', fontWeight:600, cursor:'pointer', whiteSpace:'nowrap', transition:'background 0.15s' }}
+                                          onMouseEnter={e => e.currentTarget.style.background='rgba(239,68,68,0.2)'}
+                                          onMouseLeave={e => e.currentTarget.style.background='rgba(239,68,68,0.1)'}>
+                                          🗑️ Borrar
+                                        </button>
                                       </div>
                                     </div>
                                   )}
                                 </Draggable>
-                              ))}
+                              )})}
                               {provided.placeholder}
                             </div>
                           )}
