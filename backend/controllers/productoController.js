@@ -27,7 +27,7 @@ const getProductos = async (req, res) => {
             params.push(`%${busqueda}%`, `%${busqueda}%`);
         }
 
-        query += ' ORDER BY p.orden ASC, p.id DESC';
+        query += ' ORDER BY p.id DESC';
 
         const [rows] = await db.query(query, params);
         res.json(rows);
