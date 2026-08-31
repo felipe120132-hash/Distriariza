@@ -78,15 +78,17 @@ const crearTablaResenas = async () => {
 // ── Agregar columna `orden` a productos si no existe ──────────────────────────
 const agregarColumnaOrden = async () => {
     try {
-        await db.query(`
-            ALTER TABLE productos 
-            ADD COLUMN IF NOT EXISTS orden INT NOT NULL DEFAULT 0
+        const [cols] = await db.query(`
+            SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
+            WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'productos' AND COLUMN_NAME = 'orden'
         `);
-        // Inicializar orden con el id de cada producto para mantener el orden actual
-        await db.query(`
-            UPDATE productos SET orden = id WHERE orden = 0
-        `);
-        console.log('✅ Columna orden lista');
+        if (cols.length === 0) {
+            await db.query(`ALTER TABLE productos ADD COLUMN orden INT NOT NULL DEFAULT 0`);
+            await db.query(`UPDATE productos SET orden = id`);
+            console.log('✅ Columna orden creada e inicializada');
+        } else {
+            console.log('✅ Columna orden ya existe');
+        }
     } catch (error) {
         console.error('❌ Error en columna orden:', error.message);
     }
