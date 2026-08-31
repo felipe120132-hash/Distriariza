@@ -75,7 +75,26 @@ const crearTablaResenas = async () => {
     }
 };
 
+// ── Agregar columna `orden` a productos si no existe ──────────────────────────
+const agregarColumnaOrden = async () => {
+    try {
+        await db.query(`
+            ALTER TABLE productos 
+            ADD COLUMN IF NOT EXISTS orden INT NOT NULL DEFAULT 0
+        `);
+        // Inicializar orden con el id de cada producto para mantener el orden actual
+        await db.query(`
+            UPDATE productos SET orden = id WHERE orden = 0
+        `);
+        console.log('✅ Columna orden lista');
+    } catch (error) {
+        console.error('❌ Error en columna orden:', error.message);
+    }
+};
+
 crearTablaResenas();
+agregarColumnaOrden();
+
 
 // ── Ruta de emergencia para cargar catálogo (PROTEGIDA) ───────────────────────
 app.get('/api/load-catalog', verifyToken, async (req, res) => {
